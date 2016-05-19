@@ -5,11 +5,11 @@
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF37DDDB-5D1B-4B7A-A050-0DBFEBC56CAE}</ProjectGuid>
+    <ProjectGuid>{0C55E1DE-1840-4372-BEFA-06DE3931ACB1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Famoser.MassPass.Business</RootNamespace>
-    <AssemblyName>Famoser.MassPass.Business</AssemblyName>
+    <RootNamespace>Famoser.MassPass.Data</RootNamespace>
+    <AssemblyName>Famoser.MassPass.Data</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,17 +35,11 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <Folder Include="Models\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\FolderEntity.cs" />
+    <Compile Include="Entities\NoteEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Famoser.MassPass.Data\Famoser.MassPass.Data.csproj">
-      <Project>{0c55e1de-1840-4372-befa-06de3931acb1}</Project>
-      <Name>Famoser.MassPass.Data</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
