@@ -1,4 +1,10 @@
-﻿request: public guid of collection
+﻿request: list with all sync entities
+response: list with all sync entities and corresponding syncactions lse
+decrypt to: none
+
+for all lse resolve issues or update
+
+request: public Server of collection
 response: encrypted entity with this guid
 decrypt to: CollectionEntity ce
 

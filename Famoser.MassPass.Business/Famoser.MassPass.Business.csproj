@@ -39,7 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Base\BaseModel.cs" />
-    <Compile Include="Models\Base\BaseSyncModel.cs" />
     <Compile Include="Models\CollectionModel.cs" />
     <Compile Include="Models\ContentModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

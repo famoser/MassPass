@@ -14,8 +14,8 @@
   <mp:PhoneIdentity PhoneProductId="188fa8e4-dfc5-49f7-a5cc-558b468cdc98" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Famoser.MassPass.Presentation.UniversalWindows</DisplayName>
-    <PublisherDisplayName>famoser</PublisherDisplayName>
+    <DisplayName>Famoser.MassPass.Presentation.UniversalWindows</DisplayContentJson>
+    <PublisherDisplayName>famoser</PublisherDisplayContentJson>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

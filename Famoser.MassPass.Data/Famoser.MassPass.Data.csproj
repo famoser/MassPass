@@ -35,11 +35,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Entities\Decrypted\ContentEntity.cs" />
-    <Compile Include="Entities\Decrypted\DecryptedEntity.cs" />
     <Compile Include="Entities\Encrypted\EncryptedEntity.cs" />
     <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
     <Compile Include="Entities\NoteEntity.cs" />
-    <Compile Include="Entities\Sync\SyncEntity.cs" />
+    <Compile Include="Enum\SyncAction.cs" />
+    <Compile Include="Models\ServerInformations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
