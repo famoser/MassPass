@@ -1,11 +1,9 @@
 ﻿using System;
+using Famoser.MassPass.Data.Entities.Sync;
 
 namespace Famoser.MassPass.Data.Entities
 {
     public class NoteEntity : SyncEntity
     {
-        public Guid TypeId { get; set; }
-        public string ContentJson { get; set; }
-        public byte[] ContentFile { get; set; }
     }
 }

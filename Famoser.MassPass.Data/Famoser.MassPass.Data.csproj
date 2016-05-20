@@ -34,9 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Entities\FolderEntity.cs" />
+    <Compile Include="Entities\Decrypted\ContentEntity.cs" />
+    <Compile Include="Entities\Decrypted\DecryptedEntity.cs" />
+    <Compile Include="Entities\Encrypted\EncryptedEntity.cs" />
+    <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
     <Compile Include="Entities\NoteEntity.cs" />
-    <Compile Include="Entities\SyncEntity.cs" />
+    <Compile Include="Entities\Sync\SyncEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Workflow.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,12 @@
+﻿request: public guid of collection
+response: encrypted entity with this guid
+decrypt to: CollectionEntity ce
+
+request: ce.RelationId
+response: list with encrypted entites related to this relationId
+decrypt to: list of ContentEntities
+
+for each ContentEntities with Type Guid == Empty && RelationId != Empty
+	repeat from beginning
+
+connect all entities by ParentId
