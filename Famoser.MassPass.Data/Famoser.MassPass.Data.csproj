@@ -40,9 +40,12 @@
     <Compile Include="Entities\Communications\Request\Entities\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Request\RefreshRequest.cs" />
     <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
+    <Compile Include="Entities\Communications\Response\CollectionResponse.cs" />
+    <Compile Include="Entities\Communications\Response\EncryptedResponse.cs" />
+    <Compile Include="Entities\Communications\Response\Entitites\RefreshEntity.cs" />
+    <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
     <Compile Include="Entities\Communications\Response\UpdateResponse.cs" />
     <Compile Include="Entities\Decrypted\ContentEntity.cs" />
-    <Compile Include="Entities\Encrypted\EncryptedEntity.cs" />
     <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
     <Compile Include="Enum\ContentStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />
