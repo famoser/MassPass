@@ -8,7 +8,6 @@ namespace Famoser.MassPass.Data.Entities.Decrypted
 {
     public class ContentEntity : CollectionEntity
     {
-        public Guid TypeId { get; set; }
         public string ContentJson { get; set; }
         public byte[] ContentFile { get; set; }
     }
