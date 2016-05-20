@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Famoser.MassPass.Data.Enum
 {
-    public enum SyncAction
+    /// <summary>
+    /// indicates the status of the contentmodel.
+    /// </summary>
+    public enum ContentStatus
     {
-        Create,
-        Remove,
-        Update
+        Normal = 1,
+        Deleted = 2,
     }
 }

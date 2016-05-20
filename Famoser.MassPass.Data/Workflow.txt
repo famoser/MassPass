@@ -1,18 +1,26 @@
-﻿request: list with all sync entities
-response: list with all sync entities and corresponding syncactions lse
-decrypt to: none
+﻿1. Step: refresh local save
+request (RefreshRequest): list with all sync entities, properties: ServerId, VersionId
+response: list lse with all sync entities and corresponding RemoteStatus
 
-for all lse resolve issues or update
+for all items in lse
+	mark as conflict if LocalStatus == Updated 
+	if LocalStatus == Unchanged
+		request (EncryptedEntityRequest): ServerId
+		response: EncryptedEntity, Version
+		decrypt: EncryptedEntity to ContentEntity
 
-request: public Server of collection
-response: encrypted entity with this guid
-decrypt to: CollectionEntity ce
+2. Step: save local entites to the server
+for all models with LocalStatus.Changed
+	encrypt: ContentEntity to EncyptedEntity
+	request: send EncryptedEntity, if applicable with ServerRelationId, if applicable with ServerId
+	response: receive VersionId and ServerRelationId and / or ServerId if Guid.Empty or null was send for any of those two ids (UpdateResponse)
 
-request: ce.RelationId
-response: list with encrypted entites related to this relationId
-decrypt to: list of ContentEntities
+3. Step: get new entries
+for each models with ServerRelationId != Guid.Empty
+	request (CollectionEntitiesRequest): ServerRelationId and list with all known ServerId und of this model
+	response: list with all available ServerId (items which have a connection to any of the specified ServerRelationId) but were not included in the request
 
-for each ContentEntities with Type Guid == Empty && RelationId != Empty
-	repeat from beginning
-
-connect all entities by ParentId
+	for all new ServerId
+		request (EncryptedEntityRequest): ServerId of ContentEntity which you want to receive
+		response: EncryptedEntity, VersionId
+		decrypt: EncryptedEntity to ContentEntity

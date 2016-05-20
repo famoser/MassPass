@@ -34,11 +34,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\Communications\Request\Base\ApiRequest.cs" />
+    <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
+    <Compile Include="Entities\Communications\Request\EncryptedEntityRequest.cs" />
+    <Compile Include="Entities\Communications\Request\Entities\RefreshEntity.cs" />
+    <Compile Include="Entities\Communications\Request\RefreshRequest.cs" />
+    <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
+    <Compile Include="Entities\Communications\Response\UpdateResponse.cs" />
     <Compile Include="Entities\Decrypted\ContentEntity.cs" />
     <Compile Include="Entities\Encrypted\EncryptedEntity.cs" />
     <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
-    <Compile Include="Entities\NoteEntity.cs" />
-    <Compile Include="Enum\SyncAction.cs" />
+    <Compile Include="Enum\ContentStatus.cs" />
+    <Compile Include="Enum\LocalStatus.cs" />
+    <Compile Include="Enum\RemoteStatus.cs" />
     <Compile Include="Models\ServerInformations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
