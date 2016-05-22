@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Famoser.MassPass.Data.Entities.Communications.Response
+namespace Famoser.MassPass.Data.Entities.Communications.Response.Encrypted
 {
     public class EncryptedResponse
     {

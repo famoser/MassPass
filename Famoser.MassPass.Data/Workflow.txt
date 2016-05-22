@@ -7,33 +7,42 @@ Unauthorize:
 request (UnAuthorizationRequest): provide the DeviceId to block, and the reason which will be displayed to the device
 response (UnAuthorizationResponse): a message and a boolean indicating if the unauthorization was successfull or not
 
+List of authorized devices:
+request (AuthorizedDevicesRequest): only baserequest needed
+response (AuthorizedDevicesResponse): List with authorized devices and their names
 
-1. Step: refresh local save
-request (RefreshRequest): list with all sync entities, properties: ServerId, VersionId
-response (RefreshResponse): list lse with all sync entities and corresponding RemoteStatus
+List of changes:
+request (ContentEntityHistoryRequest): serverId of the entity
+response (ContentEntityHistoryReponse): a list of all changes
 
-for all items in lse
-	mark as conflict if LocalStatus == Updated 
-	if LocalStatus == Unchanged
-		request (ContentEntityRequest): ServerId
-		response (internal EncryptedResponse): EncryptedEntity, Version
-		decrypt: EncryptedEntity to ContentEntity
-		result (ContentEntityResponse): ContentEntity 
+Sync:
+	1. Step: refresh local save
+	request (RefreshRequest): list with all sync entities, properties: ServerId, VersionId
+	response (RefreshResponse): list lse with all sync entities and corresponding RemoteStatus
 
-2. Step: save local entites to the server
-for all models with LocalStatus.Changed
-	request (UpdateRequest): contains the ContentEntity
-	encrypt: ContentEntity to EncyptedEntity
-	request: send EncryptedEntity, if applicable with ServerRelationId, if applicable with ServerId
-	response (UpdateResponse): receive VersionId and ServerRelationId and / or ServerId if Guid.Empty or null was send for any of those two ids (UpdateResponse)
+	for all items in lse
+		mark as conflict if LocalStatus == Updated 
+		if LocalStatus == Unchanged
+			request (ContentEntityRequest): ServerId
+			response (internal EncryptedResponse): EncryptedEntity, Version
+			decrypt: EncryptedEntity to ContentEntity
+			result (ContentEntityResponse): ContentEntity 
 
-3. Step: get new entries
-for each models with ServerRelationId != Guid.Empty
-	request (CollectionEntriesRequest): ServerRelationId and list with all known ServerId und of this model
-	response (CollectionEntriesResponse): list with all available ServerId (items which have a connection to any of the specified ServerRelationId) but were not included in the request
+	2. Step: save local entites to the server
+	for all models with LocalStatus.Changed
+		request (UpdateRequest): contains the ContentEntity
+		encrypt: ContentEntity to EncyptedEntity
+		request: send EncryptedEntity, if applicable with ServerRelationId, if applicable with ServerId
+		response (UpdateResponse): receive VersionId and ServerRelationId and / or ServerId if Guid.Empty or null was send for any of those two ids (UpdateResponse)
 
-	for all new ServerId
-		request (ContentEntityRequest): ServerId of ContentEntity which you want to receive
-		response (EnryptedResponse): EncryptedEntity, VersionId
-		decrypt: EncryptedEntity to ContentEntity
-		result (ContentEntityResponse)
+	3. Step: get new entries
+	for each models with ServerRelationId != Guid.Empty
+		request (CollectionEntriesRequest): ServerRelationId and list with all known ServerId und of this model
+		response (CollectionEntriesResponse): list with all available ServerId (items which have a connection to any of the specified ServerRelationId) but were not included in the request
+
+		for all new ServerId
+			request (ContentEntityRequest): ServerId of ContentEntity which you want to receive
+			response (EnryptedResponse): EncryptedEntity, VersionId
+			decrypt: EncryptedEntity to ContentEntity
+			result (ContentEntityResponse)
+
