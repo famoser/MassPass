@@ -10,5 +10,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request
     public class UpdateRequest : ApiRequest
     {
         public ContentEntity ContentEntity { get; set; }
+        public Guid ServerId { get; set; }
     }
 }

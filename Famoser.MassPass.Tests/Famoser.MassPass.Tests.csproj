@@ -55,6 +55,10 @@
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PCLCrypto, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d4421c8a4786956c, processorArchitecture=MSIL">
       <HintPath>..\packages\PCLCrypto.2.0.147\lib\net45\PCLCrypto.dll</HintPath>
       <Private>True</Private>
@@ -100,6 +104,9 @@
   <ItemGroup>
     <Compile Include="Data\Mocks\ConfigurationService.cs" />
     <Compile Include="Data\Services\EncryptionServiceTest.cs" />
+    <Compile Include="LibraryTest\JsonConvertTests.cs" />
+    <Compile Include="LibraryTest\Models\BaseModelWithoutProperty.cs" />
+    <Compile Include="LibraryTest\Models\ModelWithProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

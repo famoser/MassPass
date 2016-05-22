@@ -25,6 +25,11 @@ namespace Famoser.MassPass.Data.Enum
         /// UserId unknown to the API
         /// </summary>
         UserNotFound = 1002,
+
+        /// <summary>
+        /// Download Uri invalid
+        /// </summary>
+        DownloadUrlInvalid = 1003,
         #endregion
 
         #region AuthroisationRequest

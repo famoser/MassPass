@@ -1,59 +1,197 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.FrameworkEssentials.Logging;
+using Famoser.FrameworkEssentials.Models.RestService;
+using Famoser.FrameworkEssentials.Services;
+using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.MassPass.Data.Attributes;
+using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response;
 using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
+using Famoser.MassPass.Data.Entities.Communications.Response.Base;
+using Famoser.MassPass.Data.Entities.Communications.Response.Encrypted;
+using Famoser.MassPass.Data.Enum;
+using Famoser.MassPass.Data.Exceptions;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Data.Services
 {
     public class DataService : IDataService
     {
-        private IEncryptionService _encryptionService;
+        private readonly IApiEncryptionService _apiEncryptionService;
+        private readonly IConfigurationService _configurationService;
+        private readonly IRestService _restService;
 
-        public DataService(IEncryptionService encryptionService)
+        public DataService(IConfigurationService configurationService, IApiEncryptionService apiEncryptionService)
         {
-            _encryptionService = encryptionService;
+            _configurationService = configurationService;
+            _apiEncryptionService = apiEncryptionService;
+            _restService = new RestService();
         }
 
+        private async Task<Uri> GetUri(RequestType rt)
+        {
+            var config = await _configurationService.GetApiConfiguration();
+            var baseUrl = config.Uri.AbsoluteUri.TrimEnd('/');
+
+            var type = typeof(RequestType);
+            var attribute = type.GetRuntimeField(rt.ToString()).GetCustomAttribute<ApiUriAttribute>();
+
+            return new Uri(baseUrl + "/" + attribute.RelativeUrl);
+        }
+
+        private async Task<T> PostJsonToApi<T>(object request) where T : ApiResponse, new()
+        {
+            try
+            {
+                var response = await _restService.PostJsonAsync(await GetUri(RequestType.Authorize),
+                    JsonConvert.SerializeObject(request));
+                if (response.IsRequestSuccessfull)
+                {
+                    return
+                        JsonConvert.DeserializeObject<T>(await response.GetResponseAsStringAsync());
+                }
+                return new T()
+                {
+                    RequestFailed = true
+                };
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+                return new T()
+                {
+                    RequestFailed = true,
+                    Exception = ex
+                };
+            }
+        }
 
         public Task<AuthorizationResponse> Authorize(AuthorizationRequest request)
         {
-            throw new NotImplementedException();
+            return PostJsonToApi<AuthorizationResponse>(request);
         }
 
         public Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request)
         {
-            throw new NotImplementedException();
+            return PostJsonToApi<UnAuthorizationResponse>(request);
         }
 
         public Task<RefreshResponse> Refresh(RefreshRequest request)
         {
-            throw new NotImplementedException();
+            return PostJsonToApi<RefreshResponse>(request);
         }
 
-        public Task<ContentEntityResponse> Read(ContentEntityRequest request)
+        public async Task<ContentEntityResponse> Read(ContentEntityRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var resp = await PostJsonToApi<EncryptedResponse>(request);
+                if (resp.IsSuccessfull)
+                {
+                    var encrypted = await _restService.GetAsync(resp.DownloadUri);
+                    if (encrypted.IsRequestSuccessfull)
+                    {
+                        var decrypted = await _apiEncryptionService.Decrypt(await encrypted.GetResponseAsByteArrayAsync(),
+                            request.ServerId);
+                        if (decrypted != null && decrypted.Length > 0)
+                        {
+                            var str = Encoding.UTF8.GetString(decrypted, 0, decrypted.Length);
+                            return new ContentEntityResponse()
+                            {
+                                ApiError = ApiError.None,
+                                ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
+                                Successfull = true
+                            };
+                        }
+                        return new ContentEntityResponse()
+                        {
+                            Successfull = false,
+                            Exception = new DecryptionFailedException()
+                        };
+                    }
+                    return new ContentEntityResponse()
+                    {
+                        Successfull = false,
+                        ApiError = ApiError.DownloadUrlInvalid
+                    };
+                }
+                return new ContentEntityResponse()
+                {
+                    Successfull = resp.Successfull,
+                    ApiError = resp.ApiError,
+                    Exception = resp.Exception
+                };
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+                return new ContentEntityResponse()
+                {
+                    Successfull = false,
+                    Exception = ex
+                };
+            }
         }
 
-        public Task<UpdateResponse> Update(UpdateRequest request)
+        public async Task<UpdateResponse> Update(UpdateRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var str = JsonConvert.SerializeObject(request.ContentEntity);
+                var bytes = Encoding.UTF8.GetBytes(str);
+                var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
+
+                var response = await _restService.PostAsync(await GetUri(RequestType.Update), new []
+                {
+                    new KeyValuePair<string, string>("UserId", request.UserId.ToString()),
+                    new KeyValuePair<string, string>("DeviceId", request.DeviceId.ToString()),
+                    new KeyValuePair<string, string>("ServerId", request.ServerId.ToString())
+                },
+                new List<RestFile>()
+                {
+                    new RestFile()
+                    {
+                        Content = encryptedBytes,
+                        ContentName = "updateFile",
+                        FileName = request.ServerId.ToString()
+                    }
+                });
+                if (response.IsRequestSuccessfull)
+                    return JsonConvert.DeserializeObject<UpdateResponse>(await response.GetResponseAsStringAsync());
+
+                return new UpdateResponse()
+                {
+                    Successfull = false,
+                    Exception = new UploadFailedException()
+                };
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+                return new UpdateResponse()
+                {
+                    Exception = ex,
+                    Successfull = false
+                };
+            }
         }
 
         public Task<CollectionEntriesResponse> Read(CollectionEntriesRequest request)
         {
-            throw new NotImplementedException();
+            return PostJsonToApi<CollectionEntriesResponse>(request);
         }
 
         public Task<ContentEntityHistoryResponse> GetHistory(ContentEntityHistoryRequest request)
         {
-            throw new NotImplementedException();
+            return PostJsonToApi<ContentEntityHistoryResponse>(request);
         }
     }
 }
