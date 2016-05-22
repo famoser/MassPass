@@ -34,24 +34,33 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\Communications\Request\Authorization\AuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Base\ApiRequest.cs" />
     <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
-    <Compile Include="Entities\Communications\Request\EncryptedEntityRequest.cs" />
+    <Compile Include="Entities\Communications\Request\Authorization\UnauthorisationRequest.cs" />
+    <Compile Include="Entities\Communications\Request\UpdateRequest.cs" />
+    <Compile Include="Entities\Communications\Request\ContentEntityRequest.cs" />
     <Compile Include="Entities\Communications\Request\Entities\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Request\RefreshRequest.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\AuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
-    <Compile Include="Entities\Communications\Response\CollectionResponse.cs" />
+    <Compile Include="Entities\Communications\Response\CollectionEntriesResponse.cs" />
+    <Compile Include="Entities\Communications\Response\ContentEntityResponse.cs" />
     <Compile Include="Entities\Communications\Response\EncryptedResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\UnAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\UpdateResponse.cs" />
     <Compile Include="Entities\Decrypted\ContentEntity.cs" />
     <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
+    <Compile Include="Enum\ApiError.cs" />
     <Compile Include="Enum\ContentStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />
     <Compile Include="Enum\RemoteStatus.cs" />
     <Compile Include="Models\ServerInformations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\IDataService.cs" />
+    <Compile Include="Services\Interfaces\IEncryptionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Famoser.FrameworkEssentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

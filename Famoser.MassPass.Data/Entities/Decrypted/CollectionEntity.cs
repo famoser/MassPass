@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Famoser.MassPass.Data.Entities.Sync;
 using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Data.Entities.Decrypted

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data.Models;
 
 namespace Famoser.MassPass.Business.Models
 {
     public class ContentModel : CollectionModel
     {
-        public ContentModel(Guid id, Guid typeId, Guid serverRelationId, CollectionModel parent) : base(id, typeId, serverRelationId, parent)
+        public ContentModel(Guid id, Guid typeId, ServerInformations serverInformations, CollectionModel parent) : base(id, typeId, serverInformations, parent)
         {
 
         }

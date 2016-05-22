@@ -1,26 +1,39 @@
-﻿1. Step: refresh local save
+﻿Authorisation (typically one time):
+Authorize:
+request (AuthorizationRequest): an authorisation string which must only be filled out if userid has already entries online. also the string name of user and device
+response (AuthorizationResponse): a message and a boolean indicating if the authorization was successfull or not
+
+Unauthorize:
+request (UnAuthorizationRequest): provide the DeviceId to block, and the reason which will be displayed to the device
+response (UnAuthorizationResponse): a message and a boolean indicating if the unauthorization was successfull or not
+
+
+1. Step: refresh local save
 request (RefreshRequest): list with all sync entities, properties: ServerId, VersionId
 response (RefreshResponse): list lse with all sync entities and corresponding RemoteStatus
 
 for all items in lse
 	mark as conflict if LocalStatus == Updated 
 	if LocalStatus == Unchanged
-		request (EncryptedEntityRequest): ServerId
-		response (EncryptedResponse): EncryptedEntity, Version
+		request (ContentEntityRequest): ServerId
+		response (internal EncryptedResponse): EncryptedEntity, Version
 		decrypt: EncryptedEntity to ContentEntity
+		result (ContentEntityResponse): ContentEntity 
 
 2. Step: save local entites to the server
 for all models with LocalStatus.Changed
+	request (UpdateRequest): contains the ContentEntity
 	encrypt: ContentEntity to EncyptedEntity
 	request: send EncryptedEntity, if applicable with ServerRelationId, if applicable with ServerId
 	response (UpdateResponse): receive VersionId and ServerRelationId and / or ServerId if Guid.Empty or null was send for any of those two ids (UpdateResponse)
 
 3. Step: get new entries
 for each models with ServerRelationId != Guid.Empty
-	request (CollectionEntitiesRequest): ServerRelationId and list with all known ServerId und of this model
-	response (CollectionResponse): list with all available ServerId (items which have a connection to any of the specified ServerRelationId) but were not included in the request
+	request (CollectionEntriesRequest): ServerRelationId and list with all known ServerId und of this model
+	response (CollectionEntriesResponse): list with all available ServerId (items which have a connection to any of the specified ServerRelationId) but were not included in the request
 
 	for all new ServerId
-		request (EncryptedEntityRequest): ServerId of ContentEntity which you want to receive
+		request (ContentEntityRequest): ServerId of ContentEntity which you want to receive
 		response (EnryptedResponse): EncryptedEntity, VersionId
 		decrypt: EncryptedEntity to ContentEntity
+		result (ContentEntityResponse)

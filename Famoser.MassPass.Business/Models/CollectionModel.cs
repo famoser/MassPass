@@ -42,7 +42,7 @@ namespace Famoser.MassPass.Business.Models
         
         public ContentModel CreateNewContent(Guid typeId)
         {
-            return new ContentModel(Guid.NewGuid(), typeId, Guid.NewGuid(), this);
+            return new ContentModel(Guid.NewGuid(), typeId, null, this);
         }
     }
 }
