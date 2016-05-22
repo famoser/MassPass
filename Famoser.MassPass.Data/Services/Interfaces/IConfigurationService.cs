@@ -10,5 +10,7 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     public interface IConfigurationService
     {
         Task<ApiConfiguration> GetApiConfiguration();
+
+        Task<bool> SetApiConfiguration(ApiConfiguration config);
     }
 }

@@ -23,8 +23,7 @@ namespace Famoser.MassPass.Data.Services
             var config = await _configurationService.GetApiConfiguration();
             var provider = WinRTCrypto.SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithm.AesCbcPkcs7);
             var symeticKey = provider.CreateSymmetricKey(key);
-            byte[] cipherText = WinRTCrypto.CryptographicEngine.Encrypt(symeticKey, data, config.InitialisationVector);
-            return WinRTCrypto.CryptographicEngine.Decrypt(symeticKey, cipherText, config.InitialisationVector);
+            return WinRTCrypto.CryptographicEngine.Encrypt(symeticKey, data, config.InitialisationVector);//add config.InitialisationVector
         }
 
         public async Task<byte[]> Decrypt(byte[] data, byte[] key)
@@ -32,7 +31,7 @@ namespace Famoser.MassPass.Data.Services
             var config = await _configurationService.GetApiConfiguration();
             var provider = WinRTCrypto.SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithm.AesCbcPkcs7);
             var symeticKey = provider.CreateSymmetricKey(key);
-            return WinRTCrypto.CryptographicEngine.Encrypt(symeticKey, data, config.InitialisationVector);
+            return WinRTCrypto.CryptographicEngine.Decrypt(symeticKey, data, config.InitialisationVector);
         }
 
         public async Task<byte[]> GeneratePasswort(string password)
