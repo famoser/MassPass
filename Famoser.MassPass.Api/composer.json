@@ -1,0 +1,24 @@
+{
+    "name": "famoser/masspass",
+    "type": "application",
+    "license": "MIT",
+    "description": "The api for a password mananger",
+    "keywords": ["masspass", "api"],
+    "authors": [
+        {
+            "name": "Florian Moser",
+            "email": "git@famoser.ch",
+            "homepage": "http://famoser.ch",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "slim/slim": "^3.0",
+        "netresearch/jsonmapper": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Famoser\\MassPass\\": "src/"
+        }
+    }
+}

@@ -23,6 +23,13 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request);
 
         /// <summary>
+        /// UnAuthorizes a device against the API
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<AuthorizedDevicesResponse> AuthorizedDevices(AuthorizedDevicesRequest request);
+
+        /// <summary>
         /// recieve a changelist with informations which local data may be outdated
         /// </summary>
         /// <param name="request"></param>
