@@ -51,8 +51,8 @@
     <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\UnAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\UpdateResponse.cs" />
-    <Compile Include="Entities\Decrypted\ContentEntity.cs" />
-    <Compile Include="Entities\Decrypted\CollectionEntity.cs" />
+    <Compile Include="Entities\ContentEntity.cs" />
+    <Compile Include="Entities\CollectionEntity.cs" />
     <Compile Include="Enum\ApiError.cs" />
     <Compile Include="Enum\ContentStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Data.Entities.Communications.Request;
+using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response;
-using Famoser.MassPass.Data.Entities.Decrypted;
+using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
 
 namespace Famoser.MassPass.Data.Services.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿namespace Famoser.MassPass.Data.Entities.Decrypted
+﻿namespace Famoser.MassPass.Data.Entities
 {
     public class ContentEntity : CollectionEntity
     {

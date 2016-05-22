@@ -1,7 +1,7 @@
 ﻿using System;
 using Famoser.MassPass.Data.Enum;
 
-namespace Famoser.MassPass.Data.Entities.Decrypted
+namespace Famoser.MassPass.Data.Entities
 {
     public class CollectionEntity
     {
