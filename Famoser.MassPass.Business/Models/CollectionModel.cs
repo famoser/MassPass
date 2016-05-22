@@ -12,11 +12,11 @@ namespace Famoser.MassPass.Business.Models
 {
     public class CollectionModel : BaseModel
     {
-        public CollectionModel(Guid id, Guid typeId, ServerInformations serverInformations, CollectionModel parent = null)
+        public CollectionModel(Guid id, Guid typeId, EntityServerInformations entityServerInformations, CollectionModel parent = null)
         {
             Id = id;
             TypeId = typeId;
-            ServerInformations = serverInformations;
+            EntityServerInformations = entityServerInformations;
             Parent = parent;
             Contents = new ObservableCollection<ContentModel>();
         }
@@ -25,7 +25,7 @@ namespace Famoser.MassPass.Business.Models
 
         public Guid TypeId { get; }
 
-        public ServerInformations ServerInformations { get; }
+        public EntityServerInformations EntityServerInformations { get; }
 
         public CollectionModel Parent { get; }
 

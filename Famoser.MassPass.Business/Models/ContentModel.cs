@@ -9,7 +9,7 @@ namespace Famoser.MassPass.Business.Models
 {
     public class ContentModel : CollectionModel
     {
-        public ContentModel(Guid id, Guid typeId, ServerInformations serverInformations, CollectionModel parent) : base(id, typeId, serverInformations, parent)
+        public ContentModel(Guid id, Guid typeId, EntityServerInformations entityServerInformations, CollectionModel parent) : base(id, typeId, entityServerInformations, parent)
         {
 
         }

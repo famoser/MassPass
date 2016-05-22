@@ -3,7 +3,7 @@ using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Data.Models
 {
-    public class ServerInformations
+    public class EntityServerInformations
     {
         public Guid ServerId { get; set; }
         public Guid ServerRelationId { get; set; }

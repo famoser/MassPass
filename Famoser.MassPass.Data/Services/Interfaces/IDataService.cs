@@ -18,7 +18,14 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         /// <param name="request"></param>
         /// <returns></returns>
         Task<AuthorizationResponse> Authorize(AuthorizationRequest request);
-        
+
+        /// <summary>
+        /// UnAuthorizes a device against the API
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request);
+
         /// <summary>
         /// recieve a changelist with informations which local data may be outdated
         /// </summary>
@@ -46,5 +53,12 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         /// <param name="request"></param>
         /// <returns></returns>
         Task<CollectionEntriesResponse> Read(CollectionEntriesRequest request);
+
+        /// <summary>
+        /// Get history of changes of a specific ContentEntity
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<ContentEntityHistoryResponse> GetHistory(ContentEntityHistoryRequest request);
     }
 }
