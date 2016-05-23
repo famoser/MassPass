@@ -35,18 +35,18 @@ namespace Famoser.MassPass.Data.Services
             _restService = new RestService();
         }
 
-        private async Task<Uri> GetUri(RequestType rt)
+        private async Task<Uri> GetUri(ApiRequest rt)
         {
             var config = await _configurationService.GetApiConfiguration();
             var baseUrl = config.Uri.AbsoluteUri.TrimEnd('/');
 
-            var type = typeof(RequestType);
+            var type = typeof(ApiRequest);
             var attribute = type.GetRuntimeField(rt.ToString()).GetCustomAttribute<ApiUriAttribute>();
 
             return new Uri(baseUrl + "/" + attribute.RelativeUrl);
         }
 
-        private async Task<T> PostJsonToApi<T>(object request, RequestType type) where T : ApiResponse, new()
+        private async Task<T> PostJsonToApi<T>(object request, ApiRequest type) where T : ApiResponse, new()
         {
             try
             {
@@ -75,29 +75,29 @@ namespace Famoser.MassPass.Data.Services
 
         public Task<AuthorizationResponse> Authorize(AuthorizationRequest request)
         {
-            return PostJsonToApi<AuthorizationResponse>(request, RequestType.Authorize);
+            return PostJsonToApi<AuthorizationResponse>(request, ApiRequest.Authorize);
         }
 
         public Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request)
         {
-            return PostJsonToApi<UnAuthorizationResponse>(request, RequestType.UnAuthorize);
+            return PostJsonToApi<UnAuthorizationResponse>(request, ApiRequest.UnAuthorize);
         }
 
         public Task<AuthorizedDevicesResponse> AuthorizedDevices(AuthorizedDevicesRequest request)
         {
-            return PostJsonToApi<AuthorizedDevicesResponse>(request,RequestType.AuthorizedDevices);
+            return PostJsonToApi<AuthorizedDevicesResponse>(request,ApiRequest.AuthorizedDevices);
         }
 
         public Task<RefreshResponse> Refresh(RefreshRequest request)
         {
-            return PostJsonToApi<RefreshResponse>(request, RequestType.Refresh);
+            return PostJsonToApi<RefreshResponse>(request, ApiRequest.Refresh);
         }
 
         public async Task<ContentEntityResponse> Read(ContentEntityRequest request)
         {
             try
             {
-                var resp = await PostJsonToApi<EncryptedResponse>(request, RequestType.ReadContentEntity);
+                var resp = await PostJsonToApi<EncryptedResponse>(request, ApiRequest.ReadContentEntity);
                 if (resp.IsSuccessfull)
                 {
                     var encrypted = await _restService.GetAsync(resp.DownloadUri);
@@ -153,7 +153,7 @@ namespace Famoser.MassPass.Data.Services
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
 
-                var response = await _restService.PostAsync(await GetUri(RequestType.Update), new []
+                var response = await _restService.PostAsync(await GetUri(ApiRequest.Update), new []
                 {
                     new KeyValuePair<string, string>("UserId", request.UserId.ToString()),
                     new KeyValuePair<string, string>("DeviceId", request.DeviceId.ToString()),
@@ -190,12 +190,12 @@ namespace Famoser.MassPass.Data.Services
 
         public Task<CollectionEntriesResponse> Read(CollectionEntriesRequest request)
         {
-            return PostJsonToApi<CollectionEntriesResponse>(request, RequestType.ReadCollectionEntries);
+            return PostJsonToApi<CollectionEntriesResponse>(request, ApiRequest.ReadCollectionEntries);
         }
 
         public Task<ContentEntityHistoryResponse> GetHistory(ContentEntityHistoryRequest request)
         {
-            return PostJsonToApi<ContentEntityHistoryResponse>(request, RequestType.GetHistory);
+            return PostJsonToApi<ContentEntityHistoryResponse>(request, ApiRequest.GetHistory);
         }
     }
 }
