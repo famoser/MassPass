@@ -61,10 +61,11 @@
     <Compile Include="Entities\ContentEntity.cs" />
     <Compile Include="Entities\CollectionEntity.cs" />
     <Compile Include="Enum\ApiError.cs" />
+    <Compile Include="Enum\ApiType.cs" />
     <Compile Include="Enum\ContentStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />
     <Compile Include="Enum\RemoteStatus.cs" />
-    <Compile Include="Enum\RequestType.cs" />
+    <Compile Include="Enum\ApiRequest.cs" />
     <Compile Include="Exceptions\DecryptionFailedException.cs" />
     <Compile Include="Exceptions\UploadFailedException.cs" />
     <Compile Include="Models\ApiConfiguration.cs" />
