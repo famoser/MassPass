@@ -9,6 +9,7 @@
 namespace Famoser\MassPass\Helpers;
 
 
+use Famoser\MassPass\Models\Entities\Base\EntityBase;
 use Slim\Container;
 
 class DatabaseHelper
@@ -44,7 +45,18 @@ class DatabaseHelper
 
         //create tables
         $conn = $this->getConnection();
-        $conn->query("CREATE TABLE users (id int AUTO_INCREMENT)");
+        $files = scandir(dirname(dirname(__FILE__)) . "/Assets/sql/initialize");
+        foreach ($files as $file) {
+            if (substr($file, -3) == "sql") {
+                $queries = file_get_contents($file);
+                $queryArray = explode(";", $queries);
+                foreach ($queryArray as $item) {
+                    if (trim($item) != "") {
+                        $conn->query($item);
+                    }
+                }
+            }
+        }
 
         file_put_contents($tempFilePath, time());
 
@@ -54,5 +66,36 @@ class DatabaseHelper
     private function createGuid()
     {
         return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    }
+
+    private function saveToDatabase(EntityBase $entity)
+    {
+        if ($entity->id > 0) {
+            //update
+
+
+        } else {
+            //create
+            $properties = (array)$entity;
+            unset($properties["id"]);
+
+            $sql = "INSERT INTO " . $entity->getTableName() . "(";
+            foreach ($properties as $key => $val) {
+                $sql .= $key . ",";
+            }
+            $sql = substr($sql, 0, -1);
+            $sql .= ") VALUES (";
+            foreach ($properties as $key => $val) {
+                $sql .= ":" . $key . ",";
+            }
+            $sql = substr($sql, 0, -1);
+            $sql .= ")";
+            $request = $this->getConnection()->prepare($sql);
+            if (!$request->execute($properties)) {
+                return false;
+            }
+            $entity->id = $this->getConnection()->lastInsertId();
+        }
+        return true;
     }
 }
