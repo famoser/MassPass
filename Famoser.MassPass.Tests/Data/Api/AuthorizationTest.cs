@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -14,21 +15,28 @@ namespace Famoser.MassPass.Tests.Data.Api
     { 
 
         [TestMethod]
-        public void TestAuthroization()
+        public async Task TestAuthroization()
         {
-            InitializeIoc();
-            var dataService = SimpleIoc.Default.GetInstance<IDataService>();
-            var userGuid = Guid.NewGuid();
-            var deviceGuid = Guid.NewGuid();
-            var authRequest = new AuthorizationRequest()
+            using (var helper = new ApiHelper())
             {
-                DeviceId = deviceGuid,
-                UserName = "my user",
-                DeviceName = "my device",
-                UserId = userGuid
-            };
+                //arrange
+                var dataService = ApiHelper.Instance.GetDataService();
+                var userGuid = Guid.NewGuid();
+                var deviceGuid = Guid.NewGuid();
+                var authRequest = new AuthorizationRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserName = "my user",
+                    DeviceName = "my device",
+                    UserId = userGuid
+                };
 
-            dataService.Authorize()
+                //act
+                var res = await dataService.Authorize(authRequest);
+
+                //assert
+                Assert.IsTrue(res.IsSuccessfull, "request not successfull");
+            }
         }
     }
 }

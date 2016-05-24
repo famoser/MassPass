@@ -15,6 +15,16 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response.Base
 
         public bool RequestFailed { get; set; }
         public Exception Exception { get; set; }
-        public bool IsSuccessfull => Successfull && !RequestFailed && ApiError == ApiError.None;
+        public bool IsSuccessfull => Successfull && !RequestFailed && ApiError == ApiError.None && Exception == null;
+
+        public override string ToString()
+        {
+            if (IsSuccessfull)
+                return "Request successfull";
+            var errorStr = "Request failed: ";
+            errorStr += ApiError
+
+            return base.ToString();
+        }
     }
 }

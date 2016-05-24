@@ -8,6 +8,7 @@
         /// <summary>
         /// DeviceId unknown to the API 
         /// </summary>
+        
         NotAuthorized = 1000,
 
         /// <summary>

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.FrameworkEssentials.Services;
+using Famoser.FrameworkEssentials.Services.Base;
 using Famoser.FrameworkEssentials.Singleton;
+using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Tests.Data.Mocks;
@@ -12,7 +15,7 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace Famoser.MassPass.Tests.Data.Api
 {
-    public class ApiHelper : SingletonBase<ApiHelper>
+    public class ApiHelper : SingletonBase<ApiHelper> , IDisposable
     {
         private static IDataService _dataService;
         private static IConfigurationService _configurationService;
@@ -38,7 +41,19 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             var config = await _configurationService.GetApiConfiguration();
             var newUri = new Uri(config.Uri.AbsolutePath + "/cleanup");
-            
+            var service = new HttpService();
+            service.FireAndForget(newUri);
+        }
+
+        public string ErrorMessage(ApiResponse resp)
+        {
+            if (resp.IsSuccessfull)
+                return "Request successfull";
+        }
+
+        public void Dispose()
+        {
+            CleanUpApi().Wait();
         }
     }
 }
