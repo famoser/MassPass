@@ -5,7 +5,7 @@ using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Tests.Data.Mocks
 {
-    class ConfigurationServiceMock : IConfigurationService
+    internal class ConfigurationServiceMock : IConfigurationService
     {
         private ApiConfiguration _config;
         private ApiConfiguration GetConfig()
@@ -14,7 +14,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
                 _config = new ApiConfiguration()
                 {
                     GenerationKeyInterations = 5000,
-                    Uri = new Uri("https://api.masspass.famoser.ch"),
+                    Uri = new Uri("https://api.masspass.famoser.ch/test"),
                     InitialisationVector =
                     new byte[]
                     {

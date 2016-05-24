@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Famoser.FrameworkEssentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Famoser.FrameworkEssentials.2.1.0\lib\dotnet\Famoser.FrameworkEssentials.dll</HintPath>
+      <HintPath>..\packages\Famoser.FrameworkEssentials.2.1.1\lib\dotnet\Famoser.FrameworkEssentials.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
@@ -97,12 +97,17 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Data\Mocks\ConfigurationService.cs" />
+    <Compile Include="Data\Api\ApiHelper.cs" />
+    <Compile Include="Data\Api\AuthorizationTest.cs" />
+    <Compile Include="Data\Mocks\ConfigurationServiceMock.cs" />
+    <Compile Include="Data\Mocks\PasswordServiceMock.cs" />
     <Compile Include="Data\Services\EncryptionServiceTest.cs" />
     <Compile Include="LibraryTest\JsonConvertTests.cs" />
     <Compile Include="LibraryTest\Models\BaseModelWithoutProperty.cs" />
