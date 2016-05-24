@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.FrameworkEssentials.Attributes;
+using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Base;
 using Famoser.FrameworkEssentials.Singleton;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
+using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Tests.Data.Mocks;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Tests.Data.Api
 {
@@ -49,6 +53,13 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             if (resp.IsSuccessfull)
                 return "Request successfull";
+
+            var res = "Request failed!";
+            res += "\nRequest successfull: " + !resp.RequestFailed;
+            res += "\nApi Successfull: " + resp.Successfull;
+            res += "\nApi Error: " +  ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(resp.ApiError).Description;
+            res += "\nException: " + resp.Exception.Message;
+            return res;
         }
 
         public void Dispose()

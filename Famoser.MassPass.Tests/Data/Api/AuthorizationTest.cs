@@ -13,14 +13,13 @@ namespace Famoser.MassPass.Tests.Data.Api
     [TestClass]
     public class AuthorizationTest
     { 
-
         [TestMethod]
         public async Task TestAuthroization()
         {
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var dataService = ApiHelper.Instance.GetDataService();
+                var dataService = helper.GetDataService();
                 var userGuid = Guid.NewGuid();
                 var deviceGuid = Guid.NewGuid();
                 var authRequest = new AuthorizationRequest()
@@ -35,7 +34,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 var res = await dataService.Authorize(authRequest);
 
                 //assert
-                Assert.IsTrue(res.IsSuccessfull, "request not successfull");
+                Assert.IsTrue(res.IsSuccessfull, helper.ErrorMessage(res));
             }
         }
     }

@@ -95,8 +95,8 @@ namespace Famoser.MassPass.Tests.Data.Services
             }
 
             //assert
-            Assert.IsTrue(availableKeySizes.Contains(8));
             Assert.IsTrue(availableKeySizes.Contains(16));
+            Assert.IsTrue(availableKeySizes.Contains(24));
             Assert.IsTrue(availableKeySizes.Contains(32));
             Assert.IsTrue(availableKeySizes.Count() == 3);
         }

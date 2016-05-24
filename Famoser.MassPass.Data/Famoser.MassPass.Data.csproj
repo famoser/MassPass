@@ -35,12 +35,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiUriAttribute.cs" />
+    <Compile Include="Entities\Communications\Request\Authorization\CreateAuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizedDevicesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Base\ApiRequest.cs" />
     <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\UnauthorisationRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityHistoryRequest.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\CreateAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizedDevicesResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityHistoryResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\AuthorizedDeviceEntity.cs" />
@@ -85,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Famoser.FrameworkEssentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Famoser.FrameworkEssentials.2.2.0\lib\portable-net45+win8+wpa81+wp8\Famoser.FrameworkEssentials.dll</HintPath>
+      <HintPath>..\packages\Famoser.FrameworkEssentials.2.4.0\lib\portable-net45+win8+wpa81+wp8\Famoser.FrameworkEssentials.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

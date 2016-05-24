@@ -1,11 +1,15 @@
-﻿namespace Famoser.MassPass.Data.Enum
+﻿using Famoser.FrameworkEssentials.Attributes;
+
+namespace Famoser.MassPass.Data.Enum
 {
     /// <summary>
     /// response from the server; indicates if contentmodel is up to date or not
     /// </summary>
     public enum RemoteStatus
     {
+        [Description("up to date")]
         UpToDate = 1,
+        [Description("changed")]
         Changed = 2
     }
 }

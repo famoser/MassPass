@@ -1,11 +1,15 @@
-﻿namespace Famoser.MassPass.Data.Enum
+﻿using Famoser.FrameworkEssentials.Attributes;
+
+namespace Famoser.MassPass.Data.Enum
 {
     /// <summary>
     /// indicates the status of the contentmodel.
     /// </summary>
     public enum ContentStatus
     {
+        [Description("normal")]
         Normal = 1,
-        Deleted = 2,
+        [Description("deleted")]
+        Deleted = 2
     }
 }
