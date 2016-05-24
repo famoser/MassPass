@@ -13,6 +13,9 @@ namespace Famoser.MassPass.Data.Enum
         [ApiUri("authorize", Authorization)]
         Authorize,
 
+        [ApiUri("createauthorization", Authorization)]
+        CreateAuthorization,
+
         [ApiUri("unauthorize", Authorization)]
         UnAuthorize,
 

@@ -16,6 +16,13 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         Task<AuthorizationResponse> Authorize(AuthorizationRequest request);
 
         /// <summary>
+        /// Provide a new AuthCode which is only valid for a short period of time, and can be used by another device to authorize itself
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<CreateAuthorizationResponse> CreateAuthorization(CreateAuthorizationRequest request);
+
+        /// <summary>
         /// UnAuthorizes a device against the API
         /// </summary>
         /// <param name="request"></param>

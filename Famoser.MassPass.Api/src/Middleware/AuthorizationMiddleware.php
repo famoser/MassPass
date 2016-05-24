@@ -11,6 +11,7 @@ namespace Famoser\MassPass\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Uri;
 
 
 class AuthorizationMiddleware
@@ -21,8 +22,9 @@ class AuthorizationMiddleware
         if ($uri->getPath() != "/authorization")
         {
             //check if access granted
-            //omitted, doing authentication directly in index, to vermeiden duplicated code
+            
         }
+
         $response = $next($request, $response);
         return $response;
     }
