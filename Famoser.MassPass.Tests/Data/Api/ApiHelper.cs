@@ -55,15 +55,15 @@ namespace Famoser.MassPass.Tests.Data.Api
         /// validate a new user to the API
         /// </summary>
         /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
-        public async Task<Tuple<Guid, Guid>> CreateValidatedDevice()
+        public async Task<Tuple<Guid, Guid>> CreateValidatedDevice(string userName = "my user", string deviceName = "my device")
         {
             var userGuid = Guid.NewGuid();
             var deviceGuid = Guid.NewGuid();
             var authRequest = new AuthorizationRequest
             {
                 DeviceId = deviceGuid,
-                UserName = "my user",
-                DeviceName = "my device",
+                UserName = userName,
+                DeviceName = deviceName,
                 UserId = userGuid
             };
             var res = await GetDataService().Authorize(authRequest);
@@ -75,7 +75,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         /// validate a new user to the API
         /// </summary>
         /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
-        public async Task<Guid> AddValidatedDevice(Guid userId, Guid deviceId, string deviceName = "new device")
+        public async Task<Guid> AddValidatedDevice(Guid userId, Guid deviceId, string deviceName = "new device", string userName = "my user")
         {
             var userGuid = userId;
             var newDeviceId = Guid.NewGuid();

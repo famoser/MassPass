@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
+using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -77,13 +80,76 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestAllRoutedNeedAuthorization()
+        public async Task TestAllRoutesNeedAuthorization()
         {
             using (var helper = new ApiHelper())
             {
                 //arrange
                 var dataService = helper.GetDataService();
-                //todo
+                var deviceGuid = Guid.NewGuid();
+                var userGuid = Guid.NewGuid();
+
+                var responses = new List<ApiResponse>();
+
+                responses.Add(await dataService.AuthorizationStatus(new AuthorizationStatusReuest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.AuthorizedDevices(new AuthorizedDevicesRequest
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.CreateAuthorization(new CreateAuthorizationRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.GetHistory(new ContentEntityHistoryRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.Refresh(new RefreshRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.UnAuthorize(new UnAuthorizationRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.Update(new UpdateRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.Read(new CollectionEntriesRequest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                responses.Add(await dataService.Read(new ContentEntityRequest
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                }));
+
+                for (int index = 0; index < responses.Count; index++)
+                {
+                    var apiResponse = responses[index];
+                    AssertionHelper.CheckForUnSuccessfull(apiResponse, "request nr " + index, ApiError.NotAuthorized);
+                }
             }
         }
 
@@ -174,9 +240,13 @@ namespace Famoser.MassPass.Tests.Data.Api
             {
                 //arrange
                 var dataService = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
-                var guids2 = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
-                var guids3 = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
+                string userName = "user name";
+                string deviceName1 = "device name 1";
+                string deviceName2 = "device name 2";
+                string deviceName3 = "device name 3";
+                var guids = await helper.CreateValidatedDevice(userName, deviceName1);
+                var guids2 = await helper.AddValidatedDevice(guids.Item1, guids.Item2, deviceName2, userName);
+                var guids3 = await helper.AddValidatedDevice(guids.Item1, guids.Item2, deviceName3, userName);
 
                 var validUnAuthRequest = new AuthorizedDevicesRequest()
                 {
@@ -190,7 +260,20 @@ namespace Famoser.MassPass.Tests.Data.Api
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");
                 Assert.IsTrue(valid1.AuthorizedDeviceEntities.Count == 3, "not valid authorized devies number");
-                //todo check if device name, user name and guids are correct
+                foreach (var authorizedDeviceEntity in valid1.AuthorizedDeviceEntities)
+                {
+                    if (authorizedDeviceEntity.DeviceId == guids.Item2)
+                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName1);
+                    else if (authorizedDeviceEntity.DeviceId == guids2)
+                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName2);
+                    else if (authorizedDeviceEntity.DeviceId == guids3)
+                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName3);
+
+                    Assert.IsTrue(authorizedDeviceEntity.AuthorizationDateTime < DateTime.Now + TimeSpan.FromSeconds(10)
+                        && authorizedDeviceEntity.AuthorizationDateTime - TimeSpan.FromSeconds(20) > DateTime.Now, "AuthorizationDateTime wrong");
+                    Assert.IsTrue(authorizedDeviceEntity.LastModificationDateTime < DateTime.Now + TimeSpan.FromSeconds(10)
+                        && authorizedDeviceEntity.LastModificationDateTime - TimeSpan.FromSeconds(20) > DateTime.Now, "LastModificationDateTime wrong");
+                }
             }
         }
     }
