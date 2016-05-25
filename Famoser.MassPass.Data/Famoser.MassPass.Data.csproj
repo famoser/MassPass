@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiUriAttribute.cs" />
+    <Compile Include="Entities\Communications\Request\Authorization\AuthorizationStatusReuest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\CreateAuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizedDevicesRequest.cs" />
@@ -42,6 +43,7 @@
     <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\UnauthorisationRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityHistoryRequest.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\AuthorizationStatusResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\CreateAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizedDevicesResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityHistoryResponse.cs" />

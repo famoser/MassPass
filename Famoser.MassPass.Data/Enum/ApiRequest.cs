@@ -10,6 +10,9 @@ namespace Famoser.MassPass.Data.Enum
         [ApiUri("authorization")]
         Authorization,
 
+        [ApiUri("status", Authorization)]
+        AuthorizationStatus,
+
         [ApiUri("authorize", Authorization)]
         Authorize,
 

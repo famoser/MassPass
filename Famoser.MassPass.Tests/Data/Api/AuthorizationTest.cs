@@ -58,63 +58,32 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceName = "my device",
                     UserId = userGuid
                 };
+                var authStatusRequest = new AuthorizationStatusReuest()
+                {
+                    DeviceId = deviceGuid,
+                    UserId = userGuid
+                };
 
                 //act
                 var res = await dataService.Authorize(authRequest);
+                var res2 = await dataService.AuthorizationStatus(authStatusRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(res, "res");
+                AssertionHelper.CheckForSuccessfull(res2, "res2");
+                Assert.IsTrue(res2.IsAuthorized, ErrorHelper.ErrorMessageForRequest(res2));
+                Assert.IsNull(res2.UnauthorizedReason, ErrorHelper.ErrorMessageForRequest(res2));
             }
         }
 
         [TestMethod]
-        public async Task TestValidAuthorization()
+        public async Task TestAllRoutedNeedAuthorization()
         {
             using (var helper = new ApiHelper())
             {
                 //arrange
                 var dataService = helper.GetDataService();
-                var userGuid = Guid.NewGuid();
-                var deviceGuid = Guid.NewGuid();
-                var authCode = Guid.NewGuid().ToString();
-                var authRequest = new AuthorizationRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserName = "my user",
-                    DeviceName = "my device",
-                    UserId = userGuid
-                };
-                var validCreateAuthRequest = new CreateAuthorizationRequest()
-                {
-                    UserId = userGuid,
-                    DeviceId = deviceGuid,
-                    AuthorisationCode = authCode
-                };
-                var inValidUserCreateAuthRequest = new CreateAuthorizationRequest()
-                {
-                    UserId = Guid.NewGuid(),
-                    DeviceId = deviceGuid,
-                    AuthorisationCode = authCode
-                };
-                var inValidDeviceCreateAuthRequest = new CreateAuthorizationRequest()
-                {
-                    UserId = userGuid,
-                    DeviceId = Guid.NewGuid(),
-                    AuthorisationCode = authCode
-                };
-
-                //act
-                var res = await dataService.Authorize(authRequest);
-                var valid1 = await dataService.CreateAuthorization(validCreateAuthRequest);
-                var invalidUser = await dataService.CreateAuthorization(inValidUserCreateAuthRequest);
-                var invalidDevice = await dataService.CreateAuthorization(inValidDeviceCreateAuthRequest);
-
-                //assert
-                AssertionHelper.CheckForSuccessfull(res, "res");
-                AssertionHelper.CheckForSuccessfull(valid1, "valid1");
-
-                AssertionHelper.CheckForUnSuccessfull(invalidUser, "invalidUser", ApiError.NotAuthorized);
-                AssertionHelper.CheckForUnSuccessfull(invalidDevice, "invalidDevice", ApiError.NotAuthorized);
+                //todo
             }
         }
 
@@ -143,22 +112,85 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceId = newDeviceGuid,
                     AuthorisationCode = authCode
                 };
-                var validCreateAuthRequest2 = new CreateAuthorizationRequest()
+                var authStatusRequest = new AuthorizationStatusReuest()
                 {
                     UserId = userGuid,
-                    DeviceId = newDeviceGuid,
-                    AuthorisationCode = authCode
+                    DeviceId = newDeviceGuid
                 };
 
                 //act
                 var valid1 = await dataService.CreateAuthorization(validCreateAuthRequest);
                 var valid2 = await dataService.Authorize(validAuthRequest);
-                var valid3 = await dataService.CreateAuthorization(validCreateAuthRequest2);
+                var valid3 = await dataService.AuthorizationStatus(authStatusRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");
                 AssertionHelper.CheckForSuccessfull(valid2, "valid2");
                 AssertionHelper.CheckForSuccessfull(valid3, "valid3");
+                Assert.IsTrue(valid3.IsAuthorized, "valid3 not authorized");
+            }
+        }
+
+        [TestMethod]
+        public async Task TestUnAuthorization()
+        {
+            using (var helper = new ApiHelper())
+            {
+                //arrange
+                var dataService = helper.GetDataService();
+                var guids = await helper.CreateValidatedDevice();
+                var newDeviceGuid = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
+                var unauthReason = "cause fuck u";
+
+                var validUnAuthRequest = new UnAuthorizationRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2,
+                    DeviceToBlockId = newDeviceGuid,
+                    Reason = unauthReason
+                };
+                var authStatusRequest = new AuthorizationStatusReuest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = newDeviceGuid
+                };
+
+                //act
+                var valid1 = await dataService.UnAuthorize(validUnAuthRequest);
+                var valid2 = await dataService.AuthorizationStatus(authStatusRequest);
+
+                //assert
+                AssertionHelper.CheckForSuccessfull(valid1, "valid1");
+                AssertionHelper.CheckForSuccessfull(valid2, "valid2");
+                Assert.IsFalse(valid2.IsAuthorized, ErrorHelper.ErrorMessageForRequest(valid2, "valid2"));
+                Assert.IsTrue(valid2.UnauthorizedReason == unauthReason, "unauth reason not correct");
+            }
+        }
+
+        [TestMethod]
+        public async Task TestAuthroizedDevices()
+        {
+            using (var helper = new ApiHelper())
+            {
+                //arrange
+                var dataService = helper.GetDataService();
+                var guids = await helper.CreateValidatedDevice();
+                var guids2 = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
+                var guids3 = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
+
+                var validUnAuthRequest = new AuthorizedDevicesRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2
+                };
+
+                //act
+                var valid1 = await dataService.AuthorizedDevices(validUnAuthRequest);
+
+                //assert
+                AssertionHelper.CheckForSuccessfull(valid1, "valid1");
+                Assert.IsTrue(valid1.AuthorizedDeviceEntities.Count == 3, "not valid authorized devies number");
+                //todo check if device name, user name and guids are correct
             }
         }
     }

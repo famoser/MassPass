@@ -54,7 +54,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         /// <summary>
         /// validate a new user to the API
         /// </summary>
-        /// <returns>Tuple with Item0 = userGuid and Item1 = deviceGuid</returns>
+        /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
         public async Task<Tuple<Guid, Guid>> CreateValidatedDevice()
         {
             var userGuid = Guid.NewGuid();
@@ -69,6 +69,36 @@ namespace Famoser.MassPass.Tests.Data.Api
             var res = await GetDataService().Authorize(authRequest);
             AssertionHelper.CheckForSuccessfull(res, "auth request in CreateValidatesDevice");
             return new Tuple<Guid, Guid>(userGuid, deviceGuid);
+        }
+
+        /// <summary>
+        /// validate a new user to the API
+        /// </summary>
+        /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
+        public async Task<Guid> AddValidatedDevice(Guid userId, Guid deviceId, string deviceName = "new device")
+        {
+            var userGuid = userId;
+            var newDeviceId = Guid.NewGuid();
+            var authCode = Guid.NewGuid().ToString();
+            var createAuthRequest = new CreateAuthorizationRequest()
+            {
+                DeviceId = deviceId,
+                AuthorisationCode = authCode,
+                UserId = userGuid
+            };
+            var authRequest = new AuthorizationRequest
+            {
+                DeviceId = newDeviceId,
+                UserName = "my user",
+                DeviceName = "my device",
+                UserId = userGuid,
+                AuthorisationCode = authCode
+            };
+            var res1 = await GetDataService().CreateAuthorization(createAuthRequest);
+            var res2 = await GetDataService().Authorize(authRequest);
+            AssertionHelper.CheckForSuccessfull(res1, "create auth request in AddCreateValidatedDevice");
+            AssertionHelper.CheckForSuccessfull(res2, "auth request in AddCreateValidatedDevice");
+            return newDeviceId;
         }
 
         public void Dispose()

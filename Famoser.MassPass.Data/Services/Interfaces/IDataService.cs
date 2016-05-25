@@ -13,6 +13,13 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        Task<AuthorizationStatusResponse> AuthorizationStatus(AuthorizationStatusReuest request);
+
+        /// <summary>
+        /// Authorizes the device against the API. Please provide an authorisation code if user has already entries online
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         Task<AuthorizationResponse> Authorize(AuthorizationRequest request);
 
         /// <summary>
