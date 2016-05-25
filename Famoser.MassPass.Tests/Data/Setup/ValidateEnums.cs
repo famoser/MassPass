@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.MassPass.Data.Attributes;
 using Famoser.MassPass.Data.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Famoser.MassPass.Tests.Data
+namespace Famoser.MassPass.Tests.Data.Setup
 {
     [TestClass]
-    public class AttributeTests
+    public class ValidateEnums
     {
         [TestMethod]
         public void AllApiErrorValuesHaveDescriptionAttribute()

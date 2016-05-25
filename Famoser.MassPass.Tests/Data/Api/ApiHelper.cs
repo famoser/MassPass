@@ -8,6 +8,7 @@ using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Base;
 using Famoser.FrameworkEssentials.Singleton;
+using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services;
@@ -15,11 +16,12 @@ using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Tests.Data.Mocks;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Tests.Data.Api
 {
-    public class ApiHelper : SingletonBase<ApiHelper> , IDisposable
+    public class ApiHelper : SingletonBase<ApiHelper>, IDisposable
     {
         private static IDataService _dataService;
         private static IConfigurationService _configurationService;
@@ -49,17 +51,24 @@ namespace Famoser.MassPass.Tests.Data.Api
             service.FireAndForget(newUri);
         }
 
-        public string ErrorMessage(ApiResponse resp)
+        /// <summary>
+        /// validate a new user to the API
+        /// </summary>
+        /// <returns>Tuple with Item0 = userGuid and Item1 = deviceGuid</returns>
+        public async Task<Tuple<Guid, Guid>> CreateValidatedDevice()
         {
-            if (resp.IsSuccessfull)
-                return "Request successfull";
-
-            var res = "Request failed!";
-            res += "\nRequest successfull: " + !resp.RequestFailed;
-            res += "\nApi Successfull: " + resp.Successfull;
-            res += "\nApi Error: " +  ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(resp.ApiError).Description;
-            res += "\nException: " + resp.Exception.Message;
-            return res;
+            var userGuid = Guid.NewGuid();
+            var deviceGuid = Guid.NewGuid();
+            var authRequest = new AuthorizationRequest
+            {
+                DeviceId = deviceGuid,
+                UserName = "my user",
+                DeviceName = "my device",
+                UserId = userGuid
+            };
+            var res = await GetDataService().Authorize(authRequest);
+            AssertionHelper.CheckForSuccessfull(res, "auth request in CreateValidatesDevice");
+            return new Tuple<Guid, Guid>(userGuid, deviceGuid);
         }
 
         public void Dispose()
