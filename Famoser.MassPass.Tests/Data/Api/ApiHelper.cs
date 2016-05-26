@@ -8,6 +8,7 @@ using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Base;
 using Famoser.FrameworkEssentials.Singleton;
+using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
@@ -99,6 +100,28 @@ namespace Famoser.MassPass.Tests.Data.Api
             AssertionHelper.CheckForSuccessfull(res1, "create auth request in AddCreateValidatedDevice");
             AssertionHelper.CheckForSuccessfull(res2, "auth request in AddCreateValidatedDevice");
             return newDeviceId;
+        }
+
+        /// <summary>
+        /// validate a new user to the API
+        /// </summary>
+        /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
+        public async Task<Tuple<Guid, Guid, string>> AddEntity(Guid userId, Guid deviceId, Guid? relationId = null, Guid? serverId = null)
+        {
+            serverId = serverId ?? Guid.NewGuid();
+            relationId = relationId ?? Guid.NewGuid();
+            var newEntity = new UpdateRequest()
+            {
+                UserId = userId,
+                DeviceId = deviceId,
+                ServerId = serverId.Value,
+                RelationId = relationId.Value,
+                ContentEntity = EntityMockHelper.GetContentEntity()
+            };
+
+            var res1 = await GetDataService().Update(newEntity);
+            AssertionHelper.CheckForSuccessfull(res1, "AddEntity request in AddEntity");
+            return new Tuple<Guid, Guid, string>(relationId.Value, serverId.Value, res1.VersionId);
         }
 
         public void Dispose()

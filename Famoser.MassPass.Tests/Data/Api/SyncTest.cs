@@ -16,7 +16,7 @@ namespace Famoser.MassPass.Tests.Data.Api
     [TestClass]
     public class SyncTest
     {
-        public async Task TestAddEntity()
+        public async Task TestAddAndReadEntity()
         {
             using (var helper = new ApiHelper())
             {
@@ -146,8 +146,8 @@ namespace Famoser.MassPass.Tests.Data.Api
 
                 //act
                 var versionRes1 = await ds.Refresh(refreshRequest1);
-                var versionRes2 = await ds.Refresh(refreshRequest1);
-                var versionRes3 = await ds.Refresh(refreshRequest1);
+                var versionRes2 = await ds.Refresh(refreshRequest2);
+                var versionRes3 = await ds.Refresh(refreshRequest3);
 
 
                 //assert
@@ -172,6 +172,95 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     Assert.IsTrue(versionRes3.RefreshEntities[0].VersionId == version2, "versionRes3: invalid version (2)");
                     Assert.IsTrue(versionRes3.RefreshEntities[1].VersionId == version1, "versionRes3: invalid version (3)");
+                }
+            }
+        }
+
+        public async Task TestReadCollection()
+        {
+            using (var helper = new ApiHelper())
+            {
+                var ds = helper.GetDataService();
+                var guids = await helper.CreateValidatedDevice();
+                var relationId = Guid.NewGuid();
+                var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
+                var entityGuids2 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
+                var entityGuids3 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
+
+                var collectionEntriesRequestEmpty = new CollectionEntriesRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2,
+                    RelationId = relationId
+                };
+                var collectionEntriesRequestFull = new CollectionEntriesRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2,
+                    RelationId = relationId,
+                    KnownServerIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2, entityGuids3.Item2 }
+                };
+                var collectionEntriesRequest2Of3 = new CollectionEntriesRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2,
+                    RelationId = relationId,
+                    KnownServerIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2 }
+                };
+
+                var res1 = await ds.Read(collectionEntriesRequestEmpty);
+                var res2 = await ds.Read(collectionEntriesRequestFull);
+                var res3 = await ds.Read(collectionEntriesRequest2Of3);
+
+
+                AssertionHelper.CheckForSuccessfull(res1, "res1");
+                AssertionHelper.CheckForSuccessfull(res2, "res2");
+                AssertionHelper.CheckForSuccessfull(res3, "res3");
+
+                Assert.IsTrue(res1.ServerIds.Count == 3, "not all entities returned (1)");
+                Assert.IsTrue(res2.ServerIds.Count == 0, "not all entities returned (2)");
+                Assert.IsTrue(res3.ServerIds.Count == 1, "not all entities returned (3)");
+                Assert.IsTrue(res3.ServerIds[0] == entityGuids3.Item2, "not correct serverId returned (1)");
+                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids3.Item2), "not correct serverId returned (2)");
+                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids2.Item2), "not correct serverId returned (3)");
+                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids1.Item2), "not correct serverId returned (4)");
+            }
+        }
+
+        public async Task TestCollectionHistory()
+        {
+            using (var helper = new ApiHelper())
+            {
+                var ds = helper.GetDataService();
+                var guids = await helper.CreateValidatedDevice();
+                var relationId = Guid.NewGuid();
+                var serverId = Guid.NewGuid();
+                var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
+                var entityGuids2 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
+                var entityGuids3 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
+
+                var collectionEntriesRequestEmpty = new ContentEntityHistoryRequest()
+                {
+                    UserId = guids.Item1,
+                    DeviceId = guids.Item2,
+                    ServerId = serverId
+                };
+                
+
+                //act
+                var res1 = await ds.GetHistory(collectionEntriesRequestEmpty);
+
+                //assert
+                AssertionHelper.CheckForSuccessfull(res1, "res1");
+
+                Assert.IsTrue(res1.HistoryEntries.Count == 3, "not all entities returned");
+                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids3.Item3), "not correct versionId returned (2)");
+                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids2.Item3), "not correct versionId returned (3)");
+                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids1.Item3), "not correct versionId returned (4)");
+                foreach (var historyEntry in res1.HistoryEntries)
+                {
+                    Assert.IsTrue(historyEntry.CreationDateTime < DateTime.Now + TimeSpan.FromSeconds(20) && historyEntry.CreationDateTime > DateTime.Now - TimeSpan.FromSeconds(20), "Datetime not correct");
+                    Assert.IsTrue(historyEntry.DeviceId == guids.Item2, "DeviceId not correct");
                 }
             }
         }
