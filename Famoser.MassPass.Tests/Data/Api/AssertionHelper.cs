@@ -26,5 +26,18 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             Assert.IsTrue(resp.IsSuccessfull, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
         }
+
+        public static void CheckForEquality<T>(T one, T two)
+        {
+            // Just grabbing this to get hold of the type name:
+            var type = one.GetType();
+
+            // Get the PropertyInfo object:
+            var properties = type.GetProperties();
+            foreach (var property in properties)
+            {
+                Assert.IsTrue(property.GetValue(one) == property.GetValue(two), "value named " + property.Name + " is not equal");
+            }
+        }
     }
 }

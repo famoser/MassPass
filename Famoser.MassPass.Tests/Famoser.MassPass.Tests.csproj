@@ -107,8 +107,10 @@
     <Compile Include="Data\Api\ApiHelper.cs" />
     <Compile Include="Data\Api\AssertionHelper.cs" />
     <Compile Include="Data\Api\AuthorizationTest.cs" />
+    <Compile Include="Data\Api\SyncTest.cs" />
     <Compile Include="Data\ErrorHelper.cs" />
     <Compile Include="Data\Mocks\ConfigurationServiceMock.cs" />
+    <Compile Include="Data\Mocks\EntityMockHelper.cs" />
     <Compile Include="Data\Mocks\PasswordServiceMock.cs" />
     <Compile Include="Data\Services\EncryptionServiceTest.cs" />
     <Compile Include="Data\Setup\ValidateEnums.cs" />
