@@ -14,7 +14,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
                 _config = new ApiConfiguration()
                 {
                     GenerationKeyInterations = 5000,
-                    Uri = new Uri("https://api.masspass.famoser.ch/test"),
+                    Uri = new Uri("https://api.masspass.famoser.ch/tests"),
                     InitialisationVector =
                     new byte[]
                     {

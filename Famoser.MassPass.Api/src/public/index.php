@@ -9,11 +9,14 @@
 use Famoser\MassPass\Helpers\DatabaseHelper;
 use Famoser\MassPass\Helpers\RequestHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
-use Famoser\MassPass\Middleware\ApiVersionMiddlename;
+use Famoser\MassPass\Middleware\ApiVersionMiddleware;
 use Famoser\MassPass\Middleware\AuthorizationMiddleware;
+use Famoser\MassPass\Middleware\JsonMiddleware;
 use Famoser\MassPass\Middleware\TestsMiddleware;
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
 use Famoser\MassPass\Models\Request\RefreshRequest;
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+use Famoser\MassPass\Types\ApiErrorTypes;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Slim\App;
@@ -23,7 +26,7 @@ require '../../vendor/autoload.php';
 
 $configuration = [
     'settings' => [
-        'displayErrorDetails' => true,
+        'displayErrorDetails' => false,
         'db' => [
             'path' => "sqlite.db",
             'test_path' => "sqlite_tests.db"
@@ -45,21 +48,36 @@ $c['db'] = function ($c) {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
 };
+$c['notFoundHandler'] = function ($c) {
+    return function ($request, $response) use ($c) {
+        $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
+        return $response->withStatus(404, "endpoint not found")->withJson($res);
+    };
+};
+$c['notAllowedHandler'] = $c['notFoundHandler'];
+$c['errorHandler'] = function ($c) {
+    /**
+     * @param $request
+     * @param $response
+     * @param $exception
+     * @return mixed
+     */
+    return function ($request, Response $response, Exception $exception) use ($c) {
+        $res = new ApiResponse(false, ApiErrorTypes::ServerFailure);
+        return $response->withStatus(500, $exception->getMessage())->withJson($res);
+    };
+};
+
 
 $app = new App($c);
-$app->add(new ApiVersionMiddlename());
-$app->add(new TestsMiddleware());
+$app->add(new JsonMiddleware());
 $app->add(new AuthorizationMiddleware());
-
-//echo json_encode($c->get('api_settings'));
+$app->add(new ApiVersionMiddleware($c));
+$app->add(new TestsMiddleware($c));
 
 
 $app->group("/authorization", function () {
-    $this->post('/authorize', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
+    $this->post('/authorize', '\AuthorizationController:authorize');
     $this->post('/unauthorize', function (Request $request, Response $response) {
         $model = RequestHelper::parseAuthorisationRequest($request);
         //stuff

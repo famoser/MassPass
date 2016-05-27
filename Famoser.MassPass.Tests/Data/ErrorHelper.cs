@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Famoser.FrameworkEssentials.Attributes;
 
 namespace Famoser.MassPass.Tests.Data
 {
@@ -23,7 +23,7 @@ namespace Famoser.MassPass.Tests.Data
             res += "\nRequest successfull: " + !resp.RequestFailed;
             res += "\nApi Successfull: " + resp.Successfull;
             res += "\nApi Error: " + ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(resp.ApiError).Description;
-            res += "\nException: " + resp.Exception.Message;
+            res += "\nException: " + resp.Exception?.Message;
             return res;
         }
     }

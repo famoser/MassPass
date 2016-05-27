@@ -7,6 +7,20 @@ namespace Famoser.MassPass.Data.Enum
         [Description("No API error occured")]
         None = 0,
 
+        #region request errors
+        [Description("Api Version unknown")]
+        ApiVersionInvalid = 100,
+
+        [Description("Json request could not be deserialized")]
+        RequestJsonFailure = 101,
+
+        [Description("Request could not be processed by the server. This is probably a API error, nothing you can do about it :/")]
+        ServerFailure = 102,
+
+        [Description("Request could not be processed by the server. The endpoint was not found. This is probably an application error, nothing you can do about it :/")]
+        RequestUriInvalid = 103,
+        #endregion
+
         #region general errors
         /// <summary>
         /// DeviceId unknown to the API 
