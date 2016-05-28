@@ -29,12 +29,13 @@ class BaseController
     }
 
     const DATABASE_FAILURE = 1;
-
+    
     protected function returnFailure($failureCode, Response $response)
     {
-        if ($failureCode == BaseController::DATABASE_FAILURE)
+        if ($failureCode == BaseController::DATABASE_FAILURE) {
             return $response->withStatus(ApiErrorTypes::ServerFailure, "Database failure");
-
+        }
+        
         return $response->withStatus(ApiErrorTypes::ServerFailure, "unspecified failure");
     }
 
@@ -43,14 +44,25 @@ class BaseController
         $user = $this->getAuthorizedUser($request);
         if ($user == null)
             return false;
-        $device = $this->getAuthorizedDevice($request, $user);
+        $device = $this->getAuthorizedDevice($request);
         if ($device != null)
             return $device->has_access;
         return false;
     }
 
+    protected function returnAuthorizationFailed(ApiResponse $response)
+    {
+        $response->ApiError = ApiErrorTypes::NotAuthorized;
+        $response->Successfull = false;
+        return $response;
+    }
+
     private $authorizedUser;
 
+    /**
+     * @param ApiRequest $request
+     * @return User
+     */
     protected function getAuthorizedUser(ApiRequest $request)
     {
         if ($this->authorizedUser == null) {
@@ -62,11 +74,14 @@ class BaseController
 
     private $authorizedDevice;
 
-    protected function getAuthorizedDevice(ApiRequest $request, User $authorizedUser)
+    /**
+     * @param ApiRequest $request
+     * @return Device
+     */
+    protected function getAuthorizedDevice(ApiRequest $request)
     {
         if ($this->authorizedDevice == null) {
-            if ($authorizedUser == null)
-                $authorizedUser = $this->getAuthorizedUser($request);
+            $authorizedUser = $this->getAuthorizedUser($request);
 
             $helper = $this->getDatabaseHelper();
             $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $request->DeviceId, "user_id" => $authorizedUser->id));

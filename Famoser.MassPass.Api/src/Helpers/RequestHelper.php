@@ -1,14 +1,17 @@
 <?php
 
 namespace Famoser\MassPass\Helpers;
+
 use Famoser\MassPass\Models\Request\Authorization\AuthorizationRequest;
+use Famoser\MassPass\Models\Request\Authorization\AuthorizationStatusRequest;
 use Famoser\MassPass\Models\Request\Authorization\AuthorizedDevicesRequest;
+use Famoser\MassPass\Models\Request\Authorization\CreateAuthorizationRequest;
 use Famoser\MassPass\Models\Request\Authorization\UnAuthorizationRequest;
 use Famoser\MassPass\Models\Request\CollectionEntriesRequest;
 use Famoser\MassPass\Models\Request\ContentEntityHistoryRequest;
 use Famoser\MassPass\Models\Request\ContentEntityRequest;
 use Famoser\MassPass\Models\Request\RefreshRequest;
-use Famoser\MassPass\Models\Response\Authorization\AuthorizedDevices;
+use Famoser\MassPass\Models\Response\Authorization\AuthorizedDevicesResponse;
 use JsonMapper;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -48,6 +51,26 @@ class RequestHelper
     public static function parseAuthorizedDevicesRequest(Request $request)
     {
         RequestHelper::executeJsonMapper($request, new AuthorizedDevicesRequest());
+    }
+
+    /**
+     * @param Request $request
+     * @return AuthorizationStatusRequest
+     * @throws \JsonMapper_Exception
+     */
+    public static function parseAuthorizationStatusRequest(Request $request)
+    {
+        RequestHelper::executeJsonMapper($request, new AuthorizationStatusRequest());
+    }
+
+    /**
+     * @param Request $request
+     * @return CreateAuthorizationRequest
+     * @throws \JsonMapper_Exception
+     */
+    public static function parseCreateAuthorizationRequest(Request $request)
+    {
+        RequestHelper::executeJsonMapper($request, new CreateAuthorizationRequest());
     }
 
     /**

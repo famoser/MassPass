@@ -10,9 +10,12 @@ CREATE TABLE devices (
   guid TEXT,
   name TEXT,
   has_access TINYINT,
-  access_revoked_reason TEXT,
   last_modification_date_time INTEGER,
-  authorization_date_time INTEGER
+  last_request_date_time INTEGER,
+  authorization_date_time INTEGER,
+  access_revoked_reason TEXT,
+  access_revoked_by_device_id TEXT,
+  access_revoked_date_time TEXT,
 );
 
 CREATE TABLE authorization_codes (

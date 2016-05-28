@@ -12,7 +12,7 @@ namespace Famoser\MassPass\Models\Response\Authorization;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Models\Response\Entities\AuthorizedDeviceEntity;
 
-class AuthorizedDevices extends ApiResponse
+class AuthorizedDevicesResponse extends ApiResponse
 {
     /**
      * @var \Famoser\MassPass\Models\Response\Entities\AuthorizedDeviceEntity

@@ -9,7 +9,9 @@
 namespace Famoser\MassPass\Models\Response;
 
 
-class RefreshResponse
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+
+class RefreshResponse extends ApiResponse
 {
     /*
      * @var Entities\RefreshEntity[]

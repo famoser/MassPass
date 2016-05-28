@@ -9,7 +9,9 @@
 namespace Famoser\MassPass\Models\Response;
 
 
-class CollectionEntriesResponse
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+
+class CollectionEntriesResponse extends ApiResponse
 {
     public $ServerIds;
 }

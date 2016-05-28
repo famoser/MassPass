@@ -72,7 +72,7 @@ namespace Famoser.MassPass.Data.Services
             }
         }
 
-        public Task<AuthorizationStatusResponse> AuthorizationStatus(AuthorizationStatusReuest request)
+        public Task<AuthorizationStatusResponse> AuthorizationStatus(AuthorizationStatusRequest request)
         {
             return PostJsonToApi<AuthorizationStatusResponse>(request, ApiRequest.AuthorizationStatus);
         }

@@ -30,33 +30,31 @@ class ApiErrorTypes
 //[Description("Execution of request was denied")]
     const Forbidden = 104;
     #endregion
-
+    
     #region general errors
-    /// <summary>
-    /// DeviceId unknown to the API
-    /// </summary>
 //[Description("Your device is unknown to the API")]
     const NotAuthorized = 1000;
 
-    /// <summary>
-    /// DeviceId was unauthorized
-    /// </summary>
 //[Description("Your device was unauthorized")]
     const Unauthorized = 1001;
 
-    /// <summary>
-    /// Download Uri invalid
-    /// </summary>
 //[Description("Failed downloading an entry because the download link was invalid or expired")]
     const DownloadUrlInvalid = 1002;
     #endregion
 
-    #region AuthroisationRequest
-    /// <summary>
-    /// The provided AuthorisationCode is invalid
-    /// </summary>
+    #region AuthorisationRequest
 //[Description("Your athorization code is invalid")]
     const AuthorizationCodeInvalid = 2000;
+    #endregion
+
+    #region UnAuthorisationRequest
+//[Description("The device to unauthorize could not be found")]
+    const DeviceNotFound = 3000;
+    #endregion
+
+    #region AuthorizedDevicesRequst
+//[Description("No authorized devices could be found")]
+    const NoDevicesFound = 4000;
     #endregion
 
 }

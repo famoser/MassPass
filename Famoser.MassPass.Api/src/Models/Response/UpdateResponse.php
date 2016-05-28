@@ -9,7 +9,9 @@
 namespace Famoser\MassPass\Models\Response;
 
 
-class UpdateResponse
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+
+class UpdateResponse extends ApiResponse
 {
     public $ServerId;
     public $ServerRelationId;

@@ -61,7 +61,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceName = "my device",
                     UserId = userGuid
                 };
-                var authStatusRequest = new AuthorizationStatusReuest()
+                var authStatusRequest = new AuthorizationStatusRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
@@ -91,7 +91,7 @@ namespace Famoser.MassPass.Tests.Data.Api
 
                 var responses = new List<ApiResponse>();
 
-                responses.Add(await dataService.AuthorizationStatus(new AuthorizationStatusReuest()
+                responses.Add(await dataService.AuthorizationStatus(new AuthorizationStatusRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
@@ -178,7 +178,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceId = newDeviceGuid,
                     AuthorisationCode = authCode
                 };
-                var authStatusRequest = new AuthorizationStatusReuest()
+                var authStatusRequest = new AuthorizationStatusRequest()
                 {
                     UserId = userGuid,
                     DeviceId = newDeviceGuid
@@ -215,7 +215,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceToBlockId = newDeviceGuid,
                     Reason = unauthReason
                 };
-                var authStatusRequest = new AuthorizationStatusReuest()
+                var authStatusRequest = new AuthorizationStatusRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = newDeviceGuid

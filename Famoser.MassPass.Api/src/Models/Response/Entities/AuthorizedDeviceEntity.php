@@ -13,6 +13,7 @@ class AuthorizedDeviceEntity
 {
     public $DeviceId;
     public $DeviceName;
+    public $LastRequestDateTime;
     public $LastModificationDateTime;
     public $AuthorizationDateTime;
 }

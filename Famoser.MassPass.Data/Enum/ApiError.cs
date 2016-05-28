@@ -44,12 +44,22 @@ namespace Famoser.MassPass.Data.Enum
         DownloadUrlInvalid = 1002,
         #endregion
 
-        #region AuthroisationRequest
+        #region AuthorisationRequest
         /// <summary>
         /// The provided AuthorisationCode is invalid
         /// </summary>
         [Description("Your athorization code is invalid")]
-        AuthorizationCodeInvalid = 2000
+        AuthorizationCodeInvalid = 2000,
+        #endregion
+
+        #region UnAuthorisationRequest
+        [Description("The device to unauthorize could not be found")]
+        DeviceNotFound = 3000,
+        #endregion
+        
+        #region AuthorizedDevicesRequst
+        [Description("No authorized devices could be found")]
+        NoDevicesFound = 4000
         #endregion
     }
 }

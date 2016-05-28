@@ -9,7 +9,9 @@
 namespace Famoser\MassPass\Models\Response;
 
 
-class ContentEntityHistoryResponse
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+
+class ContentEntityHistoryResponse extends ApiResponse
 {
     /*
      * @var Entities\HistoryEntry[]
