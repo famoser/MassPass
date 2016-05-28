@@ -29,12 +29,16 @@ namespace Famoser.MassPass.Tests.Data.Mocks
                 };
             return _config;
         }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<ApiConfiguration> GetApiConfiguration()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return GetConfig();
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<bool> SetApiConfiguration(ApiConfiguration config)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _config = config;
             return true;
