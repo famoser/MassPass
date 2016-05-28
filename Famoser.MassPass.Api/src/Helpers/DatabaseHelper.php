@@ -45,15 +45,17 @@ class DatabaseHelper
     private function initializeDatabase()
     {
         $tempFilePath = $this->container["settings"]["data_path"] . "/.db_created";
+
         if (file_exists($tempFilePath))
             return true;
 
         //create tables
         $conn = $this->getConnection();
-        $files = scandir(dirname(dirname(__FILE__)) . "/Assets/sql/initialize");
+        $path = $this->container["settings"]["asset_path"] . "/sql/initialize";
+        $files = scandir($path);
         foreach ($files as $file) {
             if (substr($file, -3) == "sql") {
-                $queries = file_get_contents($file);
+                $queries = file_get_contents($path . "/" . $file);
                 $queryArray = explode(";", $queries);
                 foreach ($queryArray as $item) {
                     if (trim($item) != "") {
@@ -89,12 +91,17 @@ class DatabaseHelper
 
     private function executeAndFetch(EntityBase $entity, $sql, $parameters)
     {
-        $request = $this->getConnection()->prepare($sql);
-        if (!$request->execute($parameters)) {
-            return false;
+        try {
+            file_put_contents("debug.txt", $sql . " params: " . json_encode($parameters));
+            $request = $this->getConnection()->prepare($sql);
+            if (!$request->execute($parameters)) {
+                return false;
+            }
+            return $request->fetchAll(PDO::FETCH_CLASS, get_class($entity));
+        } catch (\Exception $ex) {
+            LogHelper::log($ex->getMessage() . "     " . $ex->getTraceAsString() . "     " . $sql . "     " . json_encode($parameters), "DatabaseHelper.txt");
         }
-
-        return $request->fetchAll(PDO::FETCH_CLASS, get_class($entity));
+        return null;
     }
 
     /**

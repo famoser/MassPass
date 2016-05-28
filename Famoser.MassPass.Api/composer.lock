@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "92515ae4708ee89f64f78a1d9d5ac468",
-    "content-hash": "6ef627104bee3fddc703f6684e76be0d",
+    "hash": "0702232998d1f20f60de2e85f16ac7fb",
+    "content-hash": "6a42562f31c9e0ae3579f134c665ce4b",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -35,17 +35,17 @@
             "time": "2014-12-30 15:22:37"
         },
         {
-            "name": "netresearch/jsonmapper",
-            "version": "v0.11.0",
+            "name": "famoser/jsonmapper",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "979abda4b128415c642b06f07db615e75cfd3173"
+                "url": "https://github.com/famoser/jsonmapper.git",
+                "reference": "7691e3906c534dcf98c4651e182a127eeb6e2ebb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/979abda4b128415c642b06f07db615e75cfd3173",
-                "reference": "979abda4b128415c642b06f07db615e75cfd3173",
+                "url": "https://api.github.com/repos/famoser/jsonmapper/zipball/7691e3906c534dcf98c4651e182a127eeb6e2ebb",
+                "reference": "7691e3906c534dcf98c4651e182a127eeb6e2ebb",
                 "shasum": ""
             },
             "require-dev": {
@@ -71,7 +71,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2016-04-14 21:59:35"
+            "time": "2016-05-28 18:50:15"
         },
         {
             "name": "nikic/fast-route",
@@ -213,16 +213,16 @@
         },
         {
             "name": "slim/slim",
-            "version": "3.4.1",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "794073a27b2dd9ef492124263038291b7f8daeb3"
+                "reference": "a132385f736063d00632b52b3f8a389fe66fe4fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/794073a27b2dd9ef492124263038291b7f8daeb3",
-                "reference": "794073a27b2dd9ef492124263038291b7f8daeb3",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/a132385f736063d00632b52b3f8a389fe66fe4fa",
+                "reference": "a132385f736063d00632b52b3f8a389fe66fe4fa",
                 "shasum": ""
             },
             "require": {
@@ -279,7 +279,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2016-05-16 18:49:10"
+            "time": "2016-05-25 11:23:38"
         }
     ],
     "packages-dev": [],

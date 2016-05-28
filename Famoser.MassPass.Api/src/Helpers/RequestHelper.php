@@ -115,7 +115,7 @@ class RequestHelper
 
     private static function executeJsonMapper(Request $request, $model)
     {
-        $jsonObj = $request->getParsedBody();
+        $jsonObj = json_decode($request->getBody());
         $mapper = new JsonMapper();
         $mapper->bExceptionOnUndefinedProperty = true;
         return $mapper->map($jsonObj, $model);

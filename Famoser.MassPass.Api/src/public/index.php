@@ -12,6 +12,7 @@ use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Middleware\ApiVersionMiddleware;
 use Famoser\MassPass\Middleware\AuthorizationMiddleware;
 use Famoser\MassPass\Middleware\JsonMiddleware;
+use Famoser\MassPass\Middleware\LoggingMiddleware;
 use Famoser\MassPass\Middleware\TestsMiddleware;
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
 use Famoser\MassPass\Models\Request\RefreshRequest;
@@ -32,7 +33,9 @@ $configuration = [
             'path' => "sqlite.db",
             'test_path' => "sqlite_tests.db"
         ],
-        'data_path' => realpath("../../app")
+        'data_path' => realpath("../../app"),
+        'asset_path' => realpath("../Assets"),
+        'log_path' => realpath("../../app/logs"),
     ],
     'api_settings' => [
         'api_version' => 1,
@@ -69,7 +72,7 @@ $c['errorHandler'] = function (Container $c) {
     return function (Request $request, Response $response, Exception $exception) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::ServerFailure);
         if ($c->get("settings")["debug_mode"])
-            $res->DebugMessage = "exception: " . $exception->getMessage();
+            $res->DebugMessage = "Exception: " . $exception->getMessage() . " \nStack: " . $exception->getTraceAsString();
         return $response->withStatus(500, $exception->getMessage())->withJson($res);
     };
 };
@@ -81,6 +84,7 @@ $app->add(new JsonMiddleware());
 $app->add(new AuthorizationMiddleware());
 $app->add(new ApiVersionMiddleware($c));
 $app->add(new TestsMiddleware($c));
+$app->add(new LoggingMiddleware($c));
 
 $routes = function () use ($controllerNamespace) {
     $this->group("/authorization", function () use ($controllerNamespace) {
@@ -92,6 +96,7 @@ $routes = function () use ($controllerNamespace) {
     });
     $this->group("/actions", function () use ($controllerNamespace) {
         $this->get('/cleanup', $controllerNamespace . 'ActionsController:cleanup');
+        $this->get('/setup', $controllerNamespace . 'ActionsController:setup');
     });
 };
 

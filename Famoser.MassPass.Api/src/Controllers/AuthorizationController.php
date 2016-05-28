@@ -58,7 +58,7 @@ class AuthorizationController extends BaseController
 
         }
         //check if device in database, if so delete it
-        $oldDevice = $helper->getSingleFromDatabase(new Device(), "user_id=:user_id AND guid=:guid", array("user_id" => $user->id, "code" => $model->DeviceId));
+        $oldDevice = $helper->getSingleFromDatabase(new Device(), "user_id=:user_id AND guid=:guid", array("user_id" => $user->id, "guid" => $model->DeviceId));
         if ($oldDevice == null) {
             $newDevice = new Device();
             $newDevice->user_id = $user->id;

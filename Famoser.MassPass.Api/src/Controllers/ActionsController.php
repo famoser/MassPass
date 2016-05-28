@@ -9,6 +9,7 @@
 namespace Famoser\MassPass\Controllers;
 
 
+use Famoser\MassPass\Helpers\DatabaseHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Types\ApiErrorTypes;
@@ -30,5 +31,11 @@ class ActionsController extends BaseController
             $model = new ApiResponse(false, ApiErrorTypes::Forbidden);
             return ResponseHelper::getJsonResponse($response, $model);
         }
+    }
+    
+    public function setup(Request $request, Response $response, $args)
+    {
+        $service = new DatabaseHelper($this->container);
+        return ResponseHelper::getJsonResponse($response, new ApiResponse());
     }
 }

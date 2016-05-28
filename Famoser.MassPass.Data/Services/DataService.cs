@@ -47,18 +47,20 @@ namespace Famoser.MassPass.Data.Services
 
         private async Task<T> PostJsonToApi<T>(object request, ApiRequest type) where T : ApiResponse, new()
         {
+            var rawResponse = "";
             try
             {
                 var response = await _restService.PostJsonAsync(await GetUri(type),
                     JsonConvert.SerializeObject(request));
+                rawResponse = await response.GetResponseAsStringAsync();
                 if (response.IsRequestSuccessfull)
                 {
-                    return
-                        JsonConvert.DeserializeObject<T>(await response.GetResponseAsStringAsync());
+                    return JsonConvert.DeserializeObject<T>(rawResponse);
                 }
                 return new T()
                 {
-                    RequestFailed = true
+                    RequestFailed = true,
+                    RawResponse = rawResponse
                 };
             }
             catch (Exception ex)
@@ -67,7 +69,8 @@ namespace Famoser.MassPass.Data.Services
                 return new T()
                 {
                     RequestFailed = true,
-                    Exception = ex
+                    Exception = ex,
+                    RawResponse = rawResponse
                 };
             }
         }
