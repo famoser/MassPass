@@ -9,7 +9,17 @@
 namespace Famoser\MassPass\Models\Response\Base;
 
 
-class ApiResponse {
-	public $Successfull;
-	public $ApiError;
+use Famoser\MassPass\Types\ApiErrorTypes;
+
+class ApiResponse
+{
+    public function __construct($successfull = true, $apiError = ApiErrorTypes::None)
+    {
+        $this->Successfull = $successfull;
+        $this->ApiError = $apiError;
+    }
+
+    public $Successfull;
+    public $ApiError;
+    public $DebugMessage;
 }

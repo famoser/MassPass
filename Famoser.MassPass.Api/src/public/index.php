@@ -9,11 +9,14 @@
 use Famoser\MassPass\Helpers\DatabaseHelper;
 use Famoser\MassPass\Helpers\RequestHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
-use Famoser\MassPass\Middleware\ApiVersionMiddlename;
+use Famoser\MassPass\Middleware\ApiVersionMiddleware;
 use Famoser\MassPass\Middleware\AuthorizationMiddleware;
+use Famoser\MassPass\Middleware\JsonMiddleware;
 use Famoser\MassPass\Middleware\TestsMiddleware;
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
 use Famoser\MassPass\Models\Request\RefreshRequest;
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
+use Famoser\MassPass\Types\ApiErrorTypes;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Slim\App;
@@ -23,7 +26,8 @@ require '../../vendor/autoload.php';
 
 $configuration = [
     'settings' => [
-        'displayErrorDetails' => true,
+        'displayErrorDetails' => false,
+        'debug_mode' => true,
         'db' => [
             'path' => "sqlite.db",
             'test_path' => "sqlite_tests.db"
@@ -45,34 +49,50 @@ $c['db'] = function ($c) {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
 };
+$c['notFoundHandler'] = function (Container $c) {
+    return function (Request $req, Response $resp) use ($c) {
+        $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
+        if ($c->get("settings")["debug_mode"])
+            $res->DebugMessage = "requested: " . $req->getRequestTarget();
+
+        return $resp->withStatus(404, "endpoint not found")->withJson($res);
+    };
+};
+$c['notAllowedHandler'] = $c['notFoundHandler'];
+$c['errorHandler'] = function (Container $c) {
+    /**
+     * @param $request
+     * @param $response
+     * @param $exception
+     * @return mixed
+     */
+    return function (Request $request, Response $response, Exception $exception) use ($c) {
+        $res = new ApiResponse(false, ApiErrorTypes::ServerFailure);
+        if ($c->get("settings")["debug_mode"])
+            $res->DebugMessage = "exception: " . $exception->getMessage();
+        return $response->withStatus(500, $exception->getMessage())->withJson($res);
+    };
+};
+
+$controllerNamespace = 'Famoser\MassPass\Controllers\\';
 
 $app = new App($c);
-$app->add(new ApiVersionMiddlename());
-$app->add(new TestsMiddleware());
+$app->add(new JsonMiddleware());
 $app->add(new AuthorizationMiddleware());
+$app->add(new ApiVersionMiddleware($c));
+$app->add(new TestsMiddleware($c));
 
-//echo json_encode($c->get('api_settings'));
+$routes = function () use ($controllerNamespace) {
+    $this->group("/authorization", function () use ($controllerNamespace) {
+        $this->post('/authorize', $controllerNamespace . 'AuthorizationController:authorize');
+    });
+    $this->group("/actions", function () use ($controllerNamespace) {
+        $this->get('/cleanup', $controllerNamespace . 'ActionsController:cleanup');
+    });
+};
 
 
-$app->group("/authorization", function () {
-    $this->post('/authorize', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
-    $this->post('/unauthorize', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
-    $this->post('/authorizeddevices', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
-});
-$app->post('/refresh', function (Request $request, Response $response) {
-    $model = RequestHelper::parseRefreshRequest($request);
-    ResponseHelper::getJsonResponse($response, $model);
-});
+$app->group("/tests/1.0", $routes);
+$app->group("/1.0", $routes);
+
 $app->run();

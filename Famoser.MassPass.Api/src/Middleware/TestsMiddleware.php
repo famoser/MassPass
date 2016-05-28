@@ -9,22 +9,22 @@
 namespace Famoser\MassPass\Middleware;
 
 
+use Interop\Container\ContainerInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-class TestsMiddleware
+class TestsMiddleware extends BaseMiddleware
 {
     public function __invoke(Request $request, Response $response, $next)
     {
-        if (strpos($_SERVER["REQUEST_URI"], "/tests") === 0) {
-            $this->get('api_settings')["test_mode"] = true;
-            $_SERVER["REQUEST_URI"] = str_replace("/tests", "", $_SERVER["REQUEST_URI"]);
-            $newEnviroment = Environment::mock($_SERVER);
-            $request = Request::createFromEnvironment($newEnviroment);
+        if (strpos($request->getRequestTarget(), "/tests") === 0) {
+            $newpath = str_replace("/tests", "", $request->getRequestTarget());
+            return $next($request->withRequestTarget($newpath)->withAttribute("test_mode", true), $response);
+        } else {
+            $response = $next($request, $response);
+            return $response;
         }
-        $response = $next($request, $response);
-        return $response;
     }
 }

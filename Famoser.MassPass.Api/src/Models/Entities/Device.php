@@ -17,7 +17,9 @@ class Device extends EntityBase
     public $guid;
     public $name;
     public $has_access;
-    public $access_revoced_reason;
+    public $access_revoked_reason;
+    public $last_modification_date_time;
+    public $authorization_date_time;
 
     public function getTableName()
     {

@@ -16,10 +16,12 @@ namespace Famoser.MassPass.Tests.Data.Api
     [TestClass]
     public class SyncTest
     {
+        [TestMethod]
         public async Task TestAddAndReadEntity()
         {
             using (var helper = new ApiHelper())
             {
+                //arrange
                 var ds = helper.GetDataService();
                 var guids = await helper.CreateValidatedDevice();
                 var serverId = Guid.NewGuid();
@@ -41,11 +43,12 @@ namespace Famoser.MassPass.Tests.Data.Api
                     ServerId = serverId
                 };
 
+                //act
                 var res1 = await ds.Update(newEntity);
                 entityRequest.VersionId = res1.VersionId;
                 var res2 = await ds.Read(entityRequest);
 
-
+                //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
                 AssertionHelper.CheckForEquality(res2.ContentEntity, entity);
@@ -56,6 +59,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             }
         }
 
+        [TestMethod]
         public async Task TestRefresh()
         {
             using (var helper = new ApiHelper())
@@ -175,11 +179,13 @@ namespace Famoser.MassPass.Tests.Data.Api
                 }
             }
         }
-
+        
+        [TestMethod]
         public async Task TestReadCollection()
         {
             using (var helper = new ApiHelper())
             {
+                //arrange
                 var ds = helper.GetDataService();
                 var guids = await helper.CreateValidatedDevice();
                 var relationId = Guid.NewGuid();
@@ -208,11 +214,12 @@ namespace Famoser.MassPass.Tests.Data.Api
                     KnownServerIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2 }
                 };
 
+                //act
                 var res1 = await ds.Read(collectionEntriesRequestEmpty);
                 var res2 = await ds.Read(collectionEntriesRequestFull);
                 var res3 = await ds.Read(collectionEntriesRequest2Of3);
 
-
+                //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
                 AssertionHelper.CheckForSuccessfull(res3, "res3");
@@ -227,6 +234,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             }
         }
 
+        [TestMethod]
         public async Task TestCollectionHistory()
         {
             using (var helper = new ApiHelper())

@@ -42,7 +42,7 @@ namespace Famoser.MassPass.Data.Services
 
             var type = typeof(ApiRequest);
             var attribute = type.GetRuntimeField(rt.ToString()).GetCustomAttribute<ApiUriAttribute>();
-            return new Uri(baseUrl + "/" + attribute.RelativeUrl);
+            return new Uri(baseUrl + attribute.RelativeUrl);
         }
 
         private async Task<T> PostJsonToApi<T>(object request, ApiRequest type) where T : ApiResponse, new()
