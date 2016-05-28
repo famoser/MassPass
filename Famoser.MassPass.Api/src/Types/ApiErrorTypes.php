@@ -26,6 +26,9 @@ class ApiErrorTypes
 
 //[Description("Json request could not be deserialized")]
     const RequestUriInvalid = 103;
+
+//[Description("Execution of request was denied")]
+    const Forbidden = 104;
     #endregion
 
     #region general errors

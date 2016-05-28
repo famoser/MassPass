@@ -31,7 +31,6 @@ class DatabaseHelper
     {
         $this->container = $container;
         $this->database = $this->container->get("db");
-        echo "here" . (($this->database != null) ? "true" : "false");
         $this->initializeDatabase();
     }
 

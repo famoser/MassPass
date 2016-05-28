@@ -18,28 +18,20 @@ use Famoser\MassPass\Models\Entities\User;
 use Famoser\MassPass\Models\Response\Authorization\AuthorizationResponse;
 use Famoser\MassPass\Types\ApiErrorTypes;
 use Interop\Container\ContainerInterface;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 class AuthorizationController extends BaseController
 {
-    protected $ci;
-
-    //Constructor
-    public function __construct(ContainerInterface $ci)
-    {
-        $this->ci = $ci;
-    }
-
     public function status($request, $response, $args)
     {
-        //your code
-        //to access items in the container... $this->ci->get('');
+        //todo
     }
 
-    public function authorize($request, Response $response, $args)
+    public function authorize(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseAuthorisationRequest($request);
-        $helper = new DatabaseHelper($this->ci);
+        $helper = $this->getDatabaseHelper();
         $user = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $model->UserId));
         if ($user == null) {
             //create new user & device
@@ -74,26 +66,31 @@ class AuthorizationController extends BaseController
         if (!$helper->saveToDatabase($newDevice)) {
             return $this->returnFailure(BaseController::DATABASE_FAILURE, $response);
         }
-        
+
         $resp = new AuthorizationResponse();
         $resp->Message = "welcome aboard!";
 
         return ResponseHelper::getJsonResponse($response, $resp);
     }
 
-    public function createauthorization($request, $response, $args)
+    public function createAuthorization(Request $request, Response $response, $args)
     {
-        //your code
-        //to access items in the container... $this->ci->get('');
+        //todo
     }
 
-    public function unauthorize($request, $response, $args)
+    public function unAuthorize(Request $request, Response $response, $args)
     {
-        //your code
-        //to access items in the container... $this->ci->get('');
+        $model = RequestHelper::parseUnAuthorisationRequest($request);
+        if ($this->isAuthorized($model)) {
+            $helper = $this->getDatabaseHelper();
+            $deviceToUnAuthorized = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $model->DeviceToBlockId, "user_id" => $this->getAuthorizedUser($model)->id));
+            if ($deviceToUnAuthorized != null) {
+                
+            }
+        }
     }
 
-    public function authorizeddevices($request, $response, $args)
+    public function authorizedDevices(Request $request, Response $response, $args)
     {
         //your code
         //to access items in the container... $this->ci->get('');

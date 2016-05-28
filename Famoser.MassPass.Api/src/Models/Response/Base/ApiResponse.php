@@ -13,12 +13,13 @@ use Famoser\MassPass\Types\ApiErrorTypes;
 
 class ApiResponse
 {
-    public function __construct($successfull = true, $apiError = true)
+    public function __construct($successfull = true, $apiError = ApiErrorTypes::None)
     {
         $this->Successfull = $successfull;
         $this->ApiError = $apiError;
     }
 
-    public $Successfull = true;
-    public $ApiError = ApiErrorTypes::None;
+    public $Successfull;
+    public $ApiError;
+    public $DebugMessage;
 }

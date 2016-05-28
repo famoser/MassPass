@@ -47,7 +47,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         public static async Task CleanUpApi()
         {
             var config = await _configurationService.GetApiConfiguration();
-            var newUri = new Uri(config.Uri.AbsolutePath + "/cleanup");
+            var newUri = new Uri(config.Uri.AbsolutePath + "/1.0/cleanup");
             var service = new HttpService();
             service.FireAndForget(newUri);
         }

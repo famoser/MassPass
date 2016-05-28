@@ -27,6 +27,7 @@ require '../../vendor/autoload.php';
 $configuration = [
     'settings' => [
         'displayErrorDetails' => false,
+        'debug_mode' => true,
         'db' => [
             'path' => "sqlite.db",
             'test_path' => "sqlite_tests.db"
@@ -48,26 +49,32 @@ $c['db'] = function ($c) {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
 };
-$c['notFoundHandler'] = function ($c) {
-    return function ($request, $response) use ($c) {
+$c['notFoundHandler'] = function (Container $c) {
+    return function (Request $req, Response $resp) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
-        return $response->withStatus(404, "endpoint not found")->withJson($res);
+        if ($c->get("settings")["debug_mode"])
+            $res->DebugMessage = "requested: " . $req->getRequestTarget();
+
+        return $resp->withStatus(404, "endpoint not found")->withJson($res);
     };
 };
 $c['notAllowedHandler'] = $c['notFoundHandler'];
-$c['errorHandler'] = function ($c) {
+$c['errorHandler'] = function (Container $c) {
     /**
      * @param $request
      * @param $response
      * @param $exception
      * @return mixed
      */
-    return function ($request, Response $response, Exception $exception) use ($c) {
+    return function (Request $request, Response $response, Exception $exception) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::ServerFailure);
+        if ($c->get("settings")["debug_mode"])
+            $res->DebugMessage = "exception: " . $exception->getMessage();
         return $response->withStatus(500, $exception->getMessage())->withJson($res);
     };
 };
 
+$controllerNamespace = 'Famoser\MassPass\Controllers\\';
 
 $app = new App($c);
 $app->add(new JsonMiddleware());
@@ -75,22 +82,17 @@ $app->add(new AuthorizationMiddleware());
 $app->add(new ApiVersionMiddleware($c));
 $app->add(new TestsMiddleware($c));
 
+$routes = function () use ($controllerNamespace) {
+    $this->group("/authorization", function () use ($controllerNamespace) {
+        $this->post('/authorize', $controllerNamespace . 'AuthorizationController:authorize');
+    });
+    $this->group("/actions", function () use ($controllerNamespace) {
+        $this->get('/cleanup', $controllerNamespace . 'ActionsController:cleanup');
+    });
+};
 
-$app->group("/authorization", function () {
-    $this->post('/authorize', '\AuthorizationController:authorize');
-    $this->post('/unauthorize', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
-    $this->post('/authorizeddevices', function (Request $request, Response $response) {
-        $model = RequestHelper::parseAuthorisationRequest($request);
-        //stuff
-        ResponseHelper::getJsonResponse($response, $model);
-    });
-});
-$app->post('/refresh', function (Request $request, Response $response) {
-    $model = RequestHelper::parseRefreshRequest($request);
-    ResponseHelper::getJsonResponse($response, $model);
-});
+
+$app->group("/tests/1.0", $routes);
+$app->group("/1.0", $routes);
+
 $app->run();

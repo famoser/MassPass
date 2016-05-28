@@ -19,6 +19,9 @@ namespace Famoser.MassPass.Data.Enum
 
         [Description("Request could not be processed by the server. The endpoint was not found. This is probably an application error, nothing you can do about it :/")]
         RequestUriInvalid = 103,
+
+        [Description("Execution of request was denied")]
+        Forbidden = 104,
         #endregion
 
         #region general errors
