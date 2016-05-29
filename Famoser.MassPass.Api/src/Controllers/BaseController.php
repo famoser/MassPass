@@ -10,6 +10,7 @@ namespace Famoser\MassPass\Controllers;
 
 
 use Famoser\MassPass\Helpers\DatabaseHelper;
+use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Entities\Device;
 use Famoser\MassPass\Models\Entities\User;
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
@@ -63,13 +64,6 @@ class BaseController
                     return false;
             }
         return true;
-    }
-
-    protected function returnAuthorizationFailed(ApiResponse $response)
-    {
-        $response->ApiError = ApiErrorTypes::NotAuthorized;
-        $response->Successfull = false;
-        return $response;
     }
 
     private $authorizedUser;

@@ -92,54 +92,63 @@ namespace Famoser.MassPass.Tests.Data.Api
 
                 var responses = new List<ApiResponse>();
 
+                //0
                 responses.Add(await dataService.AuthorizationStatus(new AuthorizationStatusRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //1
                 responses.Add(await dataService.AuthorizedDevices(new AuthorizedDevicesRequest
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //2
                 responses.Add(await dataService.CreateAuthorization(new CreateAuthorizationRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //3
                 responses.Add(await dataService.GetHistory(new ContentEntityHistoryRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //4
                 responses.Add(await dataService.Refresh(new RefreshRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //5
                 responses.Add(await dataService.UnAuthorize(new UnAuthorizationRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //6
                 responses.Add(await dataService.Update(new UpdateRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //7
                 responses.Add(await dataService.Read(new CollectionEntriesRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
+                //8
                 responses.Add(await dataService.Read(new ContentEntityRequest
                 {
                     DeviceId = deviceGuid,

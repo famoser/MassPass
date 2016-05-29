@@ -44,6 +44,21 @@ namespace Famoser.MassPass.Data.Services
             return new Uri(baseUrl + attribute.RelativeUrl);
         }
 
+        private async Task<HttpResponseModel> PostJsonToApiRaw(object request, ApiRequest type)
+        {
+            try
+            {
+                return await _restService.PostJsonAsync(await GetUri(type),
+                    JsonConvert.SerializeObject(request));
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+                return new HttpResponseModel(ex);
+            }
+        }
+
         private async Task<T> PostJsonToApi<T>(object request, ApiRequest type) where T : ApiResponse, new()
         {
             var rawResponse = "";
@@ -54,13 +69,10 @@ namespace Famoser.MassPass.Data.Services
                 rawResponse = await response.GetResponseAsStringAsync();
                 if (response.IsRequestSuccessfull)
                 {
-                    return JsonConvert.DeserializeObject<T>(rawResponse) 
-                        ??
-                        new T()
-                        {
-                            RequestFailed = true,
-                            RawResponse = rawResponse
-                        };
+                    var obj = JsonConvert.DeserializeObject<T>(rawResponse);
+                    if (obj != null)
+                        return obj;
+                    LogHelper.Instance.LogError("response from api null", this);
                 }
                 return new T()
                 {
@@ -114,42 +126,46 @@ namespace Famoser.MassPass.Data.Services
         {
             try
             {
-                var resp = await PostJsonToApi<DownloadContentEntityResponse>(request, ApiRequest.ReadContentEntity);
-                if (resp.IsSuccessfull)
+                var resp = await PostJsonToApiRaw(request, ApiRequest.ReadContentEntity);
+                if (resp.IsRequestSuccessfull)
                 {
-                    var encrypted = await _restService.GetAsync(resp.DownloadUri);
-                    if (encrypted.IsRequestSuccessfull)
+                    var decrypted = await _apiEncryptionService.Decrypt(await resp.GetResponseAsByteArrayAsync(),
+                        request.ServerId);
+                    if (decrypted != null && decrypted.Length > 0)
                     {
-                        var decrypted = await _apiEncryptionService.Decrypt(await encrypted.GetResponseAsByteArrayAsync(),
-                            request.ServerId);
-                        if (decrypted != null && decrypted.Length > 0)
-                        {
-                            var str = Encoding.UTF8.GetString(decrypted, 0, decrypted.Length);
-                            return new ContentEntityResponse()
-                            {
-                                ApiError = ApiError.None,
-                                ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
-                                Successfull = true
-                            };
-                        }
+                        var str = Encoding.UTF8.GetString(decrypted, 0, decrypted.Length);
                         return new ContentEntityResponse()
                         {
-                            Successfull = false,
-                            Exception = new DecryptionFailedException()
+                            ApiError = ApiError.None,
+                            ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
+                            Successfull = true
                         };
                     }
                     return new ContentEntityResponse()
                     {
                         Successfull = false,
-                        ApiError = ApiError.DownloadUrlInvalid
+                        Exception = new DecryptionFailedException()
                     };
                 }
-                return new ContentEntityResponse()
+                try
                 {
-                    Successfull = resp.Successfull,
-                    ApiError = resp.ApiError,
-                    Exception = resp.Exception
-                };
+                    var jsonResponse = JsonConvert.DeserializeObject<ApiResponse>(await resp.GetResponseAsStringAsync());
+                    return new ContentEntityResponse()
+                    {
+                        Successfull = jsonResponse.Successfull,
+                        ApiError = jsonResponse.ApiError,
+                        Exception = resp.Exception
+                    };
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Instance.LogException(ex, this);
+                    return new ContentEntityResponse()
+                    {
+                        Successfull = false,
+                        Exception = ex
+                    };
+                }
             }
             catch (Exception ex)
             {

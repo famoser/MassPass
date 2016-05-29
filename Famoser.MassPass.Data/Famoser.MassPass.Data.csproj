@@ -112,7 +112,6 @@
     <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
     <Compile Include="Entities\Communications\Response\CollectionEntriesResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityResponse.cs" />
-    <Compile Include="Entities\Communications\Response\DownloadContentEntityResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\UnAuthorizationResponse.cs" />

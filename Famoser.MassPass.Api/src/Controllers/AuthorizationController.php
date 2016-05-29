@@ -105,7 +105,7 @@ class AuthorizationController extends BaseController
                 $resp->IsAuthorized = false;
                 $resp->UnauthorizedReason = $device->access_revoked_reason;
             } else {
-                return $this->returnAuthorizationFailed(new AuthorizationStatusResponse());
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
             }
         }
         return ResponseHelper::getJsonResponse($response, $resp);
@@ -131,7 +131,7 @@ class AuthorizationController extends BaseController
                 return $this->returnFailure(BaseController::DATABASE_FAILURE, $response);
             }
         } else {
-            return $this->returnAuthorizationFailed(new AuthorizationStatusResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
@@ -160,7 +160,7 @@ class AuthorizationController extends BaseController
                 return ResponseHelper::getJsonResponse($response, $resp);
             }
         } else {
-            return $this->returnAuthorizationFailed(new UnAuthorizationResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
@@ -189,7 +189,7 @@ class AuthorizationController extends BaseController
                 return ResponseHelper::getJsonResponse($response, $resp);
             }
         } else {
-            return $this->returnAuthorizationFailed(new AuthorizedDevicesResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 }

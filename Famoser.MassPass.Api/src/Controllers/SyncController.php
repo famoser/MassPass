@@ -21,6 +21,7 @@ use Famoser\MassPass\Models\Request\Entities\RefreshEntity;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Models\Response\CollectionEntriesResponse;
 use Famoser\MassPass\Models\Response\ContentEntityHistoryResponse;
+use Famoser\MassPass\Models\Response\DownloadContentEntityResponse;
 use Famoser\MassPass\Models\Response\Entities\CollectionEntryEntity;
 use Famoser\MassPass\Models\Response\Entities\HistoryEntry;
 use Famoser\MassPass\Models\Response\RefreshResponse;
@@ -76,7 +77,7 @@ class SyncController extends BaseController
 
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return $this->returnAuthorizationFailed(new RefreshResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
@@ -135,10 +136,10 @@ class SyncController extends BaseController
             $resp->VersionId = $newVersion;
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return $this->returnAuthorizationFailed(new UpdateResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
-
+    
     public function readContentEntity(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseContentEntityRequest($request);
@@ -151,10 +152,11 @@ class SyncController extends BaseController
                 $resp = new ApiResponse(false, ApiErrorTypes::ContentNotFound);
                 return ResponseHelper::getJsonResponse($response, $resp);
             }
+            $resp = new DownloadContentEntityResponse();
             $content = file_get_contents($path);
             return $response->getBody()->write($content);
         } else {
-            return $this->returnAuthorizationFailed(new ApiResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
@@ -184,7 +186,7 @@ class SyncController extends BaseController
 
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return $this->returnAuthorizationFailed(new CollectionEntriesResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
@@ -230,7 +232,7 @@ class SyncController extends BaseController
                 return ResponseHelper::getJsonResponse($response, $resp);
             }
         } else {
-            return $this->returnAuthorizationFailed(new ContentEntityHistoryResponse());
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
         }
     }
 
