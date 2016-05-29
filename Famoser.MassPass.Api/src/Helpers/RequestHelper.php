@@ -11,6 +11,7 @@ use Famoser\MassPass\Models\Request\CollectionEntriesRequest;
 use Famoser\MassPass\Models\Request\ContentEntityHistoryRequest;
 use Famoser\MassPass\Models\Request\ContentEntityRequest;
 use Famoser\MassPass\Models\Request\RefreshRequest;
+use Famoser\MassPass\Models\Request\UpdateRequest;
 use Famoser\MassPass\Models\Response\Authorization\AuthorizedDevicesResponse;
 use JsonMapper;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -111,6 +112,16 @@ class RequestHelper
     public static function parseRefreshRequest(Request $request)
     {
         return RequestHelper::executeJsonMapper($request, new RefreshRequest());
+    }
+
+    /**
+     * @param Request $request
+     * @return UpdateRequest
+     * @throws \JsonMapper_Exception
+     */
+    public static function parseUpdateRequest(Request $request)
+    {
+        return RequestHelper::executeJsonMapper($request, new UpdateRequest());
     }
 
     private static function executeJsonMapper(Request $request, $model)

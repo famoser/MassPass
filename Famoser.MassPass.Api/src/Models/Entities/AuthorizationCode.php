@@ -9,9 +9,9 @@
 namespace Famoser\MassPass\Models\Entities;
 
 
-use Famoser\MassPass\Models\Entities\Base\EntityBase;
+use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 
-class AuthorizationCode extends EntityBase
+class AuthorizationCode extends BaseEntity
 {
     public $user_id;
     public $content_id;

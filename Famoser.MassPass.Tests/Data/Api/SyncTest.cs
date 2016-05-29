@@ -224,13 +224,14 @@ namespace Famoser.MassPass.Tests.Data.Api
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
                 AssertionHelper.CheckForSuccessfull(res3, "res3");
 
-                Assert.IsTrue(res1.ServerIds.Count == 3, "not all entities returned (1)");
-                Assert.IsTrue(res2.ServerIds.Count == 0, "not all entities returned (2)");
-                Assert.IsTrue(res3.ServerIds.Count == 1, "not all entities returned (3)");
-                Assert.IsTrue(res3.ServerIds[0] == entityGuids3.Item2, "not correct serverId returned (1)");
-                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids3.Item2), "not correct serverId returned (2)");
-                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids2.Item2), "not correct serverId returned (3)");
-                Assert.IsTrue(res3.ServerIds.Any(s => s == entityGuids1.Item2), "not correct serverId returned (4)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Count == 3, "not all entities returned (1)");
+                Assert.IsTrue(res2.CollectionEntryEntities.Count == 0, "not all entities returned (2)");
+                Assert.IsTrue(res3.CollectionEntryEntities.Count == 1, "not all entities returned (3)");
+                Assert.IsTrue(res3.CollectionEntryEntities[0].ServerId == entityGuids3.Item2, "not correct serverId returned (1)");
+                Assert.IsTrue(res3.CollectionEntryEntities[0].VersionId == entityGuids3.Item3, "not correct versionId returned (1)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids3.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (2)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids2.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (3)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids1.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (4)");
             }
         }
 

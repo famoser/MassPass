@@ -6,12 +6,12 @@
  * Time: 09:48
  */
 
-namespace Famoser\MassPass\Models\Response\Encrypted;
+namespace Famoser\MassPass\Models\Response;
 
 
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 
-class EncryptedResponse extends ApiResponse
+class DownloadContentEntityResponse extends ApiResponse
 {
     public $DownloadUri;
 }

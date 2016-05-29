@@ -109,7 +109,7 @@ namespace Famoser.MassPass.Data.Services
         {
             try
             {
-                var resp = await PostJsonToApi<EncryptedResponse>(request, ApiRequest.ReadContentEntity);
+                var resp = await PostJsonToApi<DownloadContentEntityResponse>(request, ApiRequest.ReadContentEntity);
                 if (resp.IsSuccessfull)
                 {
                     var encrypted = await _restService.GetAsync(resp.DownloadUri);

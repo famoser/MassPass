@@ -10,8 +10,9 @@ namespace Famoser\MassPass\Helpers;
 
 
 use Famoser\MassPass\Models\Entities\AuthorizationCode;
-use Famoser\MassPass\Models\Entities\Base\EntityBase;
+use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 use Famoser\MassPass\Models\Entities\Content;
+use Famoser\MassPass\Models\Entities\ContentHistory;
 use Famoser\MassPass\Models\Entities\Device;
 use Famoser\MassPass\Models\Entities\User;
 use Interop\Container\ContainerInterface;
@@ -96,12 +97,12 @@ class DatabaseHelper
         return true;
     }
 
-    private function createGuid()
+    public function createUniqueVersion()
     {
         return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
     }
 
-    private function createQuery(EntityBase $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
+    private function createQuery(BaseEntity $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
         $sql = "SELECT * FROM " . $entity->getTableName();
         if ($where != null) {
@@ -114,7 +115,7 @@ class DatabaseHelper
         return $sql;
     }
 
-    private function executeAndFetch(EntityBase $entity, $sql, $parameters)
+    private function executeAndFetch(BaseEntity $entity, $sql, $parameters)
     {
         try {
             file_put_contents("debug.txt", $sql . " params: " . json_encode($parameters));
@@ -130,14 +131,14 @@ class DatabaseHelper
     }
 
     /**
-     * @param EntityBase $entity
+     * @param BaseEntity $entity
      * @param null $where
      * @param null $parameters
      * @param null $orderBy
      * @param int $limit
-     * @return AuthorizationCode[]|Content[]|Device[]|User[]|bool
+     * @return AuthorizationCode[]|Content[]|ContentHistory[]|Device[]|User[]|bool
      */
-    public function getFromDatabase(EntityBase $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
+    public function getFromDatabase(BaseEntity $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
         $sql = $this->createQuery($entity, $where, $parameters, $orderBy, $limit);
         $res = $this->executeAndFetch($entity, $sql, $parameters);
@@ -145,14 +146,44 @@ class DatabaseHelper
     }
 
     /**
-     * @param EntityBase $entity
+     * @param BaseEntity $entity
+     * @param string $property
+     * @param int[] $values
+     * @param bool $invertIn
      * @param null $where
      * @param null $parameters
      * @param null $orderBy
      * @param int $limit
-     * @return AuthorizationCode|Content|Device|User|bool
+     * @return AuthorizationCode[]|Content[]|ContentHistory[]|Device[]|User[]|bool
      */
-    public function getSingleFromDatabase(EntityBase $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
+    public function getWithInFromDatabase(BaseEntity $entity, $property, $values, $invertIn = false, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
+    {
+        if ($parameters == null)
+            $parameters = [];
+        if ($where == null)
+            $where = " ";
+        else
+            $where .= " AND ";
+        $variables = [];
+        for ($i = 0; $i < count($values); $i++) {
+            $parameters[":" . $property . $i] = $values[$i];
+            $variables[] = ":" . $property . $i;
+        }
+        $where .= $property . (($invertIn) ? " NOT" : "") . " (" . implode(",", $variables) . ")";
+        $sql = $this->createQuery($entity, $where, $parameters, $orderBy, $limit);
+        $res = $this->executeAndFetch($entity, $sql, $parameters);
+        return $res;
+    }
+
+    /**
+     * @param BaseEntity $entity
+     * @param null $where
+     * @param null $parameters
+     * @param null $orderBy
+     * @param int $limit
+     * @return AuthorizationCode|Content|Device|ContentHistory|User|bool
+     */
+    public function getSingleFromDatabase(BaseEntity $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
         $sql = $this->createQuery($entity, $where, $parameters, $orderBy, $limit);
         $res = $this->executeAndFetch($entity, $sql, $parameters);
@@ -162,10 +193,10 @@ class DatabaseHelper
     }
 
     /**
-     * @param EntityBase $entity
+     * @param BaseEntity $entity
      * @return bool
      */
-    public function saveToDatabase(EntityBase $entity)
+    public function saveToDatabase(BaseEntity $entity)
     {
         $properties = (array)$entity;
         LogHelper::log(json_encode($properties, JSON_PRETTY_PRINT) . "\n\n\n" . json_encode($entity, JSON_PRETTY_PRINT), "DatabaseHelper_" . $entity->getTableName() . '_' . time() . "_" . uniqid() . ".txt");
@@ -207,10 +238,10 @@ class DatabaseHelper
     }
 
     /**
-     * @param EntityBase $entity
+     * @param BaseEntity $entity
      * @return bool
      */
-    public function deleteFromDatabase(EntityBase $entity)
+    public function deleteFromDatabase(BaseEntity $entity)
     {
         $sql = "DELETE FROM " . $entity->getTableName() . " WHERE id=:id";
         $params = array("id" => $entity->id);

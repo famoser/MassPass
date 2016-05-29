@@ -102,6 +102,7 @@
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizedDevicesResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityHistoryResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\AuthorizedDeviceEntity.cs" />
+    <Compile Include="Entities\Communications\Response\Entitites\CollectionEntryEntity.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\HistoryEntry.cs" />
     <Compile Include="Entities\Communications\Request\UpdateRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityRequest.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
     <Compile Include="Entities\Communications\Response\CollectionEntriesResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityResponse.cs" />
-    <Compile Include="Entities\Communications\Response\Encrypted\EncryptedResponse.cs" />
+    <Compile Include="Entities\Communications\Response\DownloadContentEntityResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\UnAuthorizationResponse.cs" />

@@ -56,10 +56,15 @@ namespace Famoser.MassPass.Data.Enum
         [Description("The device to unauthorize could not be found")]
         DeviceNotFound = 3000,
         #endregion
-        
+
         #region AuthorizedDevicesRequst
         [Description("No authorized devices could be found")]
-        NoDevicesFound = 4000
+        NoDevicesFound = 4000,
+        #endregion
+        
+        #region ReadContentEntityRequest
+        [Description("No authorized devices could be found")]
+        ContentNotFound = 5000
         #endregion
     }
 }

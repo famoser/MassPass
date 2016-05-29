@@ -57,4 +57,9 @@ class ApiErrorTypes
     const NoDevicesFound = 4000;
     #endregion
 
+    #region ReadContentEntityRequest
+//[Description("No authorized devices could be found")]
+    const ContentNotFound = 5000;
+    #endregion
+
 }

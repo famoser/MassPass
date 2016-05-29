@@ -13,5 +13,5 @@ use Famoser\MassPass\Models\Response\Base\ApiResponse;
 
 class CollectionEntriesResponse extends ApiResponse
 {
-    public $ServerIds;
+    public $CollectionEntryEntities;
 }

@@ -4,9 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "92515ae4708ee89f64f78a1d9d5ac468",
-    "content-hash": "6ef627104bee3fddc703f6684e76be0d",
+    "hash": "1020e39cb49563885d1c90072cf93e30",
+    "content-hash": "3c77c2e8a2c5faa09111ffefa53776c8",
     "packages": [
+        {
+            "name": "codeguy/upload",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brandonsavage/Upload.git",
+                "reference": "e2bea54f98eb4fc09b5b296565eb7e54ae43642b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brandonsavage/Upload/zipball/e2bea54f98eb4fc09b5b296565eb7e54ae43642b",
+                "reference": "e2bea54f98eb4fc09b5b296565eb7e54ae43642b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Upload": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Lockhart",
+                    "email": "info@joshlockhart.com",
+                    "homepage": "https://github.com/codeguy/"
+                }
+            ],
+            "description": "Handle file uploads with extensible validation and storage strategies",
+            "homepage": "http://github.com/codeguy/Upload",
+            "keywords": [
+                "file",
+                "upload",
+                "validation"
+            ],
+            "time": "2012-11-06 00:41:12"
+        },
         {
             "name": "container-interop/container-interop",
             "version": "1.1.0",
@@ -35,17 +78,17 @@
             "time": "2014-12-30 15:22:37"
         },
         {
-            "name": "netresearch/jsonmapper",
-            "version": "v0.11.0",
+            "name": "famoser/jsonmapper",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "979abda4b128415c642b06f07db615e75cfd3173"
+                "url": "https://github.com/famoser/jsonmapper.git",
+                "reference": "7691e3906c534dcf98c4651e182a127eeb6e2ebb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/979abda4b128415c642b06f07db615e75cfd3173",
-                "reference": "979abda4b128415c642b06f07db615e75cfd3173",
+                "url": "https://api.github.com/repos/famoser/jsonmapper/zipball/7691e3906c534dcf98c4651e182a127eeb6e2ebb",
+                "reference": "7691e3906c534dcf98c4651e182a127eeb6e2ebb",
                 "shasum": ""
             },
             "require-dev": {
@@ -71,7 +114,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2016-04-14 21:59:35"
+            "time": "2016-05-28 18:50:15"
         },
         {
             "name": "nikic/fast-route",

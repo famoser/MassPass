@@ -36,6 +36,7 @@ $configuration = [
         'data_path' => realpath("../../app"),
         'asset_path' => realpath("../Assets"),
         'log_path' => realpath("../../app/logs"),
+        'file_path' => realpath("../../app/files")
     ],
     'api_settings' => [
         'api_version' => 1,
@@ -89,6 +90,13 @@ $routes = function () use ($controllerNamespace) {
     $this->group("/actions", function () use ($controllerNamespace) {
         $this->get('/cleanup', $controllerNamespace . 'ActionsController:cleanup');
         $this->get('/setup', $controllerNamespace . 'ActionsController:setup');
+    });
+    $this->group("/sync", function () use ($controllerNamespace) {
+        $this->get('/refresh', $controllerNamespace . 'SyncController:refresh');
+        $this->get('/update', $controllerNamespace . 'SyncController:update');
+        $this->get('/readcontententity', $controllerNamespace . 'SyncController:readContentEntity');
+        $this->get('/readcollectionentries', $controllerNamespace . 'SyncController:readCollectionEntries');
+        $this->get('/gethistory', $controllerNamespace . 'SyncController:getHistory');
     });
 };
 

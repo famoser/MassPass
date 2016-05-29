@@ -9,9 +9,9 @@
 namespace Famoser\MassPass\Models\Entities;
 
 
-use Famoser\MassPass\Models\Entities\Base\EntityBase;
+use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 
-class Device extends EntityBase
+class Device extends BaseEntity
 {
     public $user_id;
     public $guid;

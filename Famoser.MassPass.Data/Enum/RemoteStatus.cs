@@ -10,6 +10,8 @@ namespace Famoser.MassPass.Data.Enum
         [Description("up to date")]
         UpToDate = 1,
         [Description("changed")]
-        Changed = 2
+        Changed = 2,
+        [Description("not found on server")]
+        NotFound = 3
     }
 }

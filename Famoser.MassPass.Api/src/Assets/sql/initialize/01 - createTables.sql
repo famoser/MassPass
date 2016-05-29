@@ -32,6 +32,13 @@ CREATE TABLE content (
   device_id     INTEGER,
   guid          TEXT,
   relation_guid TEXT,
+  version_id    TEXT
+);
+
+CREATE TABLE content_history (
+  id            INTEGER PRIMARY KEY,
+  content_id    INTEGER,
+  device_id    INTEGER,
   version_id    TEXT,
-  creation_time INTEGER
+  creation_date_time INTEGER
 );

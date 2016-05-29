@@ -9,7 +9,14 @@
 namespace Famoser\MassPass\Models\Request;
 
 
-class CollectionEntriesRequest
-{
+use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
+class CollectionEntriesRequest extends ApiRequest
+{
+    public $Guid;
+    
+    /*
+     * @var string[]
+     */
+    public $KnownServerIds;
 }

@@ -3,7 +3,7 @@ using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 
 namespace Famoser.MassPass.Data.Entities.Communications.Response.Encrypted
 {
-    public class EncryptedResponse : ApiResponse
+    public class DownloadContentEntityResponse : ApiResponse
     {
         public Uri DownloadUri { get; set; }
     }

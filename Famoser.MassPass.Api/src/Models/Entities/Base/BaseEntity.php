@@ -9,7 +9,7 @@
 namespace Famoser\MassPass\Models\Entities\Base;
 
 
-abstract class EntityBase
+abstract class BaseEntity
 {
     public $id;
     abstract public function getTableName();
