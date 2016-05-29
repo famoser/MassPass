@@ -14,7 +14,6 @@ using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response;
 using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
-using Famoser.MassPass.Data.Entities.Communications.Response.Encrypted;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Exceptions;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -55,7 +54,13 @@ namespace Famoser.MassPass.Data.Services
                 rawResponse = await response.GetResponseAsStringAsync();
                 if (response.IsRequestSuccessfull)
                 {
-                    return JsonConvert.DeserializeObject<T>(rawResponse);
+                    return JsonConvert.DeserializeObject<T>(rawResponse) 
+                        ??
+                        new T()
+                        {
+                            RequestFailed = true,
+                            RawResponse = rawResponse
+                        };
                 }
                 return new T()
                 {
@@ -97,7 +102,7 @@ namespace Famoser.MassPass.Data.Services
 
         public Task<AuthorizedDevicesResponse> AuthorizedDevices(AuthorizedDevicesRequest request)
         {
-            return PostJsonToApi<AuthorizedDevicesResponse>(request,ApiRequest.AuthorizedDevices);
+            return PostJsonToApi<AuthorizedDevicesResponse>(request, ApiRequest.AuthorizedDevices);
         }
 
         public Task<RefreshResponse> Refresh(RefreshRequest request)
@@ -165,7 +170,7 @@ namespace Famoser.MassPass.Data.Services
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
 
-                var response = await _restService.PostAsync(await GetUri(ApiRequest.Update), new []
+                var response = await _restService.PostAsync(await GetUri(ApiRequest.Update), new[]
                 {
                     new KeyValuePair<string, string>("UserId", request.UserId.ToString()),
                     new KeyValuePair<string, string>("DeviceId", request.DeviceId.ToString()),

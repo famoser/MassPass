@@ -1,7 +1,7 @@
 ﻿using System;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 
-namespace Famoser.MassPass.Data.Entities.Communications.Response.Encrypted
+namespace Famoser.MassPass.Data.Entities.Communications.Response
 {
     public class DownloadContentEntityResponse : ApiResponse
     {

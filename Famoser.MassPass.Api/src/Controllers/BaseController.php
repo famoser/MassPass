@@ -50,6 +50,21 @@ class BaseController
         return false;
     }
 
+    protected function isWellDefined(ApiRequest $request, $neededProps, $neededArrays = null)
+    {
+        if ($neededProps != null)
+            foreach ($neededProps as $neededProp) {
+                if ($request->$neededProp == null)
+                    return false;
+            }
+        if ($neededArrays != null)
+            foreach ($neededArrays as $neededArray) {
+                if (!is_array($request->$neededArray))
+                    return false;
+            }
+        return true;
+    }
+
     protected function returnAuthorizationFailed(ApiResponse $response)
     {
         $response->ApiError = ApiErrorTypes::NotAuthorized;
@@ -66,8 +81,10 @@ class BaseController
     protected function getAuthorizedUser(ApiRequest $request)
     {
         if ($this->authorizedUser == null) {
-            $helper = $this->getDatabaseHelper();
-            $this->authorizedUser = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $request->UserId));
+            if ($request->UserId != null) {
+                $helper = $this->getDatabaseHelper();
+                $this->authorizedUser = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $request->UserId));
+            }
         }
         return $this->authorizedUser;
     }
@@ -81,12 +98,19 @@ class BaseController
     protected function getAuthorizedDevice(ApiRequest $request)
     {
         if ($this->authorizedDevice == null) {
-            $authorizedUser = $this->getAuthorizedUser($request);
+            if ($request->DeviceId != null) {
+                $authorizedUser = $this->getAuthorizedUser($request);
 
-            $helper = $this->getDatabaseHelper();
-            $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $request->DeviceId, "user_id" => $authorizedUser->id));
-            $this->authorizedDevice->last_request_date_time = time();
-            $helper->saveToDatabase($this->authorizedDevice);
+                if ($authorizedUser != null) {
+                    $helper = $this->getDatabaseHelper();
+                    $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $request->DeviceId, "user_id" => $authorizedUser->id));
+
+                    if ($this->authorizedDevice != null) {
+                        $this->authorizedDevice->last_request_date_time = time();
+                        $helper->saveToDatabase($this->authorizedDevice);
+                    }
+                }
+            }
         }
         return $this->authorizedDevice;
     }

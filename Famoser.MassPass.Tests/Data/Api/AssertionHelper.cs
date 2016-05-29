@@ -16,9 +16,8 @@ namespace Famoser.MassPass.Tests.Data.Api
         public static void CheckForUnSuccessfull(ApiResponse resp, string requestIdentifier, ApiError error)
         {
             Assert.IsFalse(resp.IsSuccessfull, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
-            Assert.IsFalse(resp.RequestFailed, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
-            Assert.IsFalse(resp.Successfull, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
-            Assert.IsTrue(resp.ApiError == ApiError.NotAuthorized, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
+            Assert.IsTrue(resp.RequestFailed, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
+            Assert.IsTrue(resp.ApiError == error, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
             Assert.IsNull(resp.Exception, ErrorHelper.ErrorMessageForRequest(resp, requestIdentifier));
         }
 

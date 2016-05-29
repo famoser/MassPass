@@ -54,7 +54,15 @@ $c['notFoundHandler'] = function (Container $c) {
         return $resp->withStatus(404, "endpoint not found")->withJson($res);
     };
 };
-$c['notAllowedHandler'] = $c['notFoundHandler'];
+$c['notAllowedHandler'] = function (Container $c) {
+    return function (Request $req, Response $resp) use ($c) {
+        $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
+        if ($c->get("settings")["debug_mode"])
+            $res->DebugMessage = "requested: " . $req->getRequestTarget();
+
+        return $resp->withStatus(405, "wrong method")->withJson($res);
+    };
+};
 $c['errorHandler'] = function (Container $c) {
     /**
      * @param $request
@@ -92,10 +100,10 @@ $routes = function () use ($controllerNamespace) {
         $this->get('/setup', $controllerNamespace . 'ActionsController:setup');
     });
     $this->group("/sync", function () use ($controllerNamespace) {
-        $this->get('/refresh', $controllerNamespace . 'SyncController:refresh');
-        $this->get('/update', $controllerNamespace . 'SyncController:update');
-        $this->get('/readcontententity', $controllerNamespace . 'SyncController:readContentEntity');
-        $this->get('/readcollectionentries', $controllerNamespace . 'SyncController:readCollectionEntries');
+        $this->post('/refresh', $controllerNamespace . 'SyncController:refresh');
+        $this->post('/update', $controllerNamespace . 'SyncController:update');
+        $this->post('/readcontententity', $controllerNamespace . 'SyncController:readContentEntity');
+        $this->post('/readcollectionentries', $controllerNamespace . 'SyncController:readCollectionEntries');
         $this->get('/gethistory', $controllerNamespace . 'SyncController:getHistory');
     });
 };

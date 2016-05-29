@@ -29,6 +29,9 @@ class ApiErrorTypes
 
 //[Description("Execution of request was denied")]
     const Forbidden = 104;
+
+//[Description("Some required properties were missing")]
+    const NotWellDefined = 105;
     #endregion
     
     #region general errors

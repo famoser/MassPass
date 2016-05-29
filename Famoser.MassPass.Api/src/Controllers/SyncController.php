@@ -38,6 +38,9 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseRefreshRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, null, array("RefreshEntities")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+            
             $guids = [];
             for ($i = 0; $i < count($model->RefreshEntities); $i++) {
                 $guids[] = $model->RefreshEntities[$i]->ServerId;
@@ -77,29 +80,13 @@ class SyncController extends BaseController
         }
     }
 
-    private function getPathForContent($userGuid, $contentGuid, $version)
-    {
-        return $this->getUserDirForContent($userGuid) . "/" . $this->getFilenameForContent($contentGuid, $version);
-    }
-
-    private function getFilenameForContent($contentGuid, $version)
-    {
-        return $contentGuid . "_" . $version;
-    }
-
-    private function getUserDirForContent($userGuid)
-    {
-        $path = $this->container->get("settings")["file_path"] . "/" . $userGuid;
-        if (!is_dir($path)) {
-            mkdir($path);
-        }
-        return $path;
-    }
-
     public function update(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseUpdateRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("RelationId", "ServerId")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $resp = new UpdateResponse();
             $helper = $this->getDatabaseHelper();
             $newVersion = $helper->createUniqueVersion();
@@ -156,6 +143,9 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseContentEntityRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("VersionId", "ServerId")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $path = $this->getPathForContent($this->getAuthorizedUser($model)->guid, $model->ServerId, $model->VersionId);
             if (!file_exists($path)) {
                 $resp = new ApiResponse(false, ApiErrorTypes::ContentNotFound);
@@ -172,6 +162,9 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseCollectionEntriesRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("Guid"), array("KnownServerIds")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $guids = [];
             for ($i = 0; $i < count($model->KnownServerIds); $i++) {
                 $guids[] = $model->KnownServerIds[$i];
@@ -199,6 +192,9 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseContentEntityHistoryRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("ServerId")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $helper = $this->getDatabaseHelper();
             $collection = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
             if ($collection != null) {
@@ -236,5 +232,24 @@ class SyncController extends BaseController
         } else {
             return $this->returnAuthorizationFailed(new ContentEntityHistoryResponse());
         }
+    }
+
+    private function getPathForContent($userGuid, $contentGuid, $version)
+    {
+        return $this->getUserDirForContent($userGuid) . "/" . $this->getFilenameForContent($contentGuid, $version);
+    }
+
+    private function getFilenameForContent($contentGuid, $version)
+    {
+        return $contentGuid . "_" . $version;
+    }
+
+    private function getUserDirForContent($userGuid)
+    {
+        $path = $this->container->get("settings")["file_path"] . "/" . $userGuid;
+        if (!is_dir($path)) {
+            mkdir($path);
+        }
+        return $path;
     }
 }

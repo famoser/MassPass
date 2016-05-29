@@ -22,6 +22,9 @@ namespace Famoser.MassPass.Data.Enum
 
         [Description("Execution of request was denied")]
         Forbidden = 104,
+
+        [Description("Some required properties were missing")]
+        NotWellDefined = 105,
         #endregion
 
         #region general errors
@@ -61,7 +64,7 @@ namespace Famoser.MassPass.Data.Enum
         [Description("No authorized devices could be found")]
         NoDevicesFound = 4000,
         #endregion
-        
+
         #region ReadContentEntityRequest
         [Description("No authorized devices could be found")]
         ContentNotFound = 5000

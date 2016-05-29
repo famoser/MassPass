@@ -22,6 +22,7 @@ use Famoser\MassPass\Models\Response\Authorization\AuthorizationStatusResponse;
 use Famoser\MassPass\Models\Response\Authorization\AuthorizedDevicesResponse;
 use Famoser\MassPass\Models\Response\Authorization\CreateAuthorizationResponse;
 use Famoser\MassPass\Models\Response\Authorization\UnAuthorizationResponse;
+use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Models\Response\Entities\AuthorizedDeviceEntity;
 use Famoser\MassPass\Types\ApiErrorTypes;
 use Interop\Container\ContainerInterface;
@@ -33,6 +34,9 @@ class AuthorizationController extends BaseController
     public function authorize(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseAuthorisationRequest($request);
+        if (!$this->isWellDefined($model, array("DeviceName", "UserName")))
+            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+        
         $helper = $this->getDatabaseHelper();
         $user = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $model->UserId));
         if ($user == null) {
@@ -49,14 +53,13 @@ class AuthorizationController extends BaseController
             //authorize device with auth code
             $authCode = $helper->getSingleFromDatabase(new AuthorizationCode(), "user_id=:user_id AND code=:code", array("user_id" => $user->id, "code" => $model->AuthorisationCode));
             if ($authCode == null) {
-                return $response->withStatus(ApiErrorTypes::AuthorizationCodeInvalid, "Authorization code not found");
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::AuthorizationCodeInvalid));
             }
             if ($authCode->valid_from > time() || $authCode->valid_till < time()) {
-                return $response->withStatus(ApiErrorTypes::AuthorizationCodeInvalid, "Authorization code not valid");
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::AuthorizationCodeInvalid));
             }
             //successful! delete auth code now
             $helper->deleteFromDatabase($authCode);
-
         }
         //check if device in database, if so delete it
         $oldDevice = $helper->getSingleFromDatabase(new Device(), "user_id=:user_id AND guid=:guid", array("user_id" => $user->id, "guid" => $model->DeviceId));
@@ -112,6 +115,9 @@ class AuthorizationController extends BaseController
     {
         $model = RequestHelper::parseCreateAuthorizationRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("AuthorisationCode")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $helper = $this->getDatabaseHelper();
             $req = new AuthorizationCode();
             $req->user_id = $this->getAuthorizedUser($model)->id;
@@ -133,6 +139,9 @@ class AuthorizationController extends BaseController
     {
         $model = RequestHelper::parseUnAuthorisationRequest($request);
         if ($this->isAuthorized($model)) {
+            if (!$this->isWellDefined($model, array("DeviceToBlockId")))
+                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+
             $helper = $this->getDatabaseHelper();
             $deviceToUnAuthorized = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $model->DeviceToBlockId, "user_id" => $this->getAuthorizedUser($model)->id));
             if ($deviceToUnAuthorized != null) {
