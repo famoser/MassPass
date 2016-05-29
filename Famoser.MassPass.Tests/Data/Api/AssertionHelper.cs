@@ -39,5 +39,10 @@ namespace Famoser.MassPass.Tests.Data.Api
                 Assert.IsTrue(property.GetValue(one) == property.GetValue(two), "value named " + property.Name + " is not equal");
             }
         }
+
+        public static void CheckDateTimeNowValidity(DateTime date, string propertyName)
+        {
+            Assert.IsTrue(date < DateTime.Now + TimeSpan.FromSeconds(10) && date > DateTime.Now - TimeSpan.FromSeconds(20), propertyName + " wrong");
+        }
     }
 }

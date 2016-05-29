@@ -90,8 +90,8 @@ namespace Famoser.MassPass.Tests.Data.Api
             var authRequest = new AuthorizationRequest
             {
                 DeviceId = newDeviceId,
-                UserName = "my user",
-                DeviceName = "my device",
+                UserName = userName,
+                DeviceName = deviceName,
                 UserId = userGuid,
                 AuthorisationCode = authCode
             };

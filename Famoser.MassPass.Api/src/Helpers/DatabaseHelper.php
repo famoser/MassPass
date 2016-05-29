@@ -178,6 +178,7 @@ class DatabaseHelper
             }
             $sql = substr($sql, 0, -1);
             $sql .= " WHERE id=:id";
+            $properties = (array)$entity;
             $request = $this->getConnection()->prepare($sql);
             if (!$request->execute($properties)) {
                 return false;

@@ -10,6 +10,7 @@ namespace Famoser\MassPass\Controllers;
 
 
 use Famoser\MassPass\Helpers\DatabaseHelper;
+use Famoser\MassPass\Helpers\FormatHelper;
 use Famoser\MassPass\Helpers\RequestHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Entities\AuthorizationCode;
@@ -165,11 +166,11 @@ class AuthorizationController extends BaseController
                 $resp->AuthorizedDeviceEntities = array();
                 foreach ($authorizedDevices as $authorizedDevice) {
                     $newDev = new AuthorizedDeviceEntity();
-                    $newDev->AuthorizationDateTime = $authorizedDevice->authorization_date_time;
+                    $newDev->AuthorizationDateTime = FormatHelper::toCSharpDateTime($authorizedDevice->authorization_date_time);
                     $newDev->DeviceId = $authorizedDevice->guid;
                     $newDev->DeviceName = $authorizedDevice->name;
-                    $newDev->LastModificationDateTime = $authorizedDevice->last_modification_date_time;
-                    $newDev->LastRequestDateTime = $authorizedDevice->last_request_date_time;
+                    $newDev->LastModificationDateTime = FormatHelper::toCSharpDateTime($authorizedDevice->last_modification_date_time);
+                    $newDev->LastRequestDateTime = FormatHelper::toCSharpDateTime($authorizedDevice->last_request_date_time);
                     $resp->AuthorizedDeviceEntities[] = $newDev;
                 }
                 return ResponseHelper::getJsonResponse($response, $resp);

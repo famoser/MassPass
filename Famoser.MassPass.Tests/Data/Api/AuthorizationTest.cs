@@ -270,10 +270,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                     else if (authorizedDeviceEntity.DeviceId == guids3)
                         Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName3);
 
-                    Assert.IsTrue(authorizedDeviceEntity.AuthorizationDateTime < DateTime.Now + TimeSpan.FromSeconds(10)
-                        && authorizedDeviceEntity.AuthorizationDateTime - TimeSpan.FromSeconds(20) > DateTime.Now, "AuthorizationDateTime wrong");
-                    Assert.IsTrue(authorizedDeviceEntity.LastModificationDateTime < DateTime.Now + TimeSpan.FromSeconds(10)
-                        && authorizedDeviceEntity.LastModificationDateTime - TimeSpan.FromSeconds(20) > DateTime.Now, "LastModificationDateTime wrong");
+                    AssertionHelper.CheckDateTimeNowValidity(authorizedDeviceEntity.AuthorizationDateTime, "AuthorizationDateTime");
+                    AssertionHelper.CheckDateTimeNowValidity(authorizedDeviceEntity.LastModificationDateTime, "LastModificationDateTime");
                 }
             }
         }
