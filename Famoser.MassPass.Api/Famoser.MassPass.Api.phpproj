@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>Famoser.MassPass.Api</Name>
+    <ProjectGuid>{90afbafd-9642-4da3-a892-22e07c11e710}</ProjectGuid>
+    <RootNamespace>
+    </RootNamespace>
+    <OutputType>Library</OutputType>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include=".idea\copyright\profiles_settings.xml" />
+    <Compile Include=".idea\dataSources.ids" />
+    <Compile Include=".idea\dataSources.local.xml" />
+    <Compile Include=".idea\dataSources.xml" />
+    <Compile Include=".idea\deployment.xml" />
+    <Compile Include=".idea\encodings.xml" />
+    <Compile Include=".idea\Famoser.MassPass.Api.iml" />
+    <Compile Include=".idea\misc.xml" />
+    <Compile Include=".idea\modules.xml" />
+    <Compile Include=".idea\sqldialects.xml" />
+    <Compile Include=".idea\workspace.xml" />
+    <Compile Include="app\logs\.gitkeep" />
+    <Compile Include="app\.gitkeep" />
+    <Compile Include="app\sqlite.db" />
+    <Compile Include="src\Assets\sql\initialize\01 - createTables.sql" />
+    <Compile Include="src\Controllers\ActionsController.php" />
+    <Compile Include="src\Controllers\AuthorizationController.php" />
+    <Compile Include="src\Controllers\BaseController.php" />
+    <Compile Include="src\Helpers\DatabaseHelper.php" />
+    <Compile Include="src\Helpers\LogHelper.php" />
+    <Compile Include="src\Helpers\RequestHelper.php" />
+    <Compile Include="src\Helpers\ResponseHelper.php" />
+    <Compile Include="src\Middleware\ApiVersionMiddleware.php" />
+    <Compile Include="src\Middleware\AuthorizationMiddleware.php" />
+    <Compile Include="src\Middleware\BaseMiddleware.php" />
+    <Compile Include="src\Middleware\JsonMiddleware.php" />
+    <Compile Include="src\Middleware\LoggingMiddleware.php" />
+    <Compile Include="src\Middleware\TestsMiddleware.php" />
+    <Compile Include="src\Models\Entities\Base\EntityBase.php" />
+    <Compile Include="src\Models\Entities\AuthorizationCode.php" />
+    <Compile Include="src\Models\Entities\Content.php" />
+    <Compile Include="src\Models\Entities\Device.php" />
+    <Compile Include="src\Models\Entities\User.php" />
+    <Compile Include="src\Models\Request\Authorization\AuthorizationRequest.php" />
+    <Compile Include="src\Models\Request\Authorization\AuthorizationStatusRequest.php" />
+    <Compile Include="src\Models\Request\Authorization\AuthorizedDevicesRequest.php" />
+    <Compile Include="src\Models\Request\Authorization\CreateAuthorizationRequest.php" />
+    <Compile Include="src\Models\Request\Authorization\UnAuthorizationRequest.php" />
+    <Compile Include="src\Models\Request\Base\ApiRequest.php" />
+    <Compile Include="src\Models\Request\Entities\RefreshEntity.php" />
+    <Compile Include="src\Models\Request\CollectionEntriesRequest.php" />
+    <Compile Include="src\Models\Request\ContentEntityHistoryRequest.php" />
+    <Compile Include="src\Models\Request\ContentEntityRequest.php" />
+    <Compile Include="src\Models\Request\RefreshRequest.php" />
+    <Compile Include="src\Models\Request\UpdateRequest.php" />
+    <Compile Include="src\Models\Response\Authorization\AuthorizationResponse.php" />
+    <Compile Include="src\Models\Response\Authorization\AuthorizationStatusResponse.php" />
+    <Compile Include="src\Models\Response\Authorization\AuthorizedDevicesResponse.php" />
+    <Compile Include="src\Models\Response\Authorization\CreateAuthorizationResponse.php" />
+    <Compile Include="src\Models\Response\Authorization\UnAuthorizationResponse.php" />
+    <Compile Include="src\Models\Response\Base\ApiResponse.php" />
+    <Compile Include="src\Models\Response\Encrypted\EncryptedResponse.php" />
+    <Compile Include="src\Models\Response\Entities\AuthorizedDeviceEntity.php" />
+    <Compile Include="src\Models\Response\Entities\HistoryEntry.php" />
+    <Compile Include="src\Models\Response\Entities\RefreshEntity.php" />
+    <Compile Include="src\Models\Response\CollectionEntriesResponse.php" />
+    <Compile Include="src\Models\Response\ContentEntityHistoryResponse.php" />
+    <Compile Include="src\Models\Response\RefreshResponse.php" />
+    <Compile Include="src\Models\Response\UpdateResponse.php" />
+    <Compile Include="src\public\.htaccess" />
+    <Compile Include="src\public\index.php" />
+    <Compile Include="src\Types\ApiErrorTypes.php" />
+    <Compile Include=".gitignore" />
+    <Compile Include="composer.json" />
+    <Compile Include="composer.lock" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".idea\copyright" />
+    <Folder Include=".idea" />
+    <Folder Include="app\logs" />
+    <Folder Include="app" />
+    <Folder Include="src\Assets\sql\initialize" />
+    <Folder Include="src\Assets\sql" />
+    <Folder Include="src\Assets" />
+    <Folder Include="src\Controllers" />
+    <Folder Include="src\Helpers" />
+    <Folder Include="src\Middleware" />
+    <Folder Include="src\Models\Entities\Base" />
+    <Folder Include="src\Models\Entities" />
+    <Folder Include="src\Models\Request\Authorization" />
+    <Folder Include="src\Models\Request\Base" />
+    <Folder Include="src\Models\Request\Entities" />
+    <Folder Include="src\Models\Request" />
+    <Folder Include="src\Models\Response\Authorization" />
+    <Folder Include="src\Models\Response\Base" />
+    <Folder Include="src\Models\Response\Encrypted" />
+    <Folder Include="src\Models\Response\Entities" />
+    <Folder Include="src\Models\Response" />
+    <Folder Include="src\Models" />
+    <Folder Include="src\public" />
+    <Folder Include="src\Types" />
+    <Folder Include="src" />
+  </ItemGroup>
+</Project>

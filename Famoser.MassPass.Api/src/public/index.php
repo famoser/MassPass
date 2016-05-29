@@ -44,14 +44,6 @@ $configuration = [
 ];
 
 $c = new Container($configuration);
-$c['db'] = function ($c) {
-    $db = $c['settings']['db'];
-    $pathKey = $c['api_settings']['test_mode'] ? 'test_path' : 'path';
-    $pdo = new PDO("sqlite:" . $c["settings"]["data_path"] . "/" . $db[$pathKey]);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    return $pdo;
-};
 $c['notFoundHandler'] = function (Container $c) {
     return function (Request $req, Response $resp) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);

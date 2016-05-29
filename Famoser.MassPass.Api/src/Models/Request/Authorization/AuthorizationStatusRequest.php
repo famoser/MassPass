@@ -13,5 +13,5 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
 class AuthorizationStatusRequest extends ApiRequest
 {
-
+    
 }

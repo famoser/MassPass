@@ -30,7 +30,6 @@ class DatabaseHelper
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->database = $this->container->get("db");
         $this->initializeDatabase();
     }
 
@@ -42,31 +41,58 @@ class DatabaseHelper
         return $this->database;
     }
 
-    private function initializeDatabase()
+    private function constructPdo($path)
     {
-        $tempFilePath = $this->container["settings"]["data_path"] . "/.db_created";
+        $pdo = new PDO("sqlite:" . $path);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        return $pdo;
+    }
 
-        if (file_exists($tempFilePath))
-            return true;
-
-        //create tables
-        $conn = $this->getConnection();
-        $path = $this->container["settings"]["asset_path"] . "/sql/initialize";
-        $files = scandir($path);
+    private function executeScripts(PDO $connection, $scriptsPath)
+    {
+        $files = scandir($scriptsPath);
         foreach ($files as $file) {
             if (substr($file, -3) == "sql") {
-                $queries = file_get_contents($path . "/" . $file);
+                $queries = file_get_contents($scriptsPath . "/" . $file);
                 $queryArray = explode(";", $queries);
                 foreach ($queryArray as $item) {
                     if (trim($item) != "") {
-                        $conn->query($item);
+                        $connection->query($item);
                     }
                 }
             }
         }
+    }
 
-        file_put_contents($tempFilePath, time());
+    private static $activePathKey = 'path';
 
+    public static function setPathKey($newPathKey)
+    {
+        DatabaseHelper::$activePathKey = $newPathKey;
+    }
+
+    public function initializeDatabase()
+    {
+        $activePath = $this->container["settings"]["data_path"] . "/" . $this->container['settings']['db'][DatabaseHelper::$activePathKey];
+
+        $tempFilePath = $this->container["settings"]["data_path"] . "/.db_created";
+        if (!file_exists($tempFilePath)) {
+
+            $testPath = $this->container["settings"]["data_path"] . "/" . $this->container['settings']['db']['test_path'];
+            $prodPath = $this->container["settings"]["data_path"] . "/" . $this->container['settings']['db']["path"];
+
+            $scriptsPath = $this->container["settings"]["asset_path"] . "/sql/initialize";
+
+            if (!file_exists($testPath))
+                $this->executeScripts($this->constructPdo($testPath), $scriptsPath);
+            if (!file_exists($prodPath))
+                $this->executeScripts($this->constructPdo($prodPath), $scriptsPath);
+
+            file_put_contents($tempFilePath, time());
+        }
+
+        $this->database = $this->constructPdo($activePath);
         return true;
     }
 
@@ -74,7 +100,6 @@ class DatabaseHelper
     {
         return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
     }
-
 
     private function createQuery(EntityBase $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
@@ -143,6 +168,7 @@ class DatabaseHelper
     public function saveToDatabase(EntityBase $entity)
     {
         $properties = (array)$entity;
+        LogHelper::log(json_encode($properties, JSON_PRETTY_PRINT) . "\n\n\n" . json_encode($entity, JSON_PRETTY_PRINT), "DatabaseHelper_" . $entity->getTableName() . '_' . time() . "_" . uniqid() . ".txt");
         unset($properties["id"]);
         if ($entity->id > 0) {
             //update

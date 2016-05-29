@@ -89,14 +89,14 @@ class AuthorizationController extends BaseController
         return ResponseHelper::getJsonResponse($response, $resp);
     }
 
-    public function status($request, $response, $args)
+    public function status(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseAuthorizationStatusRequest($request);
         $resp = new AuthorizationStatusResponse();
         if ($this->isAuthorized($model)) {
             $resp->IsAuthorized = true;
         } else {
-            $device = $this->getAuthorizedDevice($request);
+            $device = $this->getAuthorizedDevice($model);
             if ($device != null) {
                 $resp->IsAuthorized = false;
                 $resp->UnauthorizedReason = $device->access_revoked_reason;

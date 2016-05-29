@@ -9,6 +9,7 @@
 namespace Famoser\MassPass\Middleware;
 
 
+use Famoser\MassPass\Helpers\DatabaseHelper;
 use Interop\Container\ContainerInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -21,6 +22,7 @@ class TestsMiddleware extends BaseMiddleware
     {
         if (strpos($request->getRequestTarget(), "/tests") === 0) {
             $newpath = str_replace("/tests", "", $request->getRequestTarget());
+            DatabaseHelper::setPathKey('test_path');
             return $next($request->withRequestTarget($newpath)->withAttribute("test_mode", true), $response);
         } else {
             $response = $next($request, $response);

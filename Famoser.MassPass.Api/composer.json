@@ -14,7 +14,7 @@
     ],
     "require": {
         "slim/slim": "^3.0",
-        "famoser/jsonmapper": "*"
+        "netresearch/jsonmapper": "*"
     },
     "autoload": {
         "psr-4": {

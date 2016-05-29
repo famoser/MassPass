@@ -1,11 +1,11 @@
 CREATE TABLE users (
-  id   INTEGER AUTO_INCREMENT,
+  id   INTEGER PRIMARY KEY,
   guid TEXT,
   name TEXT
 );
 
 CREATE TABLE devices (
-  id                          INTEGER AUTO_INCREMENT,
+  id                          INTEGER PRIMARY KEY,
   user_id                     INTEGER,
   guid                        TEXT,
   name                        TEXT,
@@ -19,7 +19,7 @@ CREATE TABLE devices (
 );
 
 CREATE TABLE authorization_codes (
-  id         INTEGER AUTO_INCREMENT,
+  id         INTEGER PRIMARY KEY,
   user_id    INTEGER,
   content_id INTEGER,
   code       TEXT,
@@ -28,7 +28,7 @@ CREATE TABLE authorization_codes (
 );
 
 CREATE TABLE content (
-  id            INTEGER AUTO_INCREMENT,
+  id            INTEGER PRIMARY KEY,
   device_id     INTEGER,
   guid          TEXT,
   relation_guid TEXT,

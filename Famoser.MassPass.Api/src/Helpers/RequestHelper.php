@@ -30,7 +30,7 @@ class RequestHelper
      */
     public static function parseAuthorisationRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new AuthorizationRequest());
+        return RequestHelper::executeJsonMapper($request, new AuthorizationRequest());
     }
 
     /**
@@ -40,7 +40,7 @@ class RequestHelper
      */
     public static function parseUnAuthorisationRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new UnAuthorizationRequest());
+        return RequestHelper::executeJsonMapper($request, new UnAuthorizationRequest());
     }
 
     /**
@@ -50,7 +50,7 @@ class RequestHelper
      */
     public static function parseAuthorizedDevicesRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new AuthorizedDevicesRequest());
+        return RequestHelper::executeJsonMapper($request, new AuthorizedDevicesRequest());
     }
 
     /**
@@ -60,7 +60,7 @@ class RequestHelper
      */
     public static function parseAuthorizationStatusRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new AuthorizationStatusRequest());
+        return RequestHelper::executeJsonMapper($request, new AuthorizationStatusRequest());
     }
 
     /**
@@ -70,7 +70,7 @@ class RequestHelper
      */
     public static function parseCreateAuthorizationRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new CreateAuthorizationRequest());
+        return RequestHelper::executeJsonMapper($request, new CreateAuthorizationRequest());
     }
 
     /**
@@ -80,7 +80,7 @@ class RequestHelper
      */
     public static function parseCollectionEntriesRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new CollectionEntriesRequest());
+        return RequestHelper::executeJsonMapper($request, new CollectionEntriesRequest());
     }
 
     /**
@@ -90,7 +90,7 @@ class RequestHelper
      */
     public static function parseContentEntityHistoryRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new ContentEntityHistoryRequest());
+        return RequestHelper::executeJsonMapper($request, new ContentEntityHistoryRequest());
     }
 
     /**
@@ -100,7 +100,7 @@ class RequestHelper
      */
     public static function parseContentEntityRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new ContentEntityRequest());
+        return RequestHelper::executeJsonMapper($request, new ContentEntityRequest());
     }
 
     /**
@@ -110,14 +110,16 @@ class RequestHelper
      */
     public static function parseRefreshRequest(Request $request)
     {
-        RequestHelper::executeJsonMapper($request, new RefreshRequest());
+        return RequestHelper::executeJsonMapper($request, new RefreshRequest());
     }
 
     private static function executeJsonMapper(Request $request, $model)
     {
-        $jsonObj = json_decode($request->getBody());
+        $jsonObj = json_decode($request->getBody()->getContents());
         $mapper = new JsonMapper();
         $mapper->bExceptionOnUndefinedProperty = true;
-        return $mapper->map($jsonObj, $model);
+        $resObj = $mapper->map($jsonObj, $model);
+        LogHelper::log(json_encode($resObj, JSON_PRETTY_PRINT), "RequestHelper.txt");
+        return $resObj;
     }
 }

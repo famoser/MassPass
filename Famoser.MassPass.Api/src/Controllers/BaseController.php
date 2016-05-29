@@ -29,13 +29,13 @@ class BaseController
     }
 
     const DATABASE_FAILURE = 1;
-    
+
     protected function returnFailure($failureCode, Response $response)
     {
         if ($failureCode == BaseController::DATABASE_FAILURE) {
             return $response->withStatus(ApiErrorTypes::ServerFailure, "Database failure");
         }
-        
+
         return $response->withStatus(ApiErrorTypes::ServerFailure, "unspecified failure");
     }
 
@@ -85,6 +85,8 @@ class BaseController
 
             $helper = $this->getDatabaseHelper();
             $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $request->DeviceId, "user_id" => $authorizedUser->id));
+            $this->authorizedDevice->last_request_date_time = time();
+            $helper->saveToDatabase($this->authorizedDevice);
         }
         return $this->authorizedDevice;
     }

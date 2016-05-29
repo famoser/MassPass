@@ -59,7 +59,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                     DeviceId = deviceGuid,
                     UserName = "my user",
                     DeviceName = "my device",
-                    UserId = userGuid
+                    UserId = userGuid,
+                    AuthorisationCode = "empty"
                 };
                 var authStatusRequest = new AuthorizationStatusRequest()
                 {
