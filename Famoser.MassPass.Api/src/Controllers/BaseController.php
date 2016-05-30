@@ -29,15 +29,31 @@ class BaseController
         $this->container = $ci;
     }
 
-    const DATABASE_FAILURE = 1;
 
-    protected function returnFailure($failureCode, Response $response)
+    protected function returnApiError($apiErrorType, Response $response)
     {
-        if ($failureCode == BaseController::DATABASE_FAILURE) {
-            return $response->withStatus(ApiErrorTypes::ServerFailure, "Database failure");
+        $apiError = array(
+            ApiErrorTypes::DatabaseFailure => 500,
+            ApiErrorTypes::ApiVersionInvalid => 406,
+            ApiErrorTypes::AuthorizationCodeInvalid => 401,
+            ApiErrorTypes::ContentNotFound => 404,
+            ApiErrorTypes::DeviceNotFound => 401,
+            ApiErrorTypes::Forbidden => 401,
+            ApiErrorTypes::NoDevicesFound => 500,
+            ApiErrorTypes::None => 200,
+            ApiErrorTypes::NotAuthorized => 401,
+            ApiErrorTypes::NotWellDefined => 400,
+            ApiErrorTypes::RequestJsonFailure => 400,
+            ApiErrorTypes::DeviceNotFound => 401,
+            ApiErrorTypes::RequestUriInvalid => 404,
+            ApiErrorTypes::Unauthorized => 401
+            );
+        
+        if (!in_array($apiErrorType, $apiError)) {
+            $apiError[$apiErrorType] = 500;
         }
-
-        return $response->withStatus(ApiErrorTypes::ServerFailure, "unspecified failure");
+        
+        return $response->withStatus($apiError[$apiErrorType])->withJson(new ApiResponse(false, $apiErrorType));
     }
 
     protected function isAuthorized(ApiRequest $request)

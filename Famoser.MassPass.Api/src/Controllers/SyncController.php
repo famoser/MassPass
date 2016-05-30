@@ -40,7 +40,7 @@ class SyncController extends BaseController
         $model = RequestHelper::parseRefreshRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, null, array("RefreshEntities")))
-                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
             
             $guids = [];
             for ($i = 0; $i < count($model->RefreshEntities); $i++) {
@@ -77,7 +77,7 @@ class SyncController extends BaseController
 
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
+            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
 
@@ -86,7 +86,7 @@ class SyncController extends BaseController
         $model = RequestHelper::parseUpdateRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, array("RelationId", "ServerId")))
-                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $resp = new UpdateResponse();
             $helper = $this->getDatabaseHelper();
@@ -105,7 +105,7 @@ class SyncController extends BaseController
                 $exiting->version_id = $newVersion;
 
                 if (!$helper->saveToDatabase($exiting)) {
-                    return $this->returnFailure(BaseController::DATABASE_FAILURE, $response);
+                    return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
                 }
                 $contentId = $exiting->id;
             } else {
@@ -116,7 +116,7 @@ class SyncController extends BaseController
                 $newModel->version_id = $newVersion;
 
                 if (!$helper->saveToDatabase($newModel)) {
-                    return $this->returnFailure(BaseController::DATABASE_FAILURE, $response);
+                    return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
                 }
                 $contentId = $newModel->id;
             }
@@ -128,7 +128,7 @@ class SyncController extends BaseController
             $newModel->creation_date_time = time();
             $newModel->device_id = $this->getAuthorizedDevice($model)->id;
             if (!$helper->saveToDatabase($newModel)) {
-                return $this->returnFailure(BaseController::DATABASE_FAILURE, $response);
+                return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
             }
 
             $resp->ServerRelationId = $model->RelationId;
@@ -136,7 +136,7 @@ class SyncController extends BaseController
             $resp->VersionId = $newVersion;
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
+            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
     
@@ -145,18 +145,16 @@ class SyncController extends BaseController
         $model = RequestHelper::parseContentEntityRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, array("VersionId", "ServerId")))
-                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $path = $this->getPathForContent($this->getAuthorizedUser($model)->guid, $model->ServerId, $model->VersionId);
             if (!file_exists($path)) {
-                $resp = new ApiResponse(false, ApiErrorTypes::ContentNotFound);
-                return ResponseHelper::getJsonResponse($response, $resp);
+                return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response);
             }
-            $resp = new DownloadContentEntityResponse();
             $content = file_get_contents($path);
             return $response->getBody()->write($content);
         } else {
-            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
+            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
 
@@ -165,7 +163,7 @@ class SyncController extends BaseController
         $model = RequestHelper::parseCollectionEntriesRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, array("Guid"), array("KnownServerIds")))
-                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $guids = [];
             for ($i = 0; $i < count($model->KnownServerIds); $i++) {
@@ -186,7 +184,7 @@ class SyncController extends BaseController
 
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
-            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
+            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
 
@@ -195,7 +193,7 @@ class SyncController extends BaseController
         $model = RequestHelper::parseContentEntityHistoryRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, array("ServerId")))
-                return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotWellDefined));
+                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $helper = $this->getDatabaseHelper();
             $collection = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
@@ -228,11 +226,10 @@ class SyncController extends BaseController
                 }
                 return ResponseHelper::getJsonResponse($response, $resp);
             } else {
-                $resp = new ApiResponse(false, ApiErrorTypes::ContentNotFound);
-                return ResponseHelper::getJsonResponse($response, $resp);
+                return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response);
             }
         } else {
-            return ResponseHelper::getJsonResponse($response, new ApiResponse(false, ApiErrorTypes::NotAuthorized));
+            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
 

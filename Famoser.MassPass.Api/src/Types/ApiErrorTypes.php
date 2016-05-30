@@ -32,17 +32,17 @@ class ApiErrorTypes
 
 //[Description("Some required properties were missing")]
     const NotWellDefined = 105;
+
+//[Description("A failure occured on the server while accessing the database")]
+    const DatabaseFailure = 106;
     #endregion
-    
+
     #region general errors
 //[Description("Your device is unknown to the API")]
     const NotAuthorized = 1000;
 
 //[Description("Your device was unauthorized")]
     const Unauthorized = 1001;
-
-//[Description("Failed downloading an entry because the download link was invalid or expired")]
-    const DownloadUrlInvalid = 1002;
     #endregion
 
     #region AuthorisationRequest

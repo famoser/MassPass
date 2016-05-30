@@ -67,13 +67,14 @@ namespace Famoser.MassPass.Data.Services
                 var response = await _restService.PostJsonAsync(await GetUri(type),
                     JsonConvert.SerializeObject(request));
                 rawResponse = await response.GetResponseAsStringAsync();
-                if (response.IsRequestSuccessfull)
+                var obj = JsonConvert.DeserializeObject<T>(rawResponse);
+                if (obj != null)
                 {
-                    var obj = JsonConvert.DeserializeObject<T>(rawResponse);
-                    if (obj != null)
-                        return obj;
-                    LogHelper.Instance.LogError("response from api null", this);
+                    obj.RequestFailed = !response.IsRequestSuccessfull;
+
+                    return obj;
                 }
+                LogHelper.Instance.LogError("response from api null", this);
                 return new T()
                 {
                     RequestFailed = true,

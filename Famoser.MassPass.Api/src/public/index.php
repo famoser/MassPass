@@ -104,7 +104,7 @@ $routes = function () use ($controllerNamespace) {
         $this->post('/update', $controllerNamespace . 'SyncController:update');
         $this->post('/readcontententity', $controllerNamespace . 'SyncController:readContentEntity');
         $this->post('/readcollectionentries', $controllerNamespace . 'SyncController:readCollectionEntries');
-        $this->get('/gethistory', $controllerNamespace . 'SyncController:getHistory');
+        $this->post('/gethistory', $controllerNamespace . 'SyncController:getHistory');
     });
 };
 

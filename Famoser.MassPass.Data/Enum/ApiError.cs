@@ -25,6 +25,9 @@ namespace Famoser.MassPass.Data.Enum
 
         [Description("Some required properties were missing")]
         NotWellDefined = 105,
+
+        [Description("A failure occured on the server while accessing the database")]
+        DatabaseFailure = 106,
         #endregion
 
         #region general errors
@@ -39,12 +42,6 @@ namespace Famoser.MassPass.Data.Enum
         /// </summary>
         [Description("Your device was unauthorized")]
         Unauthorized = 1001,
-
-        /// <summary>
-        /// Download Uri invalid
-        /// </summary>
-        [Description("Failed downloading an entry because the download link was invalid or expired")]
-        DownloadUrlInvalid = 1002,
         #endregion
 
         #region AuthorisationRequest
