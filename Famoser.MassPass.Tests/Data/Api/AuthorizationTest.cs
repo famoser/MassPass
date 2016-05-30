@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
@@ -138,7 +139,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                 responses.Add(await dataService.Update(new UpdateRequest()
                 {
                     DeviceId = deviceGuid,
-                    UserId = userGuid
+                    UserId = userGuid,
+                    ContentEntity = new ContentEntity()
                 }));
 
                 //7

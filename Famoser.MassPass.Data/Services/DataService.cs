@@ -183,31 +183,48 @@ namespace Famoser.MassPass.Data.Services
         {
             try
             {
-                var str = JsonConvert.SerializeObject(request.ContentEntity);
-                var bytes = Encoding.UTF8.GetBytes(str);
-                var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
+                if (request.ContentEntity != null)
+                {
+                    var str = JsonConvert.SerializeObject(request.ContentEntity);
+                    var bytes = Encoding.UTF8.GetBytes(str);
+                    var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
 
-                var response = await _restService.PostAsync(await GetUri(ApiRequest.Update), new[]
-                {
-                    new KeyValuePair<string, string>("UserId", request.UserId.ToString()),
-                    new KeyValuePair<string, string>("DeviceId", request.DeviceId.ToString()),
-                    new KeyValuePair<string, string>("ServerId", request.ServerId.ToString())
-                },
-                new List<RestFile>()
-                {
-                    new RestFile()
+                    var newRequest = new UpdateRequest()
                     {
-                        Content = encryptedBytes,
-                        ContentName = "updateFile",
-                        FileName = request.ServerId.ToString()
-                    }
-                });
-                if (response.IsRequestSuccessfull)
-                    return JsonConvert.DeserializeObject<UpdateResponse>(await response.GetResponseAsStringAsync());
+                        DeviceId = request.DeviceId,
+                        RelationId = request.RelationId,
+                        ServerId = request.ServerId,
+                        UserId = request.UserId
+                    };
 
+                    var response = await _restService.PostJsonAsync(await GetUri(ApiRequest.Update), JsonConvert.SerializeObject(newRequest),
+                        new List<RestFile>()
+                        {
+                            new RestFile()
+                            {
+                                Content = encryptedBytes,
+                                ContentName = "updateFile",
+                                FileName = request.ServerId.ToString()
+                            }
+                        });
+                    var rawResponse = await response.GetResponseAsStringAsync();
+                    var obj = JsonConvert.DeserializeObject<UpdateResponse>(rawResponse);
+                    if (obj != null)
+                    {
+                        obj.RequestFailed = !response.IsRequestSuccessfull;
+
+                        return obj;
+                    }
+                    LogHelper.Instance.LogError("response from api null", this);
+                    return new UpdateResponse()
+                    {
+                        RequestFailed = true,
+                        RawResponse = rawResponse
+                    };
+                }
                 return new UpdateResponse()
                 {
-                    Successfull = false,
+                    RequestFailed = true,
                     Exception = new UploadFailedException()
                 };
             }
