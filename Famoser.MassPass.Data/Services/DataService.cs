@@ -155,7 +155,8 @@ namespace Famoser.MassPass.Data.Services
                     {
                         Successfull = jsonResponse.Successfull,
                         ApiError = jsonResponse.ApiError,
-                        Exception = resp.Exception
+                        Exception = resp.Exception,
+                        RequestFailed = true
                     };
                 }
                 catch (Exception ex)
@@ -189,7 +190,7 @@ namespace Famoser.MassPass.Data.Services
                     var bytes = Encoding.UTF8.GetBytes(str);
                     var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
 
-                    var newRequest = new UpdateRequest()
+                    var newRequest = new RawUpdateRequest()
                     {
                         DeviceId = request.DeviceId,
                         RelationId = request.RelationId,

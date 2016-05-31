@@ -98,8 +98,8 @@ class SyncController extends BaseController
             $file->setName($this->getFilenameForContent($model->ServerId, $newVersion));
             $file->upload();
 
-            $contentId = null;
             //update database
+            $contentId = null;
             $exiting = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
             if ($exiting != null) {
                 $exiting->version_id = $newVersion;
@@ -121,7 +121,7 @@ class SyncController extends BaseController
                 $contentId = $newModel->id;
             }
 
-            //save
+            //save to history
             $newModel = new ContentHistory();
             $newModel->version_id = $newVersion;
             $newModel->content_id = $contentId;
@@ -171,7 +171,7 @@ class SyncController extends BaseController
             }
 
             $helper = $this->getDatabaseHelper();
-            $contents = $helper->getWithInFromDatabase(new Content(), "guid", $guids, true, "relation_id=:relation_id", array("relation_id" => $model->Guid));
+            $contents = $helper->getWithInFromDatabase(new Content(), "guid", $guids, true, "relation_id=:relation_id", array("relation_id" => $model->RelationId));
 
             $resp = new CollectionEntriesResponse();
             $resp->CollectionEntryEntities = [];
