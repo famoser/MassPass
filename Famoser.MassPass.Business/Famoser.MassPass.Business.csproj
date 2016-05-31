@@ -89,15 +89,23 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <Folder Include="Services\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\FileKeys.cs" />
+    <Compile Include="Enums\SettingKeys.cs" />
+    <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
     <Compile Include="Models\CollectionModel.cs" />
+    <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\ContentModel.cs" />
+    <Compile Include="Models\Storage\PasswordVaultStorageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ContentRepository.cs" />
     <Compile Include="Repositories\Interfaces\IContentRepository.cs" />
+    <Compile Include="Services\ApiEncryptionService.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\Interfaces\IConfigurationService.cs" />
+    <Compile Include="Services\PasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Famoser.MassPass.Data\Famoser.MassPass.Data.csproj">

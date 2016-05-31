@@ -34,7 +34,7 @@ namespace Famoser.MassPass.Tests.Data.Services
             //act
             for (int i = 0; i < testingCases; i++)
             {
-                results.Add(await encService.GeneratePasswortAsync(passwort));
+                results.Add(await encService.GeneratePasswortPhraseAsync(passwort));
             }
 
             //assert
@@ -54,7 +54,7 @@ namespace Famoser.MassPass.Tests.Data.Services
             RegisterMocks();
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             var encService = SimpleIoc.Default.GetInstance<IEncryptionService>();
-            var key = await encService.GeneratePasswortAsync(Guid.NewGuid().ToString());
+            var key = await encService.GeneratePasswortPhraseAsync(Guid.NewGuid().ToString());
             var data = new byte[] { 234, 234, 13, 41, 24, 143, 12, 32, 12, 34, 123, 12, 41, 41, 23, 12, 3, 41, 41, 41, 2, 41, 231, 24, 12, 4, 31, 41, 24, 1, 42, 12 };
 
             //act
