@@ -41,7 +41,7 @@ class SyncController extends BaseController
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, null, array("RefreshEntities")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
-            
+
             $guids = [];
             for ($i = 0; $i < count($model->RefreshEntities); $i++) {
                 $guids[] = $model->RefreshEntities[$i]->ServerId;
@@ -139,7 +139,7 @@ class SyncController extends BaseController
             return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }
     }
-    
+
     public function readContentEntity(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseContentEntityRequest($request);
@@ -149,7 +149,7 @@ class SyncController extends BaseController
 
             $path = $this->getPathForContent($this->getAuthorizedUser($model)->guid, $model->ServerId, $model->VersionId);
             if (!file_exists($path)) {
-                return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response);
+                return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response, $path);
             }
             $content = file_get_contents($path);
             return $response->getBody()->write($content);
@@ -235,12 +235,18 @@ class SyncController extends BaseController
 
     private function getPathForContent($userGuid, $contentGuid, $version)
     {
-        return $this->getUserDirForContent($userGuid) . "/" . $this->getFilenameForContent($contentGuid, $version);
+        return $this->getUserDirForContent($userGuid) . "/" . $this->getFilenameForContent($contentGuid, $version) . "." . $this->getExtensionForContent();
     }
 
     private function getFilenameForContent($contentGuid, $version)
     {
         return $contentGuid . "_" . $version;
+    }
+
+    private function getExtensionForContent()
+    {
+        //empty fileextension
+        return "";
     }
 
     private function getUserDirForContent($userGuid)

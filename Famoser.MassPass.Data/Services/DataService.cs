@@ -156,7 +156,8 @@ namespace Famoser.MassPass.Data.Services
                         Successfull = jsonResponse.Successfull,
                         ApiError = jsonResponse.ApiError,
                         Exception = resp.Exception,
-                        RequestFailed = true
+                        RequestFailed = true,
+                        DebugMessage = jsonResponse.DebugMessage
                     };
                 }
                 catch (Exception ex)

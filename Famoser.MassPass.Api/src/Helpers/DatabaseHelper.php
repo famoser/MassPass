@@ -118,7 +118,7 @@ class DatabaseHelper
     private function executeAndFetch(BaseEntity $entity, $sql, $parameters)
     {
         try {
-            file_put_contents("debug.txt", $sql . " params: " . json_encode($parameters));
+            LogHelper::log($sql . "     " . json_encode($parameters), "DatabaseHelper" . uniqid() . ".txt");
             $request = $this->getConnection()->prepare($sql);
             if (!$request->execute($parameters)) {
                 return false;
@@ -169,7 +169,7 @@ class DatabaseHelper
             $parameters[":" . $property . $i] = $values[$i];
             $variables[] = ":" . $property . $i;
         }
-        $where .= $property . (($invertIn) ? " NOT" : "") . " (" . implode(",", $variables) . ")";
+        $where .= $property . (($invertIn) ? " NOT" : "") . " IN (" . implode(",", $variables) . ")";
         $sql = $this->createQuery($entity, $where, $parameters, $orderBy, $limit);
         $res = $this->executeAndFetch($entity, $sql, $parameters);
         return $res;

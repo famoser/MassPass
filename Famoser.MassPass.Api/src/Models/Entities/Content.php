@@ -13,13 +13,13 @@ use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 
 class Content extends BaseEntity
 {
-    public $user_id;
     public $guid;
+    public $user_id;
     public $relation_guid;
     public $version_id;
 
     public function getTableName()
     {
-        return "contents";
+        return "content";
     }
 }

@@ -35,7 +35,17 @@ namespace Famoser.MassPass.Tests.Data.Api
             var properties = type.GetProperties();
             foreach (var property in properties)
             {
-                Assert.IsTrue(property.GetValue(one) == property.GetValue(two), "value named " + property.Name + " is not equal");
+                if (property.PropertyType == typeof(byte[]))
+                {
+                    var val1 = (byte[])property.GetValue(one);
+                    var val2 = (byte[])property.GetValue(one);
+                    for (int i = 0; i < val1.Length; i++)
+                    {
+                        Assert.IsTrue(val1[i] == val2[i], "value named " + property.Name + " at position " + i + "is not equal");
+                    }
+                }
+                else
+                    Assert.IsTrue(property.GetValue(one).Equals(property.GetValue(two)), "value named " + property.Name + " is not equal");
             }
         }
 

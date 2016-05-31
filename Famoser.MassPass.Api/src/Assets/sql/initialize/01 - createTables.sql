@@ -29,7 +29,7 @@ CREATE TABLE authorization_codes (
 
 CREATE TABLE content (
   id            INTEGER PRIMARY KEY,
-  device_id     INTEGER,
+  user_id       INTEGER,
   guid          TEXT,
   relation_guid TEXT,
   version_id    TEXT

@@ -63,7 +63,7 @@ namespace Famoser.MassPass.Data.Enum
         #endregion
 
         #region ReadContentEntityRequest
-        [Description("No authorized devices could be found")]
+        [Description("Content not found")]
         ContentNotFound = 5000
         #endregion
     }

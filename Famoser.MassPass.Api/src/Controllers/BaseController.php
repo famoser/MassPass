@@ -30,7 +30,7 @@ class BaseController
     }
 
 
-    protected function returnApiError($apiErrorType, Response $response)
+    protected function returnApiError($apiErrorType, Response $response, $debugMessage = null)
     {
         $apiError = array(
             ApiErrorTypes::DatabaseFailure => 500,
@@ -53,7 +53,10 @@ class BaseController
             $apiError[$apiErrorType] = 500;
         }
         
-        return $response->withStatus($apiError[$apiErrorType])->withJson(new ApiResponse(false, $apiErrorType));
+        $resp = new ApiResponse(false, $apiErrorType);
+        $resp->DebugMessage = $debugMessage;
+        
+        return $response->withStatus($apiError[$apiErrorType])->withJson($resp);
     }
 
     protected function isAuthorized(ApiRequest $request)
