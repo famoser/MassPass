@@ -34,7 +34,7 @@ namespace Famoser.MassPass.Tests.Data.Services
             //act
             for (int i = 0; i < testingCases; i++)
             {
-                results.Add(await encService.GeneratePasswort(passwort));
+                results.Add(await encService.GeneratePasswortAsync(passwort));
             }
 
             //assert
@@ -54,12 +54,12 @@ namespace Famoser.MassPass.Tests.Data.Services
             RegisterMocks();
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             var encService = SimpleIoc.Default.GetInstance<IEncryptionService>();
-            var key = await encService.GeneratePasswort(Guid.NewGuid().ToString());
+            var key = await encService.GeneratePasswortAsync(Guid.NewGuid().ToString());
             var data = new byte[] { 234, 234, 13, 41, 24, 143, 12, 32, 12, 34, 123, 12, 41, 41, 23, 12, 3, 41, 41, 41, 2, 41, 231, 24, 12, 4, 31, 41, 24, 1, 42, 12 };
 
             //act
-            var encrypted = await encService.Encrypt(data, key);
-            var decrypted = await encService.Decrypt(encrypted, key);
+            var encrypted = await encService.EncryptAsync(data, key);
+            var decrypted = await encService.DecryptAsync(encrypted, key);
 
             //assert
             Assert.IsTrue(decrypted.Length == data.Length, "not same length!");
@@ -85,7 +85,7 @@ namespace Famoser.MassPass.Tests.Data.Services
                 var key = new byte[i];
                 try
                 {
-                    var encrypted = await encService.Encrypt(data, key);
+                    var encrypted = await encService.EncryptAsync(data, key);
                     availableKeySizes.Add(i);
                 }
                 catch
@@ -116,12 +116,12 @@ namespace Famoser.MassPass.Tests.Data.Services
             //act
             for (int i = 0; i < 65; i++)
             {
-                var config = await configService.GetApiConfiguration();
+                var config = await configService.GetApiConfigurationAsync();
                 config.InitialisationVector = new byte[i];
-                await configService.SetApiConfiguration(config);
+                await configService.SetApiConfigurationAsync(config);
                 try
                 {
-                    var encrypted = await encService.Encrypt(data, key);
+                    var encrypted = await encService.EncryptAsync(data, key);
                     availableIvSizes.Add(i);
                 }
                 catch

@@ -15,7 +15,7 @@ class Content extends BaseEntity
 {
     public $guid;
     public $user_id;
-    public $relation_guid;
+    public $relation_id;
     public $version_id;
 
     public function getTableName()

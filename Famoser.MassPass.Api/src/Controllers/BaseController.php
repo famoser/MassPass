@@ -10,6 +10,7 @@ namespace Famoser\MassPass\Controllers;
 
 
 use Famoser\MassPass\Helpers\DatabaseHelper;
+use Famoser\MassPass\Helpers\LogHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Entities\Device;
 use Famoser\MassPass\Models\Entities\User;
@@ -47,15 +48,15 @@ class BaseController
             ApiErrorTypes::DeviceNotFound => 401,
             ApiErrorTypes::RequestUriInvalid => 404,
             ApiErrorTypes::Unauthorized => 401
-            );
-        
+        );
+
         if (!in_array($apiErrorType, $apiError)) {
             $apiError[$apiErrorType] = 500;
         }
-        
+
         $resp = new ApiResponse(false, $apiErrorType);
         $resp->DebugMessage = $debugMessage;
-        
+
         return $response->withStatus($apiError[$apiErrorType])->withJson($resp);
     }
 
@@ -74,13 +75,17 @@ class BaseController
     {
         if ($neededProps != null)
             foreach ($neededProps as $neededProp) {
-                if ($request->$neededProp == null)
+                if ($request->$neededProp == null) {
+                    LogHelper::log("not a property: " . $neededProp . " in object " . json_encode($request, JSON_PRETTY_PRINT), "isWellDefined_" . uniqid() . ".txt");
                     return false;
+                }
             }
         if ($neededArrays != null)
             foreach ($neededArrays as $neededArray) {
-                if (!is_array($request->$neededArray))
+                if (!is_array($request->$neededArray)) {
+                    LogHelper::log("not an array: " . $neededArray . " in object " . json_encode($request, JSON_PRETTY_PRINT), "isWellDefined_" . uniqid() . ".txt");
                     return false;
+                }
             }
         return true;
     }

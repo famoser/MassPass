@@ -227,8 +227,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                 Assert.IsTrue(res3.CollectionEntryEntities[0].ServerId == entityGuids3.Item2, "not correct serverId returned (1)");
                 Assert.IsTrue(res3.CollectionEntryEntities[0].VersionId == entityGuids3.Item3, "not correct versionId returned (1)");
                 Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids3.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (2)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids2.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (3)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids1.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (4)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids2.Item2 && s.VersionId == entityGuids2.Item3), "not correct serverId or versionId returned (3)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids1.Item2 && s.VersionId == entityGuids1.Item3), "not correct serverId or versionId returned (4)");
             }
         }
 

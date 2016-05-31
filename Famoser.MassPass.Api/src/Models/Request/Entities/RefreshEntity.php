@@ -13,5 +13,4 @@ class RefreshEntity
 {
     public $ServerId;
     public $VersionId;
-    public $RemoteStatus;
 }

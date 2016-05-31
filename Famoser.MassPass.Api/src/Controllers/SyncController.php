@@ -17,13 +17,12 @@ use Famoser\MassPass\Models\Entities\ContentHistory;
 use Famoser\MassPass\Models\Entities\Device;
 use Famoser\MassPass\Models\Entities\User;
 use Famoser\MassPass\Models\Request\CollectionEntriesRequest;
-use Famoser\MassPass\Models\Request\Entities\RefreshEntity;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Models\Response\CollectionEntriesResponse;
 use Famoser\MassPass\Models\Response\ContentEntityHistoryResponse;
-use Famoser\MassPass\Models\Response\DownloadContentEntityResponse;
 use Famoser\MassPass\Models\Response\Entities\CollectionEntryEntity;
 use Famoser\MassPass\Models\Response\Entities\HistoryEntry;
+use Famoser\MassPass\Models\Response\Entities\RefreshEntity;
 use Famoser\MassPass\Models\Response\RefreshResponse;
 use Famoser\MassPass\Models\Response\UpdateResponse;
 use Famoser\MassPass\Types\ApiErrorTypes;
@@ -54,7 +53,7 @@ class SyncController extends BaseController
             for ($i = 0; $i < count($results); $i++) {
                 $found = false;
                 for ($j = 0; $j < count($model->RefreshEntities); $j++) {
-                    if ($model->RefreshEntities[$j] == $results[$i]->guid) {
+                    if ($model->RefreshEntities[$j]->ServerId == $results[$i]->guid) {
                         $found = true;
                         if ($model->RefreshEntities[$j]->VersionId != $results[$i]->version_id) {
                             $entity = new RefreshEntity();
@@ -112,7 +111,7 @@ class SyncController extends BaseController
                 $newModel = new Content();
                 $newModel->guid = $model->ServerId;
                 $newModel->user_id = $this->getAuthorizedUser($model)->guid;
-                $newModel->relation_guid = $model->RelationId;
+                $newModel->relation_id = $model->RelationId;
                 $newModel->version_id = $newVersion;
 
                 if (!$helper->saveToDatabase($newModel)) {
@@ -162,24 +161,30 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseCollectionEntriesRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("Guid"), array("KnownServerIds")))
+            if (!$this->isWellDefined($model, array("RelationId"), array("KnownServerIds")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
-            $guids = [];
-            for ($i = 0; $i < count($model->KnownServerIds); $i++) {
-                $guids[] = $model->KnownServerIds[$i];
-            }
-
             $helper = $this->getDatabaseHelper();
-            $contents = $helper->getWithInFromDatabase(new Content(), "guid", $guids, true, "relation_id=:relation_id", array("relation_id" => $model->RelationId));
+            if (count($model->KnownServerIds) > 0) {
+                $guids = [];
+                for ($i = 0; $i < count($model->KnownServerIds); $i++) {
+                    $guids[] = $model->KnownServerIds[$i];
+                }
+
+                $contents = $helper->getWithInFromDatabase(new Content(), "guid", $guids, true, "relation_id=:relation_id", array("relation_id" => $model->RelationId));
+            } else {
+                $contents = $helper->getFromDatabase(new Content(), "relation_id=:relation_id", array("relation_id" => $model->RelationId));
+            }
 
             $resp = new CollectionEntriesResponse();
             $resp->CollectionEntryEntities = [];
-            foreach ($contents as $content) {
-                $entity = new CollectionEntryEntity();
-                $entity->VersionId = $content->version_id;
-                $entity->ServerId = $content->guid;
-                $resp->CollectionEntryEntities[] = $entity;
+            if ($contents != null) {
+                foreach ($contents as $content) {
+                    $entity = new CollectionEntryEntity();
+                    $entity->VersionId = $content->version_id;
+                    $entity->ServerId = $content->guid;
+                    $resp->CollectionEntryEntities[] = $entity;
+                }
             }
 
             return ResponseHelper::getJsonResponse($response, $resp);
@@ -204,7 +209,7 @@ class SyncController extends BaseController
                 //cache all devices
                 $ids = [];
                 for ($i = 0; $i < count($historyEntries); $i++) {
-                    $ids[] = $historyEntries[$i]->user_id;
+                    $ids[] = $historyEntries[$i]->device_id;
                 }
                 $helper = $this->getDatabaseHelper();
                 $devices = $helper->getWithInFromDatabase(new Device(), "id", $ids);

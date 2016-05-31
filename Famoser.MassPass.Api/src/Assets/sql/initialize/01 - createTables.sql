@@ -31,7 +31,7 @@ CREATE TABLE content (
   id            INTEGER PRIMARY KEY,
   user_id       INTEGER,
   guid          TEXT,
-  relation_guid TEXT,
+  relation_id TEXT,
   version_id    TEXT
 );
 
