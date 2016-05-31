@@ -13,69 +13,69 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<AuthorizationStatusResponse> AuthorizationStatus(AuthorizationStatusRequest request);
+        Task<AuthorizationStatusResponse> GetAuthorizationStatusAsync(AuthorizationStatusRequest request);
 
         /// <summary>
         /// Authorizes the device against the API. Please provide an authorisation code if user has already entries online
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<AuthorizationResponse> Authorize(AuthorizationRequest request);
+        Task<AuthorizationResponse> AuthorizeAsync(AuthorizationRequest request);
 
         /// <summary>
         /// Provide a new AuthCode which is only valid for a short period of time, and can be used by another device to authorize itself
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<CreateAuthorizationResponse> CreateAuthorization(CreateAuthorizationRequest request);
+        Task<CreateAuthorizationResponse> CreateAuthorizationAsync(CreateAuthorizationRequest request);
 
         /// <summary>
         /// UnAuthorizes a device against the API
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request);
+        Task<UnAuthorizationResponse> UnAuthorizeAsync(UnAuthorizationRequest request);
 
         /// <summary>
         /// UnAuthorizes a device against the API
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<AuthorizedDevicesResponse> AuthorizedDevices(AuthorizedDevicesRequest request);
+        Task<AuthorizedDevicesResponse> GetAuthorizedDevicesAsync(AuthorizedDevicesRequest request);
 
         /// <summary>
         /// recieve a changelist with informations which local data may be outdated
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<RefreshResponse> Refresh(RefreshRequest request);
+        Task<RefreshResponse> RefreshAsync(RefreshRequest request);
 
         /// <summary>
         /// Download a specific ContentEntity by providing the ServerId
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<ContentEntityResponse> Read(ContentEntityRequest request);
+        Task<ContentEntityResponse> ReadAsync(ContentEntityRequest request);
 
         /// <summary>
         /// Update the ContentEntity on the server
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<UpdateResponse> Update(UpdateRequest request);
+        Task<UpdateResponse> UpdateAsync(UpdateRequest request);
 
         /// <summary>
         /// get a list of all entries in a collection
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<CollectionEntriesResponse> Read(CollectionEntriesRequest request);
+        Task<CollectionEntriesResponse> ReadAsync(CollectionEntriesRequest request);
 
         /// <summary>
         /// Get history of changes of a specific ContentEntity
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<ContentEntityHistoryResponse> GetHistory(ContentEntityHistoryRequest request);
+        Task<ContentEntityHistoryResponse> GetHistoryAsync(ContentEntityHistoryRequest request);
     }
 }

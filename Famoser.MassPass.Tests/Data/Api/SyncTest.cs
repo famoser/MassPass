@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Famoser.FrameworkEssentials.Services.Base;
-using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 using Famoser.MassPass.Data.Enum;
@@ -44,9 +41,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var res1 = await ds.Update(newEntity);
+                var res1 = await ds.UpdateAsync(newEntity);
                 entityRequest.VersionId = res1.VersionId;
-                var res2 = await ds.Read(entityRequest);
+                var res2 = await ds.ReadAsync(entityRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
@@ -87,8 +84,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                     RelationId = relationId,
                     ContentEntity = entity
                 };
-                var res1 = await ds.Update(newEntity);
-                var res2 = await ds.Update(newEntity2);
+                var res1 = await ds.UpdateAsync(newEntity);
+                var res2 = await ds.UpdateAsync(newEntity2);
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
                 var version1 = res1.VersionId;
@@ -149,9 +146,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var versionRes1 = await ds.Refresh(refreshRequest1);
-                var versionRes2 = await ds.Refresh(refreshRequest2);
-                var versionRes3 = await ds.Refresh(refreshRequest3);
+                var versionRes1 = await ds.RefreshAsync(refreshRequest1);
+                var versionRes2 = await ds.RefreshAsync(refreshRequest2);
+                var versionRes3 = await ds.RefreshAsync(refreshRequest3);
 
 
                 //assert
@@ -215,9 +212,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var res1 = await ds.Read(collectionEntriesRequestEmpty);
-                var res2 = await ds.Read(collectionEntriesRequestFull);
-                var res3 = await ds.Read(collectionEntriesRequest2Of3);
+                var res1 = await ds.ReadAsync(collectionEntriesRequestEmpty);
+                var res2 = await ds.ReadAsync(collectionEntriesRequestFull);
+                var res3 = await ds.ReadAsync(collectionEntriesRequest2Of3);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
@@ -257,7 +254,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 
 
                 //act
-                var res1 = await ds.GetHistory(collectionEntriesRequestEmpty);
+                var res1 = await ds.GetHistoryAsync(collectionEntriesRequestEmpty);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");

@@ -1,31 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Famoser.FrameworkEssentials.Attributes;
-using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Services;
-using Famoser.FrameworkEssentials.Services.Base;
 using Famoser.FrameworkEssentials.Singleton;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
-using Famoser.MassPass.Data.Entities.Communications.Response.Base;
-using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Tests.Data.Mocks;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Tests.Data.Api
 {
     public class ApiHelper : SingletonBase<ApiHelper>, IDisposable
     {
         private static IDataService _dataService;
-        private static IConfigurationService _configurationService;
+        private static IApiConfigurationService _apiConfigurationService;
 
         public ApiHelper()
         {
@@ -33,10 +23,10 @@ namespace Famoser.MassPass.Tests.Data.Api
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             SimpleIoc.Default.Register<IDataService, DataService>();
             SimpleIoc.Default.Register<IApiEncryptionService, ApiEncryptionService>();
-            SimpleIoc.Default.Register<IPasswordService, PasswordServiceMock>();
-            SimpleIoc.Default.Register<IConfigurationService, ConfigurationServiceMock>();
+            SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultServiceMock>();
+            SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationServiceMock>();
             _dataService = SimpleIoc.Default.GetInstance<IDataService>();
-            _configurationService = SimpleIoc.Default.GetInstance<IConfigurationService>();
+            _apiConfigurationService = SimpleIoc.Default.GetInstance<IApiConfigurationService>();
         }
 
         public IDataService GetDataService()
@@ -46,7 +36,7 @@ namespace Famoser.MassPass.Tests.Data.Api
 
         public static async Task CleanUpApi()
         {
-            var config = await _configurationService.GetApiConfiguration();
+            var config = await _apiConfigurationService.GetApiConfigurationAsync();
             var newUri = new Uri(config.Uri.AbsoluteUri + "/1.0/cleanup");
             var service = new HttpService();
             service.FireAndForget(newUri);
@@ -67,7 +57,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 DeviceName = deviceName,
                 UserId = userGuid
             };
-            var res = await GetDataService().Authorize(authRequest);
+            var res = await GetDataService().AuthorizeAsync(authRequest);
             AssertionHelper.CheckForSuccessfull(res, "auth request in CreateValidatesDevice");
             return new Tuple<Guid, Guid>(userGuid, deviceGuid);
         }
@@ -95,8 +85,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                 UserId = userGuid,
                 AuthorisationCode = authCode
             };
-            var res1 = await GetDataService().CreateAuthorization(createAuthRequest);
-            var res2 = await GetDataService().Authorize(authRequest);
+            var res1 = await GetDataService().CreateAuthorizationAsync(createAuthRequest);
+            var res2 = await GetDataService().AuthorizeAsync(authRequest);
             AssertionHelper.CheckForSuccessfull(res1, "create auth request in AddCreateValidatedDevice");
             AssertionHelper.CheckForSuccessfull(res2, "auth request in AddCreateValidatedDevice");
             return newDeviceId;
@@ -119,7 +109,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 ContentEntity = EntityMockHelper.GetContentEntity()
             };
 
-            var res1 = await GetDataService().Update(newEntity);
+            var res1 = await GetDataService().UpdateAsync(newEntity);
             AssertionHelper.CheckForSuccessfull(res1, "AddEntity request in AddEntity");
             return new Tuple<Guid, Guid, string>(relationId.Value, serverId.Value, res1.VersionId);
         }

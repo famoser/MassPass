@@ -6,11 +6,6 @@ using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
-using Famoser.MassPass.Data.Services;
-using Famoser.MassPass.Data.Services.Interfaces;
-using Famoser.MassPass.Tests.Data.Mocks;
-using GalaSoft.MvvmLight.Ioc;
-using Microsoft.Practices.ServiceLocation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Famoser.MassPass.Tests.Data.Api
@@ -36,7 +31,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var res = await dataService.Authorize(authRequest);
+                var res = await dataService.AuthorizeAsync(authRequest);
 
                 //assert
                 Assert.IsTrue(res.IsSuccessfull, ErrorHelper.ErrorMessageForRequest(res));
@@ -70,8 +65,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var res = await dataService.Authorize(authRequest);
-                var res2 = await dataService.AuthorizationStatus(authStatusRequest);
+                var res = await dataService.AuthorizeAsync(authRequest);
+                var res2 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(res, "res");
@@ -94,49 +89,49 @@ namespace Famoser.MassPass.Tests.Data.Api
                 var responses = new List<ApiResponse>();
 
                 //0
-                responses.Add(await dataService.AuthorizationStatus(new AuthorizationStatusRequest()
+                responses.Add(await dataService.GetAuthorizationStatusAsync(new AuthorizationStatusRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //1
-                responses.Add(await dataService.AuthorizedDevices(new AuthorizedDevicesRequest
+                responses.Add(await dataService.GetAuthorizedDevicesAsync(new AuthorizedDevicesRequest
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //2
-                responses.Add(await dataService.CreateAuthorization(new CreateAuthorizationRequest()
+                responses.Add(await dataService.CreateAuthorizationAsync(new CreateAuthorizationRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //3
-                responses.Add(await dataService.GetHistory(new ContentEntityHistoryRequest()
+                responses.Add(await dataService.GetHistoryAsync(new ContentEntityHistoryRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //4
-                responses.Add(await dataService.Refresh(new RefreshRequest()
+                responses.Add(await dataService.RefreshAsync(new RefreshRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //5
-                responses.Add(await dataService.UnAuthorize(new UnAuthorizationRequest()
+                responses.Add(await dataService.UnAuthorizeAsync(new UnAuthorizationRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //6
-                responses.Add(await dataService.Update(new UpdateRequest()
+                responses.Add(await dataService.UpdateAsync(new UpdateRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid,
@@ -144,14 +139,14 @@ namespace Famoser.MassPass.Tests.Data.Api
                 }));
 
                 //7
-                responses.Add(await dataService.Read(new CollectionEntriesRequest()
+                responses.Add(await dataService.ReadAsync(new CollectionEntriesRequest()
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
                 }));
 
                 //8
-                responses.Add(await dataService.Read(new ContentEntityRequest
+                responses.Add(await dataService.ReadAsync(new ContentEntityRequest
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid
@@ -199,9 +194,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var valid1 = await dataService.CreateAuthorization(validCreateAuthRequest);
-                var valid2 = await dataService.Authorize(validAuthRequest);
-                var valid3 = await dataService.AuthorizationStatus(authStatusRequest);
+                var valid1 = await dataService.CreateAuthorizationAsync(validCreateAuthRequest);
+                var valid2 = await dataService.AuthorizeAsync(validAuthRequest);
+                var valid3 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");
@@ -236,8 +231,8 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var valid1 = await dataService.UnAuthorize(validUnAuthRequest);
-                var valid2 = await dataService.AuthorizationStatus(authStatusRequest);
+                var valid1 = await dataService.UnAuthorizeAsync(validUnAuthRequest);
+                var valid2 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");
@@ -269,7 +264,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 };
 
                 //act
-                var valid1 = await dataService.AuthorizedDevices(validUnAuthRequest);
+                var valid1 = await dataService.GetAuthorizedDevicesAsync(validUnAuthRequest);
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");

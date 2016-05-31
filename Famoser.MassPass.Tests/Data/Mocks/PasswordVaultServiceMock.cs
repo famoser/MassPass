@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Tests.Data.Mocks
 {
-    public class PasswordServiceMock : IPasswordService
+    public class PasswordVaultServiceMock : IPasswordVaultService
     {
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<byte[]> GetPasswordFor(Guid serverId)
+        public async Task<byte[]> GetPasswordAsync(Guid serverId)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return new byte[]

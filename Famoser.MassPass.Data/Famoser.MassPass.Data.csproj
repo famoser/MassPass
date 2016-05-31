@@ -134,10 +134,10 @@
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\EncryptionService.cs" />
     <Compile Include="Services\Interfaces\IApiEncryptionService.cs" />
-    <Compile Include="Services\Interfaces\IConfigurationService.cs" />
+    <Compile Include="Services\Interfaces\IApiConfigurationService.cs" />
     <Compile Include="Services\Interfaces\IDataService.cs" />
     <Compile Include="Services\Interfaces\IEncryptionService.cs" />
-    <Compile Include="Services\Interfaces\IPasswordService.cs" />
+    <Compile Include="Services\Interfaces\IPasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Workflow.txt" />

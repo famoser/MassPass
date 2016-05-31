@@ -17,7 +17,7 @@ namespace Famoser.MassPass.Tests.Data.Services
         private void RegisterMocks()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-            SimpleIoc.Default.Register<IConfigurationService, ConfigurationServiceMock>();
+            SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationServiceMock>();
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace Famoser.MassPass.Tests.Data.Services
             RegisterMocks();
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             var encService = SimpleIoc.Default.GetInstance<IEncryptionService>();
-            var configService = SimpleIoc.Default.GetInstance<IConfigurationService>();
+            var configService = SimpleIoc.Default.GetInstance<IApiConfigurationService>();
             var availableIvSizes = new List<int>();
             var data = new byte[] { 234, 234, 13, 41, 24, 143, 12, 32, 12, 34, 123, 12, 41, 41, 23, 12, 3, 41, 41, 41, 2, 41, 231, 24, 12, 4, 31, 41, 24, 1, 42, 12 };
             var key = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };

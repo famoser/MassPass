@@ -5,7 +5,7 @@ using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Tests.Data.Mocks
 {
-    internal class ConfigurationServiceMock : IConfigurationService
+    internal class ApiConfigurationServiceMock : IApiConfigurationService
     {
         private ApiConfiguration _config;
         private ApiConfiguration GetConfig()
@@ -30,14 +30,14 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return _config;
         }
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<ApiConfiguration> GetApiConfiguration()
+        public async Task<ApiConfiguration> GetApiConfigurationAsync()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return GetConfig();
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<bool> SetApiConfiguration(ApiConfiguration config)
+        public async Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _config = config;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
+﻿using System.Collections.Generic;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 

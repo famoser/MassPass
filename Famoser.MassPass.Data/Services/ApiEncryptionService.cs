@@ -6,25 +6,25 @@ namespace Famoser.MassPass.Data.Services
 {
     public class ApiEncryptionService : IApiEncryptionService
     {
-        private readonly IPasswordService _passwordService;
+        private readonly IPasswordVaultService _passwordVaultService;
         private readonly IEncryptionService _encryptionService;
 
-        public ApiEncryptionService(IPasswordService passwordService, IEncryptionService encryptionService)
+        public ApiEncryptionService(IPasswordVaultService passwordVaultService, IEncryptionService encryptionService)
         {
-            _passwordService = passwordService;
+            _passwordVaultService = passwordVaultService;
             _encryptionService = encryptionService;
         }
 
-        public async Task<byte[]> Encrypt(byte[] data, Guid serverId)
+        public async Task<byte[]> EncryptAsync(byte[] data, Guid serverId)
         {
-            var password = await _passwordService.GetPasswordFor(serverId);
-            return await _encryptionService.Encrypt(data, password);
+            var password = await _passwordVaultService.GetPasswordAsync(serverId);
+            return await _encryptionService.EncryptAsync(data, password);
         }
 
-        public async Task<byte[]> Decrypt(byte[] data, Guid serverId)
+        public async Task<byte[]> DecryptAsync(byte[] data, Guid serverId)
         {
-            var password = await _passwordService.GetPasswordFor(serverId);
-            return await _encryptionService.Decrypt(data, password);
+            var password = await _passwordVaultService.GetPasswordAsync(serverId);
+            return await _encryptionService.DecryptAsync(data, password);
         }
     }
 }

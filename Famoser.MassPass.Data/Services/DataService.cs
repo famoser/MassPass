@@ -24,19 +24,19 @@ namespace Famoser.MassPass.Data.Services
     public class DataService : IDataService
     {
         private readonly IApiEncryptionService _apiEncryptionService;
-        private readonly IConfigurationService _configurationService;
+        private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IRestService _restService;
 
-        public DataService(IConfigurationService configurationService, IApiEncryptionService apiEncryptionService)
+        public DataService(IApiConfigurationService apiConfigurationService, IApiEncryptionService apiEncryptionService)
         {
-            _configurationService = configurationService;
+            _apiConfigurationService = apiConfigurationService;
             _apiEncryptionService = apiEncryptionService;
             _restService = new RestService();
         }
 
         private async Task<Uri> GetUri(ApiRequest rt)
         {
-            var config = await _configurationService.GetApiConfiguration();
+            var config = await _apiConfigurationService.GetApiConfigurationAsync();
             var baseUrl = config.Uri.AbsoluteUri.TrimEnd('/');
 
             var type = typeof(ApiRequest);
@@ -93,44 +93,44 @@ namespace Famoser.MassPass.Data.Services
             }
         }
 
-        public Task<AuthorizationStatusResponse> AuthorizationStatus(AuthorizationStatusRequest request)
+        public Task<AuthorizationStatusResponse> GetAuthorizationStatusAsync(AuthorizationStatusRequest request)
         {
             return PostJsonToApi<AuthorizationStatusResponse>(request, ApiRequest.AuthorizationStatus);
         }
 
-        public Task<AuthorizationResponse> Authorize(AuthorizationRequest request)
+        public Task<AuthorizationResponse> AuthorizeAsync(AuthorizationRequest request)
         {
             return PostJsonToApi<AuthorizationResponse>(request, ApiRequest.Authorize);
         }
 
-        public Task<CreateAuthorizationResponse> CreateAuthorization(CreateAuthorizationRequest request)
+        public Task<CreateAuthorizationResponse> CreateAuthorizationAsync(CreateAuthorizationRequest request)
         {
             return PostJsonToApi<CreateAuthorizationResponse>(request, ApiRequest.CreateAuthorization);
         }
 
-        public Task<UnAuthorizationResponse> UnAuthorize(UnAuthorizationRequest request)
+        public Task<UnAuthorizationResponse> UnAuthorizeAsync(UnAuthorizationRequest request)
         {
             return PostJsonToApi<UnAuthorizationResponse>(request, ApiRequest.UnAuthorize);
         }
 
-        public Task<AuthorizedDevicesResponse> AuthorizedDevices(AuthorizedDevicesRequest request)
+        public Task<AuthorizedDevicesResponse> GetAuthorizedDevicesAsync(AuthorizedDevicesRequest request)
         {
             return PostJsonToApi<AuthorizedDevicesResponse>(request, ApiRequest.AuthorizedDevices);
         }
 
-        public Task<RefreshResponse> Refresh(RefreshRequest request)
+        public Task<RefreshResponse> RefreshAsync(RefreshRequest request)
         {
             return PostJsonToApi<RefreshResponse>(request, ApiRequest.Refresh);
         }
 
-        public async Task<ContentEntityResponse> Read(ContentEntityRequest request)
+        public async Task<ContentEntityResponse> ReadAsync(ContentEntityRequest request)
         {
             try
             {
                 var resp = await PostJsonToApiRaw(request, ApiRequest.ReadContentEntity);
                 if (resp.IsRequestSuccessfull)
                 {
-                    var decrypted = await _apiEncryptionService.Decrypt(await resp.GetResponseAsByteArrayAsync(),
+                    var decrypted = await _apiEncryptionService.DecryptAsync(await resp.GetResponseAsByteArrayAsync(),
                         request.ServerId);
                     if (decrypted != null && decrypted.Length > 0)
                     {
@@ -181,7 +181,7 @@ namespace Famoser.MassPass.Data.Services
             }
         }
 
-        public async Task<UpdateResponse> Update(UpdateRequest request)
+        public async Task<UpdateResponse> UpdateAsync(UpdateRequest request)
         {
             try
             {
@@ -189,7 +189,7 @@ namespace Famoser.MassPass.Data.Services
                 {
                     var str = JsonConvert.SerializeObject(request.ContentEntity);
                     var bytes = Encoding.UTF8.GetBytes(str);
-                    var encryptedBytes = await _apiEncryptionService.Encrypt(bytes, request.ServerId);
+                    var encryptedBytes = await _apiEncryptionService.EncryptAsync(bytes, request.ServerId);
 
                     var newRequest = new RawUpdateRequest()
                     {
@@ -241,12 +241,12 @@ namespace Famoser.MassPass.Data.Services
             }
         }
 
-        public Task<CollectionEntriesResponse> Read(CollectionEntriesRequest request)
+        public Task<CollectionEntriesResponse> ReadAsync(CollectionEntriesRequest request)
         {
             return PostJsonToApi<CollectionEntriesResponse>(request, ApiRequest.ReadCollectionEntries);
         }
 
-        public Task<ContentEntityHistoryResponse> GetHistory(ContentEntityHistoryRequest request)
+        public Task<ContentEntityHistoryResponse> GetHistoryAsync(ContentEntityHistoryRequest request)
         {
             return PostJsonToApi<ContentEntityHistoryResponse>(request, ApiRequest.GetHistory);
         }
