@@ -39,7 +39,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             var config = await _apiConfigurationService.GetApiConfigurationAsync();
             var newUri = new Uri(config.Uri.AbsoluteUri + "/1.0/cleanup");
             var service = new HttpService();
-            service.FireAndForget(newUri);
+            await service.DownloadAsync(newUri);
         }
 
         /// <summary>

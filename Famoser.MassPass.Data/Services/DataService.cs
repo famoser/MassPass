@@ -9,6 +9,7 @@ using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Data.Attributes;
 using Famoser.MassPass.Data.Entities;
+using Famoser.MassPass.Data.Entities.Communications;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response;
@@ -127,11 +128,18 @@ namespace Famoser.MassPass.Data.Services
         {
             try
             {
-                var resp = await PostJsonToApiRaw(request, ApiRequest.ReadContentEntity);
+                var req = new RawContentEntityRequest()
+                {
+                    UserId = request.UserId,
+                    DeviceId = request.DeviceId,
+                    ServerId = request.ServerId,
+                    VersionId = request.VersionId
+                };
+                var resp = await PostJsonToApiRaw(req, ApiRequest.ReadContentEntity);
                 if (resp.IsRequestSuccessfull)
                 {
                     var decrypted = await _apiEncryptionService.DecryptAsync(await resp.GetResponseAsByteArrayAsync(),
-                        request.ServerId);
+                        request.RelationId);
                     if (decrypted != null && decrypted.Length > 0)
                     {
                         var str = Encoding.UTF8.GetString(decrypted, 0, decrypted.Length);
@@ -189,7 +197,7 @@ namespace Famoser.MassPass.Data.Services
                 {
                     var str = JsonConvert.SerializeObject(request.ContentEntity);
                     var bytes = Encoding.UTF8.GetBytes(str);
-                    var encryptedBytes = await _apiEncryptionService.EncryptAsync(bytes, request.ServerId);
+                    var encryptedBytes = await _apiEncryptionService.EncryptAsync(bytes, request.RelationId);
 
                     var newRequest = new RawUpdateRequest()
                     {

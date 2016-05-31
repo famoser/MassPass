@@ -29,7 +29,7 @@ namespace Famoser.MassPass.Data.Services
             return WinRTCrypto.CryptographicEngine.Decrypt(symeticKey, data, config.InitialisationVector);
         }
 
-        public async Task<byte[]> GeneratePasswortAsync(string password)
+        public async Task<byte[]> GeneratePasswortPhraseAsync(string password)
         {
             var infos = await _apiConfigurationService.GetApiConfigurationAsync();
             return await Task.Run(() => NetFxCrypto.DeriveBytes.GetBytes(password, infos.GenerationSalt, infos.GenerationKeyInterations, infos.GenerationKeyLenghtInBytes));

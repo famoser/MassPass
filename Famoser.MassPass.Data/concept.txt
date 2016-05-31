@@ -1,0 +1,26 @@
+﻿Case 1:
+User opens app for first time. 
+	1. He is presented with a message that he can use the default API or may set up his own.
+	2. He photographs a QRcode from a webpage with the api informations (ApiInformations)
+	3. Explanations follow why his data is secure
+	4. He chooses a MassPass, fancy page shows generation of key
+	5. User is navigated to the decryption page
+
+Case 2:
+User already configured the application
+	1. user is navigated to the decryption page
+
+Decryption page
+	Input to put in master password / key to clean device & start new
+	List to display afterwards is prepared. All needed data is decrypted
+	navigate to main page
+
+
+
+Collections
+	each collection has one or many Contents or Folders, Contents or Collections
+	all Children are encrypted with the same Password (which is not the master password)
+
+Passwords
+	the passwords for the collections are only saved localy on the device. 
+	They are saved encrypted with the master password.

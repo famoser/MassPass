@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data.Entities.Communications;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 using Famoser.MassPass.Data.Enum;
@@ -149,7 +150,6 @@ namespace Famoser.MassPass.Tests.Data.Api
                 var versionRes1 = await ds.RefreshAsync(refreshRequest1);
                 var versionRes2 = await ds.RefreshAsync(refreshRequest2);
                 var versionRes3 = await ds.RefreshAsync(refreshRequest3);
-
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(versionRes1, "versionRes1");

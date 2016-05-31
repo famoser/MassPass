@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiUriAttribute.cs" />
+    <Compile Include="Entities\Communications\Request\ContentEntityRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationStatusRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\CreateAuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationRequest.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="Entities\Communications\Response\Entitites\CollectionEntryEntity.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\HistoryEntry.cs" />
     <Compile Include="Entities\Communications\Request\UpdateRequest.cs" />
-    <Compile Include="Entities\Communications\Request\ContentEntityRequest.cs" />
+    <Compile Include="Entities\Communications\Request\RawContentEntityRequest.cs" />
     <Compile Include="Entities\Communications\Request\Entities\RefreshEntity.cs" />
     <Compile Include="Entities\Communications\Request\RefreshRequest.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizationResponse.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Services\Interfaces\IPasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="concept.txt" />
     <Content Include="Workflow.txt" />
   </ItemGroup>
   <ItemGroup>
