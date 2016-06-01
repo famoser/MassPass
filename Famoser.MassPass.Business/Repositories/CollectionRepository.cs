@@ -17,6 +17,7 @@ using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Common;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
+using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -41,7 +42,7 @@ namespace Famoser.MassPass.Business.Repositories
 
         private ObservableCollection<ContentModel> _collections;
 
-        private async void FillCollection()
+        private async Task FillCollection()
         {
             var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
             if (cacheConfig.BoolValue)
@@ -80,45 +81,45 @@ namespace Famoser.MassPass.Business.Repositories
         {
             var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
             var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
+            var requestHelper = new RequestHelper(userConfig);
 
-            var authorizationStatusRequest = new AuthorizationStatusRequest()
+            var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
+            if (res.IsAuthorized)
             {
-                UserId = userConfig.UserId,
-                DeviceId = userConfig.DeviceId
-            };
-            var res = 
+                //refresh relations
+                var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
+                var tasks = new List<Task>();
+                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                {
+                    tasks.Add(SyncRelationsWorker(relationStack));
+                }
+                await Task.WhenAll(tasks);
+                tasks.Clear();
 
+                //refresh content
+                var items = _collections.SelectMany(s => s.Contents.Where(c => c.LocalStatus == LocalStatus.Changed)).ToList();
+                var contentStack = new FastThreadSafeStack<ContentModel>(items);
+                for (int i = 0; i < workerConfig.IntValue && i < items.Count; i++)
+                {
+                    tasks.Add(SyncItemsWorker(contentStack));
+                }
+                await Task.WhenAll(tasks);
 
-            //refresh relations
-            var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
-            var tasks = new List<Task>();
-            for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
-            {
-                tasks.Add(SyncRelationsWorker(relationStack));
+                //todo: save & cache etc
+                return true;
             }
-            await Task.WhenAll(tasks);
-            tasks.Clear();
-
-            //refresh content
-            var items = _collections.SelectMany(s => s.Contents).ToList();
-            var contentStack = new FastThreadSafeStack<ContentModel>(items);
-            for (int i = 0; i < workerConfig.IntValue && i < items.Count; i++)
-            {
-                tasks.Add(SyncItemsWorker(contentStack));
-            }
-            await Task.WhenAll(tasks);
-
-            //todo: save & cache etc
-            return true;
         }
 
-        private async Task SyncRelationsWorker(FastThreadSafeStack<Guid> stack)
+        private async Task SyncRelationsWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
         {
             try
             {
-                var req = new CollectionEntriesRequest();
-                req.UserId =
-                _dataService.ReadAsync()
+                var req = requestHelper.CollectionEntriesRequest()
+
+
+                //get items to refresh
+                var refreshRes = await _dataService.GetAuthorizationStatusAsync(requestHelper.RefreshRequest());
+
             }
             catch (Exception ex)
             {
@@ -126,7 +127,7 @@ namespace Famoser.MassPass.Business.Repositories
             }
         }
 
-        private async Task SyncItemsWorker(FastThreadSafeStack<ContentModel> models)
+        private async Task SyncItemsWorker(FastThreadSafeStack<ContentModel> models, RequestHelper requestHelper)
         {
             //todo: do work
         }

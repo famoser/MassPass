@@ -94,6 +94,7 @@
     <Compile Include="Enums\FileKeys.cs" />
     <Compile Include="Enums\SettingKeys.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Helpers\EntityConversionHelper.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />

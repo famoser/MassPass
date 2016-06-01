@@ -5,11 +5,6 @@ namespace Famoser.MassPass.Business.Models
 {
     public class ContentModel : CollectionModel
     {
-        public ContentModel(Guid id, Guid typeId, EntityServerInformations entityServerInformations, CollectionModel parent) : base(id, typeId, entityServerInformations, parent)
-        {
-
-        }
-
         private string _contentJson;
         public string ContentJson
         {

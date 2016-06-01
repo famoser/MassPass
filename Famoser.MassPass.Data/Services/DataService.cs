@@ -17,6 +17,7 @@ using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Exceptions;
+using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -147,6 +148,13 @@ namespace Famoser.MassPass.Data.Services
                         {
                             ApiError = ApiError.None,
                             ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
+                            EntityServerInformations = new EntityServerInformations()
+                            {
+                                RemoteStatus = RemoteStatus.UpToDate,
+                                ServerId = request.ServerId,
+                                VersionId = request.VersionId,
+                                ServerRelationId = request.RelationId
+                            },
                             Successfull = true
                         };
                     }

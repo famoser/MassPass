@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Request.Base;
+using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 using Famoser.MassPass.Data.Models.Storage;
 
 namespace Famoser.MassPass.Business.Helpers
@@ -69,6 +71,42 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 KnownServerIds = knownServerGuids,
                 RelationId = relationId
+            });
+        }
+
+        public ContentEntityRequest ContentEntityRequest(Guid serverId, Guid relationId, string versionId)
+        {
+            return FillUserConfigurationAndReturn(new ContentEntityRequest()
+            {
+                ServerId = serverId,
+                VersionId = versionId,
+                RelationId = relationId
+            });
+        }
+
+        public ContentEntityHistoryRequest ContentEntityHistoryRequest(Guid serverId)
+        {
+            return FillUserConfigurationAndReturn(new ContentEntityHistoryRequest()
+            {
+                ServerId = serverId
+            });
+        }
+
+        public UpdateRequest UpdateRequest(Guid serverId, Guid relationId, ContentEntity contentEntity)
+        {
+            return FillUserConfigurationAndReturn(new UpdateRequest()
+            {
+                RelationId = relationId,
+                ServerId = serverId,
+                ContentEntity = contentEntity
+            });
+        }
+
+        public RefreshRequest RefreshRequest(List<RefreshEntity> entities)
+        {
+            return FillUserConfigurationAndReturn(new RefreshRequest()
+            {
+                RefreshEntities = entities
             });
         }
     }
