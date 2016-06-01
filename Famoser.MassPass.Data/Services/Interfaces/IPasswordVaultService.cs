@@ -14,5 +14,8 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         bool IsVaultUnLocked();
         bool LockVault();
         bool ResetTimeout();
+        
+        Task<byte[]> EncryptAsync(byte[] data);
+        Task<byte[]> DecryptAsync(byte[] data);
     }
 }

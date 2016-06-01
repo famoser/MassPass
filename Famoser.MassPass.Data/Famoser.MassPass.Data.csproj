@@ -130,6 +130,7 @@
     <Compile Include="Exceptions\UploadFailedException.cs" />
     <Compile Include="Models\Storage\ApiConfiguration.cs" />
     <Compile Include="Models\EntityServerInformations.cs" />
+    <Compile Include="Models\Storage\UserConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />
     <Compile Include="Services\DataService.cs" />

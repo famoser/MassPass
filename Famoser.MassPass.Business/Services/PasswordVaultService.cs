@@ -145,5 +145,19 @@ namespace Famoser.MassPass.Business.Services
             }
             return false;
         }
+
+        public async Task<byte[]> EncryptAsync(byte[] data)
+        {
+            if (IsVaultUnLocked())
+                await _encryptionService.EncryptAsync(data, _activePasswordPhrase);
+            return null;
+        }
+
+        public async Task<byte[]> DecryptAsync(byte[] data)
+        {
+            if (IsVaultUnLocked())
+                await _encryptionService.DecryptAsync(data, _activePasswordPhrase);
+            return null;
+        }
     }
 }

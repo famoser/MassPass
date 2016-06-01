@@ -12,5 +12,9 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         Task<ApiConfiguration> GetApiConfigurationAsync();
         Task<bool> SetApiConfigurationAsync(ApiConfiguration config);
         Task<bool> SetApiConfigurationAsync(string config);
+
+        Task<UserConfiguration> GetUserConfigurationAsync();
+        Task<bool> SetUserConfigurationAsync(UserConfiguration config);
+        Task<bool> SetUserConfigurationAsync(string config);
     }
 }

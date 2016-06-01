@@ -6,7 +6,7 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
 {
     public interface ICollectionRepository
     {
-        ObservableCollection<CollectionModel> GetCollectionsAndLoad();
+        ObservableCollection<ContentModel> GetCollectionsAndLoad();
         Task<bool> SyncAsync();
     }
 }

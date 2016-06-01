@@ -100,6 +100,7 @@
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\ContentModel.cs" />
     <Compile Include="Models\DeviceModel.cs" />
+    <Compile Include="Models\Storage\ApiStorageModel.cs" />
     <Compile Include="Models\Storage\CollectionCacheModel.cs" />
     <Compile Include="Models\Storage\PasswordVaultStorageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -114,6 +115,10 @@
     <Compile Include="Services\PasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Famoser.MassPass.Common\Famoser.MassPass.Common.csproj">
+      <Project>{a2983cf7-f340-4285-8db8-fd76f311eabd}</Project>
+      <Name>Famoser.MassPass.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Famoser.MassPass.Data\Famoser.MassPass.Data.csproj">
       <Project>{0c55e1de-1840-4372-befa-06de3931acb1}</Project>
       <Name>Famoser.MassPass.Data</Name>
@@ -138,6 +143,14 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\portable-net45+netcore45+wpa81\Nito.AsyncEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\portable-net45+netcore45+wpa81\Nito.AsyncEx.Concurrent.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

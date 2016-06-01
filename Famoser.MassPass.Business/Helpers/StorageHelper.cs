@@ -10,11 +10,17 @@ namespace Famoser.MassPass.Business.Helpers
     {
         public static string ByteToString(byte[] bytes)
         {
+            if (bytes == null || bytes.Length == 0)
+                return null;
+
             return Convert.ToBase64String(bytes);
         }
 
         public static byte[] StringToBytes(string content)
         {
+            if (string.IsNullOrEmpty(content))
+                return null;
+
             return Convert.FromBase64String(content);
         }
     }
