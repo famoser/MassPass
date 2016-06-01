@@ -55,11 +55,23 @@ namespace Famoser.MassPass.Business.Services
                             var def = defaultSettings.FirstOrDefault(s => s.Guid == configurationModel.Guid);
                             if (def != null)
                             {
+                                configurationModel.SettingKey = def.SettingKey;
+                                if (configurationModel.Immutable != def.Immutable)
+                                {
+                                    configurationModel.Immutable = def.Immutable;
+                                    configurationModel.Value = def.Value;
+                                }
+                                configurationModel.Name = def.Name;
+                               
                                 _models.Add(configurationModel);
                                 defaultSettings.Remove(def);
                             }
                             else
                                 save = true;
+                        }
+                        foreach (var configurationModel in defaultSettings)
+                        {
+                            _models.Add(configurationModel);
                         }
                         if (save)
                             await SaveConfiguration();

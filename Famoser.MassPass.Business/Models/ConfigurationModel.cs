@@ -13,6 +13,7 @@ namespace Famoser.MassPass.Business.Models
     {
         public Guid Guid { get; set; }
         public SettingKeys SettingKey { get; set; }
+        public bool Immutable { get; set; }
 
         private string _name;
         public string Name

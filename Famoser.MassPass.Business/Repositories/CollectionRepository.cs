@@ -86,5 +86,10 @@ namespace Famoser.MassPass.Business.Repositories
             
             return true;
         }
+
+        private async Task SyncRelationsWorker()
+        {
+            
+        }
     }
 }

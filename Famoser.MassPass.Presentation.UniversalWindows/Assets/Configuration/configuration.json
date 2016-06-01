@@ -3,12 +3,21 @@
     "Guid": "a5c24dbd-3e06-4f45-808a-acdca2f2f276",
     "SettingKey": 1,
     "Name": "Timeout to automatically lock the application in seconds",
-    "Value": "300"
+    "Value": "300",
+    "Immutable":  false
   },
   {
     "Guid": "caa881a8-04eb-4412-bcef-2790b8cc2630",
     "SettingKey": 2,
     "Name": "Caching enabled (more performance, less security)",
-    "Value": "False"
+    "Value": "False",
+    "Immutable":  true
+  },
+  {
+    "Guid": "25cacd67-d9ec-48f1-a4fa-f7ad2af06505",
+    "SettingKey": 3,
+    "Name": "Maximum number of workers",
+    "Value": "5",
+    "Immutable":  true
   }
 ]

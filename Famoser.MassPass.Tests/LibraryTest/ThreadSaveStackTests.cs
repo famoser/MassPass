@@ -21,18 +21,8 @@ namespace Famoser.MassPass.Tests.LibraryTest
                 items[i] = i;
             }
             var theradSafeStack = new ThreadSafeStack<byte>();
+            var fastThreadSaveStack = new FastThreadSafeStack<byte>();
             var stack = new Stack<byte>();
-
-            //act
-            var start = DateTime.Now;
-            foreach (byte t in items)
-            {
-                foreach (byte t1 in items)
-                {
-                    await theradSafeStack.Push(t1);
-                }
-            }
-            var stop = DateTime.Now;
 
             //act
             var start1 = DateTime.Now;
@@ -69,12 +59,29 @@ namespace Famoser.MassPass.Tests.LibraryTest
             }
             var stop2 = DateTime.Now;
 
+            var start3 = DateTime.Now;
+            foreach (byte t in items)
+            {
+                foreach (byte t1 in items)
+                {
+                    fastThreadSaveStack.Push(t1);
+                }
+            }
+            foreach (byte t in items)
+            {
+                foreach (byte t1 in items)
+                {
+                    fastThreadSaveStack.Pop();
+                }
+            }
+            var stop3 = DateTime.Now;
+
             //assert
             var time = stop - start;
-            var time1 = stop - start;
+            var time1 = stop1 - start1;
             var time2 = stop2 - start2;
-            var difference = time2 - time1;
-            //Assert.IsTrue(time1.Ticks*0.3 > time1.Ticks, "very slow stack, more than 30% :(");
+            var time3 = stop3 - start3;
+            Assert.IsTrue(time3.Ticks < time1.Ticks, "very slow fast stack!");
         }
 
         [TestMethod]
@@ -83,6 +90,26 @@ namespace Famoser.MassPass.Tests.LibraryTest
             var stack = new ThreadSafeStack<byte>();
             Assert.IsTrue(await stack.TryPeek() == default(byte));
             Assert.IsTrue(await stack.TryPop() == default(byte));
+        }
+
+        [TestMethod]
+        public void FastThreadSaveStack()
+        {
+            //prepare
+            var stack = new FastThreadSafeStack<byte>();
+            byte item1 = 2;
+            byte item2 = 3;
+
+            //act
+            stack.Push(item1);
+            stack.Push(item2);
+
+            //assert
+            Assert.IsTrue(stack.Pop() == item2);
+            Assert.IsTrue(stack.Pop() == item1);
+            Assert.IsTrue(stack.Pop() == default(byte));
+            Assert.IsTrue(stack.Pop() == default(byte));
+            Assert.IsTrue(stack.Pop() == default(byte));
         }
     }
 }
