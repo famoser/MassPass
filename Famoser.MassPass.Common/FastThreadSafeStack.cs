@@ -11,13 +11,28 @@ namespace Famoser.MassPass.Common
     public class FastThreadSafeStack<T>
     {
         private StackItem<T> _head;
-        private readonly StackItem<T> _default;
+        private readonly StackItem<T> _default = new StackItem<T>(default(T));
+        private int _count;
 
         public FastThreadSafeStack()
         {
-            _head = new StackItem<T>(default(T));
-            _default = _head;
-        } 
+            Reset();
+        }
+
+        public FastThreadSafeStack(IEnumerable<T> items)
+        {
+            Reset();
+            foreach (var item in items)
+            {
+                Push(item);
+            }
+        }
+
+        private void Reset()
+        {
+            _head = _default;
+            _count = 0;
+        }
 
         public void Push(T item)
         {
@@ -29,6 +44,7 @@ namespace Famoser.MassPass.Common
                 localHead = _head;
                 node.Next = localHead;
             }
+            Interlocked.Increment(ref _count);
         }
 
         public T Pop()
@@ -44,12 +60,13 @@ namespace Famoser.MassPass.Common
                     return default(T);
                 next = active.Next;
             }
+            Interlocked.Decrement(ref _count);
             return active.Item;
         }
 
         public void Clear()
         {
-            _head = _default;
+            Reset();
         }
     }
 }

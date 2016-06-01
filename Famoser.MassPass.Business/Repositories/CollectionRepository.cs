@@ -58,7 +58,7 @@ namespace Famoser.MassPass.Business.Repositories
                     return;
                 }
             }
-            //todo: storageFolderService
+            //todo: storageFolderService: Fill cache with all items from folder in cache
         }
 
         public ObservableCollection<ContentModel> GetCollectionsAndLoad()
@@ -76,20 +76,40 @@ namespace Famoser.MassPass.Business.Repositories
 
         public async Task<bool> SyncAsync()
         {
-            //var relationIds =
+            var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
             var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
-            var relationStack = new ThreadSafeStack<Guid>();
-            foreach (var relationId in userConfig.ReleationIds)
+
+            //refresh relations
+            var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
+            var tasks = new List<Task>();
+            for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
             {
-                await relationStack.Push(relationId);
+                tasks.Add(SyncRelationsWorker(relationStack));
             }
-            
+            await Task.WhenAll(tasks);
+            tasks.Clear();
+
+            //refresh content
+            var items = _collections.SelectMany(s => s.Contents).ToList();
+            var contentStack = new FastThreadSafeStack<ContentModel>(items);
+            for (int i = 0; i < workerConfig.IntValue && i < items.Count; i++)
+            {
+                tasks.Add(SyncItemsWorker(contentStack));
+            }
+            await Task.WhenAll(tasks);
+
+            //todo: save & cache etc
             return true;
         }
 
-        private async Task SyncRelationsWorker()
+        private async Task SyncRelationsWorker(FastThreadSafeStack<Guid> stack)
         {
-            
+            //todo: do work
+        }
+
+        private async Task SyncItemsWorker(FastThreadSafeStack<ContentModel> models)
+        {
+            //todo: do work
         }
     }
 }
