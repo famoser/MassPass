@@ -12,7 +12,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             {
                 ContentFile = new byte[]  { 21,31,41,12,3,1,31,2,12},
                 ContentJson = "{\"name=\"=\"hallo welt\", \"password\":\"30 tonnen mäuse\"}",
-                ContentStatus = ContentStatus.Normal,
+                LivecycleStatus = LivecycleStatus.Normal,
                 Id = id ?? Guid.NewGuid(),
                 ParentId = parentId ?? Guid.NewGuid(),
                 Name = "Hallo Welt Passwort",

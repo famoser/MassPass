@@ -122,14 +122,14 @@
     <Compile Include="Entities\CollectionEntity.cs" />
     <Compile Include="Enum\ApiError.cs" />
     <Compile Include="Enum\ApiType.cs" />
-    <Compile Include="Enum\ContentStatus.cs" />
+    <Compile Include="Enum\LivecycleStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />
-    <Compile Include="Enum\RemoteStatus.cs" />
+    <Compile Include="Enum\ApiStatus.cs" />
     <Compile Include="Enum\ApiRequest.cs" />
     <Compile Include="Exceptions\DecryptionFailedException.cs" />
     <Compile Include="Exceptions\UploadFailedException.cs" />
     <Compile Include="Models\Storage\ApiConfiguration.cs" />
-    <Compile Include="Models\EntityServerInformations.cs" />
+    <Compile Include="Models\ApiInformations.cs" />
     <Compile Include="Models\Storage\UserConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />

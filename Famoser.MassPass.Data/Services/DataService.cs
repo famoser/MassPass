@@ -148,9 +148,9 @@ namespace Famoser.MassPass.Data.Services
                         {
                             ApiError = ApiError.None,
                             ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
-                            EntityServerInformations = new EntityServerInformations()
+                            ApiInformations = new ApiInformations()
                             {
-                                RemoteStatus = RemoteStatus.UpToDate,
+                                ApiStatus = ApiStatus.UpToDate,
                                 ServerId = request.ServerId,
                                 VersionId = request.VersionId,
                                 ServerRelationId = request.RelationId

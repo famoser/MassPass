@@ -93,10 +93,10 @@
   <ItemGroup>
     <Compile Include="Enums\FileKeys.cs" />
     <Compile Include="Enums\SettingKeys.cs" />
-    <Compile Include="Helpers\ConversionHelper.cs" />
     <Compile Include="Helpers\EntityConversionHelper.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
+    <Compile Include="Managers\ContentManager.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
     <Compile Include="Models\CollectionModel.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
@@ -114,6 +114,7 @@
     <Compile Include="Services\ApiEncryptionService.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationService.cs" />
+    <Compile Include="Services\Interfaces\IFolderStorageService.cs" />
     <Compile Include="Services\PasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>

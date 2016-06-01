@@ -1,7 +1,4 @@
-﻿using System;
-using Famoser.MassPass.Data.Models;
-
-namespace Famoser.MassPass.Business.Models
+﻿namespace Famoser.MassPass.Business.Models
 {
     public class ContentModel : CollectionModel
     {

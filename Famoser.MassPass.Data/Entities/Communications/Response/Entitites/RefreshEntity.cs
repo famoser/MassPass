@@ -7,6 +7,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response.Entitites
     {
         public Guid ServerId { get; set; }
         public string VersionId { get; set; }
-        public RemoteStatus RemoteStatus { get; set; }
+        public ApiStatus ApiStatus { get; set; }
     }
 }

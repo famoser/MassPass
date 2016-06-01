@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
@@ -12,7 +9,7 @@ namespace Famoser.MassPass.Business.Helpers
 {
     public class EntityConversionHelper
     {
-        public ContentModel Convert(ContentEntity entity, EntityServerInformations infos)
+        public static ContentModel Convert(ContentEntity entity, ApiInformations infos)
         {
             return new ContentModel()
             {
@@ -21,10 +18,22 @@ namespace Famoser.MassPass.Business.Helpers
                 ContentFile = entity.ContentFile,
                 ContentJson = entity.ContentJson,
                 Name = entity.Name,
-                EntityServerInformations = infos
+                ApiInformations = infos
             };
         }
 
-        public List<RefreshEntity> GetRefreshEntities() 
+        public static List<RefreshEntity> GetRefreshEntities(List<ContentModel> models)
+        {
+            return models.Select(Convert).ToList();
+        }
+
+        private static RefreshEntity Convert(ContentModel model)
+        {
+            return new RefreshEntity()
+            {
+                ServerId = model.ApiInformations.ServerId,
+                VersionId = model.ApiInformations.VersionId
+            };
+        }
     }
 }

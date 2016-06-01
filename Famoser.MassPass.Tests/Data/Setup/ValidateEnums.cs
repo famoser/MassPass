@@ -24,7 +24,7 @@ namespace Famoser.MassPass.Tests.Data.Setup
         [TestMethod]
         public void AllContentStatusValuesHaveDescriptionAttribute()
         {
-            AllEnumValuesHaveAttribute<ContentStatus, DescriptionAttribute>();
+            AllEnumValuesHaveAttribute<LivecycleStatus, DescriptionAttribute>();
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace Famoser.MassPass.Tests.Data.Setup
         [TestMethod]
         public void AllRemoteStatusValuesHaveDescriptionAttribute()
         {
-            AllEnumValuesHaveAttribute<RemoteStatus, DescriptionAttribute>();
+            AllEnumValuesHaveAttribute<ApiStatus, DescriptionAttribute>();
         }
 
         private void AllEnumValuesHaveAttribute<TE, TA>() where TA : Attribute

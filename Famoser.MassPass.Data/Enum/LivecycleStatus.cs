@@ -5,7 +5,7 @@ namespace Famoser.MassPass.Data.Enum
     /// <summary>
     /// indicates the status of the contentmodel.
     /// </summary>
-    public enum ContentStatus
+    public enum LivecycleStatus
     {
         [Description("normal")]
         Normal = 1,

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Famoser.MassPass.Business.Models.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Models
 {
@@ -17,18 +18,9 @@ namespace Famoser.MassPass.Business.Models
 
         public Guid TypeId { get; set; }
 
-        public EntityServerInformations EntityServerInformations { get; set; }
+        public Guid ParentId { get; set; }
 
-        public CollectionModel Parent { get; set; }
-
-        public ObservableCollection<ContentModel> Contents { get; }
-
-        private ContentStatus _contentStatus;
-        public ContentStatus ContentStatus
-        {
-            get { return _contentStatus; }
-            set { Set(ref _contentStatus, value); }
-        }
+        public ApiInformations ApiInformations { get; set; }
 
         private LocalStatus _localStatus;
         public LocalStatus LocalStatus
@@ -37,11 +29,24 @@ namespace Famoser.MassPass.Business.Models
             set { Set(ref _localStatus, value); }
         }
 
+        private LivecycleStatus _livecycleStatus;
+        public LivecycleStatus LivecycleStatus
+        {
+            get { return _livecycleStatus; }
+            set { Set(ref _livecycleStatus, value); }
+        }
+
         private string _name;
         public string Name
         {
             get { return _name; }
             set { Set(ref _name, value); }
         }
+
+        [JsonIgnore]
+        public CollectionModel Parent { get; set; }
+
+        [JsonIgnore]
+        public ObservableCollection<ContentModel> Contents { get; }
     }
 }

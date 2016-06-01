@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
@@ -9,7 +6,6 @@ using Famoser.FrameworkEssentials.Logging;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage;
-using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
@@ -18,7 +14,7 @@ namespace Famoser.MassPass.Business.Services
 {
     public class ApiConfigurationService : IApiConfigurationService
     {
-        private IStorageService _storageService;
+        private readonly IStorageService _storageService;
 
         public ApiConfigurationService(IStorageService storageService)
         {

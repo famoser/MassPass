@@ -160,9 +160,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 Assert.IsTrue(versionRes2.RefreshEntities.Count == 0, "versionRes2: invalid count");
                 Assert.IsTrue(versionRes3.RefreshEntities.Count == 2, "versionRes3: invalid count");
 
-                Assert.IsTrue(versionRes1.RefreshEntities[0].RemoteStatus == RemoteStatus.Changed, "versionRes1: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[0].RemoteStatus == RemoteStatus.Changed, "versionRes3: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[1].RemoteStatus == RemoteStatus.Changed, "versionRes3: invalid remote status (2)");
+                Assert.IsTrue(versionRes1.RefreshEntities[0].ApiStatus == ApiStatus.Changed, "versionRes1: invalid remote status");
+                Assert.IsTrue(versionRes3.RefreshEntities[0].ApiStatus == ApiStatus.Changed, "versionRes3: invalid remote status");
+                Assert.IsTrue(versionRes3.RefreshEntities[1].ApiStatus == ApiStatus.Changed, "versionRes3: invalid remote status (2)");
 
                 Assert.IsTrue(versionRes1.RefreshEntities[0].VersionId == version1, "versionRes1: invalid version");
                 if (versionRes3.RefreshEntities[0].VersionId == version1)
