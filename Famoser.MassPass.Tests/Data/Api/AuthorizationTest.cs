@@ -15,7 +15,7 @@ namespace Famoser.MassPass.Tests.Data.Api
     public class AuthorizationTest
     {
         [TestMethod]
-        public async Task TestRequestIsSuccessfull()
+        public async Task RequestIsSuccessfull()
         {
             using (var helper = new ApiHelper())
             {
@@ -43,7 +43,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestInitialAuthorization()
+        public async Task InitialAuthorization()
         {
             using (var helper = new ApiHelper())
             {
@@ -78,7 +78,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestAllRoutesNeedAuthorization()
+        public async Task AllRoutesNeedAuthorization()
         {
             using (var helper = new ApiHelper())
             {
@@ -162,7 +162,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestNewAuthorization()
+        public async Task NewAuthorization()
         {
             using (var helper = new ApiHelper())
             {
@@ -208,7 +208,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestUnAuthorization()
+        public async Task UnAuthorization()
         {
             using (var helper = new ApiHelper())
             {
@@ -244,7 +244,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestAuthroizedDevices()
+        public async Task AuthroizedDevices()
         {
             using (var helper = new ApiHelper())
             {

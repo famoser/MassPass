@@ -41,6 +41,16 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return true;
         }
 
+        public async Task<byte[]> EncryptAsync(byte[] data)
+        {
+            return null;
+        }
+
+        public async Task<byte[]> DecryptAsync(byte[] data)
+        {
+            return null;
+        }
+
         public async Task<bool> RegisterPasswordAsync(Guid relationId, byte[] password)
         {
             _passwords.Add(relationId, password);

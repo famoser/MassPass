@@ -70,7 +70,7 @@ namespace Famoser.MassPass.Tests.Data.Services
         }
 
         [TestMethod]
-        public async Task TestAvailableKeySizes()
+        public async Task GetAvailableKeySizes()
         {
             //arrange
             RegisterMocks();
@@ -102,7 +102,7 @@ namespace Famoser.MassPass.Tests.Data.Services
         }
 
         [TestMethod]
-        public async Task TestInitialisationVectorSize()
+        public async Task GetInitialisationVectorSize()
         {
             //arrange
             RegisterMocks();

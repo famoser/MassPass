@@ -7,7 +7,7 @@ using Nito.AsyncEx;
 
 namespace Famoser.MassPass.Common
 {
-    public class ThreadSafeStack<T>
+    public class ThreadSafeStack<T> 
     {
         private readonly Stack<T> _stack = new Stack<T>();
         private readonly AsyncLock _asyncLock = new AsyncLock();
@@ -20,19 +20,34 @@ namespace Famoser.MassPass.Common
             }
         }
 
-        public async Task<T> Pop()
+        public async Task PushAll(IEnumerable<T> items)
         {
             using (await _asyncLock.LockAsync())
             {
-                return _stack.Pop();
+                foreach (var item in items)
+                {
+                    _stack.Push(item);
+                }
             }
         }
 
-        public async Task<T> Peek()
+        public async Task<T> TryPop()
         {
             using (await _asyncLock.LockAsync())
             {
-                return _stack.Peek();
+                if (_stack.Count > 0)
+                    return _stack.Pop();
+                return default(T);
+            }
+        }
+
+        public async Task<T> TryPeek()
+        {
+            using (await _asyncLock.LockAsync())
+            {
+                if (_stack.Count > 0)
+                    return _stack.Peek();
+                return default(T);
             }
         }
 

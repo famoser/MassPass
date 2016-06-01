@@ -161,6 +161,10 @@
       <Project>{af37dddb-5d1b-4b7a-a050-0dbfebc56cae}</Project>
       <Name>Famoser.MassPass.Business</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Famoser.MassPass.Common\Famoser.MassPass.Common.csproj">
+      <Project>{a2983cf7-f340-4285-8db8-fd76f311eabd}</Project>
+      <Name>Famoser.MassPass.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Famoser.MassPass.Data\Famoser.MassPass.Data.csproj">
       <Project>{0c55e1de-1840-4372-befa-06de3931acb1}</Project>
       <Name>Famoser.MassPass.Data</Name>

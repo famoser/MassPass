@@ -15,7 +15,7 @@ namespace Famoser.MassPass.Tests.Data.Api
     public class SyncTest
     {
         [TestMethod]
-        public async Task TestAddAndReadEntity()
+        public async Task AddAndReadEntity()
         {
             using (var helper = new ApiHelper())
             {
@@ -58,7 +58,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestRefresh()
+        public async Task Refresh()
         {
             using (var helper = new ApiHelper())
             {
@@ -178,7 +178,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
         
         [TestMethod]
-        public async Task TestReadCollection()
+        public async Task ReadCollection()
         {
             using (var helper = new ApiHelper())
             {
@@ -233,7 +233,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         }
 
         [TestMethod]
-        public async Task TestCollectionHistory()
+        public async Task CollectionHistory()
         {
             using (var helper = new ApiHelper())
             {
