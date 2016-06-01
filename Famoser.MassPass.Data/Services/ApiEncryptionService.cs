@@ -17,13 +17,13 @@ namespace Famoser.MassPass.Data.Services
 
         public async Task<byte[]> EncryptAsync(byte[] data, Guid relationId)
         {
-            var password = await _passwordVaultService.GetPasswordAsync(relationId);
+            var password = _passwordVaultService.GetPassword(relationId);
             return await _encryptionService.EncryptAsync(data, password);
         }
 
         public async Task<byte[]> DecryptAsync(byte[] data, Guid relationId)
         {
-            var password = await _passwordVaultService.GetPasswordAsync(relationId);
+            var password = _passwordVaultService.GetPassword(relationId);
             return await _encryptionService.DecryptAsync(data, password);
         }
     }

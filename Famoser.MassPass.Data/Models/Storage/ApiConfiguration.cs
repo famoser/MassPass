@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Famoser.MassPass.Data.Models
+namespace Famoser.MassPass.Data.Models.Storage
 {
     public class ApiConfiguration
     {

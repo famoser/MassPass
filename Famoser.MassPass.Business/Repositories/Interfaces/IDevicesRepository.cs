@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,9 +9,8 @@ using Famoser.MassPass.Business.Models;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces
 {
-    public interface IContentRepository
+    public interface IDevicesRepository
     {
-        Task<bool> FillValues(ContentModel model);
-        Task<bool> FillHistory(ContentModel model);
+        Task<ObservableCollection<DeviceModel>> GetDevices();
     }
 }

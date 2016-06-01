@@ -15,7 +15,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return true;
         }
 
-        public async Task<byte[]> GetPasswordAsync(Guid relationId)
+        public byte[] GetPassword(Guid relationId)
         {
             if (_passwords.ContainsKey(relationId))
                 return _passwords[relationId];
@@ -25,17 +25,26 @@ namespace Famoser.MassPass.Tests.Data.Mocks
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
             };
         }
-        
+
+        public bool IsVaultUnLocked()
+        {
+            return true;
+        }
+
+        public bool LockVault()
+        {
+            return true;
+        }
+
+        public bool ResetTimeout()
+        {
+            return true;
+        }
+
         public async Task<bool> RegisterPasswordAsync(Guid relationId, byte[] password)
         {
             _passwords.Add(relationId, password);
             return true;
         }
-
-        public async Task<bool> LockVaultAsync()
-        {
-            return true;
-        }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 }

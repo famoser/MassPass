@@ -35,9 +35,9 @@ namespace Famoser.MassPass.Business.Models
 
         public bool IsCollection => Id == Guid.Empty;
         
-        public ContentModel CreateNewContent(Guid typeId)
+        public ContentModel CreateNewContent(Guid typeId, EntityServerInformations infos)
         {
-            return new ContentModel(Guid.NewGuid(), typeId, null, this);
+            return new ContentModel(Guid.NewGuid(), typeId, infos, this);
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Famoser.MassPass.Data.Models;
+using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Tests.Data.Mocks
 {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     internal class ApiConfigurationServiceMock : IApiConfigurationService
     {
         private ApiConfiguration _config;
@@ -29,18 +32,21 @@ namespace Famoser.MassPass.Tests.Data.Mocks
                 };
             return _config;
         }
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return GetConfig();
         }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        
         public async Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _config = config;
+            return true;
+        }
+
+        public async Task<bool> SetApiConfigurationAsync(string config)
+        {
+            _config = JsonConvert.DeserializeObject<ApiConfiguration>(config);
             return true;
         }
     }
