@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
+using Famoser.FrameworkEssentials.Logging;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
@@ -14,6 +15,7 @@ using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Common;
+using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
@@ -79,6 +81,14 @@ namespace Famoser.MassPass.Business.Repositories
             var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
             var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
 
+            var authorizationStatusRequest = new AuthorizationStatusRequest()
+            {
+                UserId = userConfig.UserId,
+                DeviceId = userConfig.DeviceId
+            };
+            var res = 
+
+
             //refresh relations
             var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
             var tasks = new List<Task>();
@@ -104,7 +114,16 @@ namespace Famoser.MassPass.Business.Repositories
 
         private async Task SyncRelationsWorker(FastThreadSafeStack<Guid> stack)
         {
-            //todo: do work
+            try
+            {
+                var req = new CollectionEntriesRequest();
+                req.UserId =
+                _dataService.ReadAsync()
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
         }
 
         private async Task SyncItemsWorker(FastThreadSafeStack<ContentModel> models)
