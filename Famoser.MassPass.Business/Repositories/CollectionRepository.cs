@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -100,12 +101,31 @@ namespace Famoser.MassPass.Business.Repositories
             var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
             if (res.IsSuccessfull && res.IsAuthorized)
             {
-                //refresh relations
+                /*
+                 * Sync:
+                 * 1. Refresh all changed ones online
+                 * 2. Upload locally changed locally if possible
+                 * 3. download missing from collections
+                 * */
+
+
+
+                // 2.
+                var changedStack = new ConcurrentStack<ContentModel>(ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.Changed));
+
+
+                //refresh existing
+
+
+                //upload changed
+
+
+                //add new ones
                 var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
                 var tasks = new List<Task>();
                 for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
                 {
-                    tasks.Add(SyncRelationsWorker(relationStack, requestHelper));
+                    //tasks.Add(SyncRelationsWorker(relationStack, requestHelper));
                 }
                 await Task.WhenAll(tasks);
                 tasks.Clear();
@@ -126,19 +146,41 @@ namespace Famoser.MassPass.Business.Repositories
         }
 
         //todo: collection instance where all ContentModels are "flat", no caring about parentId. create a contentmanager for this
-        private async Task SyncRelationsWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
+        private async Task UploadChangedWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
+        {
+            try
+            {
+                var relationGuid = stack.Pop();
+                var items = ContentManager.FlatContentModelCollection.SelectMany(s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
+                var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
+                var entities = EntityConversionHelper.GetRefreshEntities(items);
+                var refreshRes = await _dataService.RefreshAsync(requestHelper.RefreshRequest(entities));
+                if (refreshRes.IsSuccessfull)
+                {
+                    foreach (var refreshEntity in refreshRes.RefreshEntities)
+                    {
+                        //refreshEntity.ApiStatus =
+                    }
+                    //todo: do stuff
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+        }
+
+        //todo: collection instance where all ContentModels are "flat", no caring about parentId. create a contentmanager for this
+        private async Task ReadCollectionWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
         {
             try
             {
                 var relationGuid = stack.Pop();
                 var items = ContentManager.FlatContentModelCollection.SelectMany(
                         s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
-                var entities = EntityConversionHelper.GetRefreshEntities(items);
-                var refreshRes = await _dataService.RefreshAsync(requestHelper.RefreshRequest(entities));
-                if (refreshRes.IsSuccessfull)
-                {
-                    //todo: do stuff
-                }
+                var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
+                
+
             }
             catch (Exception ex)
             {

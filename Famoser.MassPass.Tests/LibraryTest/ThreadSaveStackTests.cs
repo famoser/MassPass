@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace Famoser.MassPass.Tests.LibraryTest
             }
             var theradSafeStack = new ThreadSafeStack<byte>();
             var fastThreadSaveStack = new FastThreadSafeStack<byte>();
+            var fasterThreadSaveStack = new ConcurrentStack<byte>();
             var stack = new Stack<byte>();
 
             //act
@@ -76,11 +78,29 @@ namespace Famoser.MassPass.Tests.LibraryTest
             }
             var stop3 = DateTime.Now;
 
+            var start4 = DateTime.Now;
+            foreach (byte t in items)
+            {
+                foreach (byte t1 in items)
+                {
+                    fasterThreadSaveStack.Push(t1);
+                }
+            }
+            foreach (byte t in items)
+            {
+                foreach (byte t1 in items)
+                {
+                    byte res;
+                    fasterThreadSaveStack.TryPop(out res);
+                }
+            }
+            var stop4 = DateTime.Now;
+
             //assert
-            var time = stop - start;
             var time1 = stop1 - start1;
             var time2 = stop2 - start2;
             var time3 = stop3 - start3;
+            var time4 = stop4 - start4;
             Assert.IsTrue(time3.Ticks < time1.Ticks, "very slow fast stack!");
         }
 
@@ -107,8 +127,6 @@ namespace Famoser.MassPass.Tests.LibraryTest
             //assert
             Assert.IsTrue(stack.Pop() == item2);
             Assert.IsTrue(stack.Pop() == item1);
-            Assert.IsTrue(stack.Pop() == default(byte));
-            Assert.IsTrue(stack.Pop() == default(byte));
             Assert.IsTrue(stack.Pop() == default(byte));
         }
     }
