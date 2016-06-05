@@ -48,5 +48,8 @@ namespace Famoser.MassPass.Business.Models
 
         [JsonIgnore]
         public ObservableCollection<ContentModel> Contents { get; }
+
+        [JsonIgnore]
+        public bool SaveDisabled { get; set; }
     }
 }

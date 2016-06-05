@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
@@ -89,13 +90,28 @@ namespace Famoser.MassPass.Business.Helpers
             });
         }
 
-        public UpdateRequest UpdateRequest(Guid serverId, Guid relationId, ContentEntity contentEntity)
+        private ContentEntity ToContentEntity(ContentModel model)
+        {
+            return new ContentEntity()
+            {
+                Name = model.Name,
+                ContentJson = model.ContentJson,
+                ParentId = model.ParentId,
+                Id = model.Id,
+                TypeId = model.TypeId,
+                LivecycleStatus = model.LivecycleStatus,
+                ContentFile = model.ContentFile
+            };
+        }
+
+        public UpdateRequest UpdateRequest(Guid serverId, Guid relationId, string versionId, ContentModel  contentModel)
         {
             return FillUserConfigurationAndReturn(new UpdateRequest()
             {
                 RelationId = relationId,
                 ServerId = serverId,
-                ContentEntity = contentEntity
+                ContentEntity = ToContentEntity(contentModel),
+                VersionId = versionId
             });
         }
 

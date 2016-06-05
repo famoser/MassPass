@@ -64,7 +64,12 @@ namespace Famoser.MassPass.Data.Enum
 
         #region ReadContentEntityRequest
         [Description("Content not found")]
-        ContentNotFound = 5000
+        ContentNotFound = 5000,
+        #endregion
+
+        #region UpdateRequest
+        [Description("Submitted Version is not newest one")]
+        InvalidVersionId = 6000
         #endregion
     }
 }

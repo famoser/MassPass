@@ -65,4 +65,8 @@ class ApiErrorTypes
     const ContentNotFound = 5000;
     #endregion
 
+    #region UpdateRequest
+//[Description("Submitted Version is not newest one")]
+    const InvalidVersionId = 6000;
+    #endregion
 }

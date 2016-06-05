@@ -101,6 +101,10 @@ class SyncController extends BaseController
             $contentId = null;
             $exiting = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
             if ($exiting != null) {
+                if ($exiting->version_id != $model->VersionId) {
+                    return $this->returnApiError(ApiErrorTypes::InvalidVersionId, $response);
+                }
+                
                 $exiting->version_id = $newVersion;
 
                 if (!$helper->saveToDatabase($exiting)) {

@@ -14,7 +14,8 @@ using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
-using Famoser.MassPass.Common;
+using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
+using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ namespace Famoser.MassPass.Business.Repositories
                                 FileKeys.ApiConfiguration).Description);
                 var decryptedBytes = await _passwordVaultService.DecryptAsync(byteCache);
                 var jsonCache = StorageHelper.ByteToString(decryptedBytes);
-               
+
                 if (jsonCache != null)
                 {
                     var cacheModel = JsonConvert.DeserializeObject<CollectionCacheModel>(jsonCache);
@@ -103,41 +104,50 @@ namespace Famoser.MassPass.Business.Repositories
             {
                 /*
                  * Sync:
-                 * 1. Refresh all changed ones online
-                 * 2. Upload locally changed locally if possible
-                 * 3. download missing from collections
+                 * 1. Upload locally changed if possible
+                 * 2. Refresh all changed ones online
+                 * 3. collect missing from collections
+                 * 4. download missing from collections
                  * */
 
-
-
-                // 2.
-                var changedStack = new ConcurrentStack<ContentModel>(ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.Changed));
-
-
-                //refresh existing
-
-
-                //upload changed
-
-
-                //add new ones
-                var relationStack = new FastThreadSafeStack<Guid>(userConfig.ReleationIds);
+                // 1. check if version online is same, if yes, prepare for upload
+                var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
                 var tasks = new List<Task>();
                 for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
                 {
-                    //tasks.Add(SyncRelationsWorker(relationStack, requestHelper));
+                    tasks.Add(UploadChangedWorker(locallyChangedStack, requestHelper));
                 }
                 await Task.WhenAll(tasks);
                 tasks.Clear();
 
-                //refresh content
-                var items = ContentManager.FlatContentModelCollection.SelectMany(s => s.Contents.Where(c => c.LocalStatus == LocalStatus.Changed)).ToList();
-                var contentStack = new FastThreadSafeStack<ContentModel>(items);
-                for (int i = 0; i < workerConfig.IntValue && i < items.Count; i++)
+
+                // 2. refresh all changed ones
+                var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
+                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
                 {
-                    tasks.Add(SyncItemsWorker(contentStack, requestHelper));
+                    tasks.Add(DownloadChangedWorker(remotelyChangedStack, requestHelper));
                 }
                 await Task.WhenAll(tasks);
+                tasks.Clear();
+
+                // 3. collect missing
+                var collectionStack = new ConcurrentStack<Guid>(ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId).Distinct());
+                var missingStack = new ConcurrentStack<CollectionEntryEntity>();
+                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                {
+                    tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
+                }
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
+                // 4. download missing
+                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                {
+                    tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
+                }
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
 
                 //todo: save & cache etc
                 return true;
@@ -145,23 +155,56 @@ namespace Famoser.MassPass.Business.Repositories
             return false;
         }
 
-        //todo: collection instance where all ContentModels are "flat", no caring about parentId. create a contentmanager for this
-        private async Task UploadChangedWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
+        private async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
         {
             try
             {
-                var relationGuid = stack.Pop();
-                var items = ContentManager.FlatContentModelCollection.SelectMany(s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
-                var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
-                var entities = EntityConversionHelper.GetRefreshEntities(items);
-                var refreshRes = await _dataService.RefreshAsync(requestHelper.RefreshRequest(entities));
-                if (refreshRes.IsSuccessfull)
+                ContentModel changedContent;
+                if (stack.TryPop(out changedContent))
                 {
-                    foreach (var refreshEntity in refreshRes.RefreshEntities)
+                    changedContent.SaveDisabled = true;
+                    var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
+                        changedContent.ApiInformations.ServerId, 
+                        changedContent.ApiInformations.ServerRelationId,
+                        changedContent.ApiInformations.VersionId, 
+                        changedContent));
+
+                    if (req.IsSuccessfull)
                     {
-                        //refreshEntity.ApiStatus =
+                        changedContent.ApiInformations.VersionId = req.VersionId;
+                        changedContent.ApiInformations.ServerId = req.ServerId;
+                        changedContent.ApiInformations.ServerRelationId = req.ServerRelationId;
+                        changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
-                    //todo: do stuff
+                    //todo: error reporting
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+        }
+
+        private async Task DownloadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
+        {
+            try
+            {
+                ContentModel changedContent;
+                if (stack.TryPop(out changedContent))
+                {
+                    changedContent.SaveDisabled = true;
+                    var req = await _dataService.ReadAsync(
+                        requestHelper.ContentEntityRequest(
+                                    changedContent.ApiInformations.ServerId,
+                                    changedContent.ApiInformations.ServerRelationId,
+                                    changedContent.ApiInformations.VersionId));
+                    if (req.IsSuccessfull)
+                    {
+                        ResponseHelper.WriteIntoModel(req.ContentEntity, changedContent);
+                        changedContent.ApiInformations = req.ApiInformations;
+                        changedContent.LocalStatus = LocalStatus.UpToDate;
+                    }
+                    //todo: error reporting
                 }
             }
             catch (Exception ex)
@@ -171,15 +214,21 @@ namespace Famoser.MassPass.Business.Repositories
         }
 
         //todo: collection instance where all ContentModels are "flat", no caring about parentId. create a contentmanager for this
-        private async Task ReadCollectionWorker(FastThreadSafeStack<Guid> stack, RequestHelper requestHelper)
+        private async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, RequestHelper requestHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
         {
             try
             {
-                var relationGuid = stack.Pop();
-                var items = ContentManager.FlatContentModelCollection.SelectMany(
-                        s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
-                var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
-                
+                Guid relationGuid;
+                if (stack.TryPop(out relationGuid))
+                {
+                    var items = ContentManager.FlatContentModelCollection.SelectMany(
+                            s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
+                    var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
+                    foreach (var item in newItems.CollectionEntryEntities)
+                    {
+                        missingStack.Push(item);
+                    }
+                }
 
             }
             catch (Exception ex)
@@ -188,9 +237,28 @@ namespace Famoser.MassPass.Business.Repositories
             }
         }
 
-        private async Task SyncItemsWorker(FastThreadSafeStack<ContentModel> models, RequestHelper requestHelper)
+        private async Task DownloadMissingWorker(ConcurrentStack<CollectionEntryEntity> stack, RequestHelper requestHelper)
         {
-            //todo: do work
+            try
+            {
+                CollectionEntryEntity entry;
+                if (stack.TryPop(out entry))
+                {
+                    var newItem = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry))
+                    var items = ContentManager.FlatContentModelCollection.SelectMany(
+                            s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
+                    var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
+                    foreach (var item in newItems.CollectionEntryEntities)
+                    {
+                        missingStack.Push(item);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
         }
     }
 }

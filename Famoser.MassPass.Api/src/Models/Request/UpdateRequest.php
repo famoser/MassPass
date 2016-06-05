@@ -15,4 +15,5 @@ class UpdateRequest extends ApiRequest
 {
     public $ServerId;
     public $RelationId;
+    public $VersionId;
 }
