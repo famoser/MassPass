@@ -119,7 +119,6 @@ namespace Famoser.MassPass.Business.Repositories
                 await Task.WhenAll(tasks);
                 tasks.Clear();
 
-
                 // 2. refresh all changed ones
                 var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
                 for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
@@ -163,9 +162,9 @@ namespace Famoser.MassPass.Business.Repositories
                 {
                     changedContent.SaveDisabled = true;
                     var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
-                        changedContent.ApiInformations.ServerId, 
+                        changedContent.ApiInformations.ServerId,
                         changedContent.ApiInformations.ServerRelationId,
-                        changedContent.ApiInformations.VersionId, 
+                        changedContent.ApiInformations.VersionId,
                         changedContent));
 
                     if (req.IsSuccessfull)
@@ -175,7 +174,15 @@ namespace Famoser.MassPass.Business.Repositories
                         changedContent.ApiInformations.ServerRelationId = req.ServerRelationId;
                         changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
-                    //todo: error reporting
+                    else if (req.ApiError == ApiError.InvalidVersionId)
+                    {
+                        //todo: error reporting
+                        changedContent.LocalStatus = LocalStatus.Conflict;
+                    }
+                    else
+                    {
+                        //todo: error reporting
+                    }
                 }
             }
             catch (Exception ex)
@@ -211,7 +218,7 @@ namespace Famoser.MassPass.Business.Repositories
                 LogHelper.Instance.LogException(ex);
             }
         }
-        
+
         private async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, RequestHelper requestHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
         {
             try
@@ -245,7 +252,7 @@ namespace Famoser.MassPass.Business.Repositories
                 CollectionEntryEntity entry;
                 if (stack.TryPop(out entry))
                 {
-                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId ,entry.VersionId));
+                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId, entry.VersionId));
                     if (response.IsSuccessfull)
                     {
                         var newModel = new ContentModel();
