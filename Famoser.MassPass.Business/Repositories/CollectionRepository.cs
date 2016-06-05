@@ -14,7 +14,6 @@ using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
-using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -143,7 +142,7 @@ namespace Famoser.MassPass.Business.Repositories
                 // 4. download missing
                 for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
                 {
-                    tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
+                    tasks.Add(DownloadMissingWorker(missingStack, requestHelper));
                 }
                 await Task.WhenAll(tasks);
                 tasks.Clear();
@@ -212,8 +211,7 @@ namespace Famoser.MassPass.Business.Repositories
                 LogHelper.Instance.LogException(ex);
             }
         }
-
-        //todo: collection instance where all ContentModels are "flat", no caring about parentId. create a contentmanager for this
+        
         private async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, RequestHelper requestHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
         {
             try
@@ -224,9 +222,12 @@ namespace Famoser.MassPass.Business.Repositories
                     var items = ContentManager.FlatContentModelCollection.SelectMany(
                             s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
                     var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
-                    foreach (var item in newItems.CollectionEntryEntities)
+                    if (newItems.IsSuccessfull)
                     {
-                        missingStack.Push(item);
+                        foreach (var item in newItems.CollectionEntryEntities)
+                        {
+                            missingStack.Push(item);
+                        }
                     }
                 }
 
@@ -244,13 +245,14 @@ namespace Famoser.MassPass.Business.Repositories
                 CollectionEntryEntity entry;
                 if (stack.TryPop(out entry))
                 {
-                    var newItem = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry))
-                    var items = ContentManager.FlatContentModelCollection.SelectMany(
-                            s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
-                    var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
-                    foreach (var item in newItems.CollectionEntryEntities)
+                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId ,entry.VersionId));
+                    if (response.IsSuccessfull)
                     {
-                        missingStack.Push(item);
+                        var newModel = new ContentModel();
+                        ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
+                        newModel.ApiInformations = response.ApiInformations;
+                        newModel.LocalStatus = LocalStatus.UpToDate;
+                        ContentManager.AddContent(newModel);
                     }
                 }
 

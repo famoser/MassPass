@@ -187,6 +187,7 @@ class SyncController extends BaseController
                     $entity = new CollectionEntryEntity();
                     $entity->VersionId = $content->version_id;
                     $entity->ServerId = $content->guid;
+                    $entity->RelationId = $content->relation_id;
                     $resp->CollectionEntryEntities[] = $entity;
                 }
             }

@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="Enums\FileKeys.cs" />
     <Compile Include="Enums\SettingKeys.cs" />
+    <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Helpers\EntityConversionHelper.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\ResponseHelper.cs" />

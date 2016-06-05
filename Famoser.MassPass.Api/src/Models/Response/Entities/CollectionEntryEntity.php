@@ -12,5 +12,6 @@ namespace Famoser\MassPass\Models\Response\Entities;
 class CollectionEntryEntity
 {
     public $ServerId;
+    public $RelationId;
     public $VersionId;
 }

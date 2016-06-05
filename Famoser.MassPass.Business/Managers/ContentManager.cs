@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Storage;
 
@@ -25,7 +26,16 @@ namespace Famoser.MassPass.Business.Managers
 
         public static void AddFromCache(CollectionCacheModel cache)
         {
-            //todo
+            var models = CacheHelper.ReadCache(cache);
+            foreach (var contentModel in models)
+            {
+                AddContent(contentModel);
+            }
+        }
+
+        public static CollectionCacheModel CreateCacheModel()
+        {
+            return CacheHelper.CreateCache(FlatContentModelCollection);
         }
 
         private static void ResolveParentLessModels()
