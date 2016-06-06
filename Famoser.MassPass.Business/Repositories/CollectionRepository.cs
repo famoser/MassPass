@@ -21,23 +21,25 @@ using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Repositories
 {
-    public class CollectionRepository : ICollectionRepository
+    public class CollectionRepository : BaseRepository, ICollectionRepository
     {
         private readonly IFolderStorageService _folderStorageService;
         private readonly IDataService _dataService;
         private readonly IConfigurationService _configurationService;
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IApiConfigurationService _apiConfigurationService;
+        private readonly IErrorApiReportingService _errorApiReportingService;
+        private readonly IContentRepository _contentRepository;
 
-        private const string ContentFolder = "content";
-
-        public CollectionRepository(IDataService dataService, IConfigurationService configurationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IFolderStorageService folderStorageService)
+        public CollectionRepository(IDataService dataService, IConfigurationService configurationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IFolderStorageService folderStorageService, IErrorApiReportingService errorApiReportingService, IContentRepository contentRepository) : base (apiConfigurationService)
         {
             _dataService = dataService;
             _configurationService = configurationService;
             _passwordVaultService = passwordVaultService;
             _apiConfigurationService = apiConfigurationService;
             _folderStorageService = folderStorageService;
+            _errorApiReportingService = errorApiReportingService;
+            _contentRepository = contentRepository;
         }
 
 
@@ -60,18 +62,26 @@ namespace Famoser.MassPass.Business.Repositories
                     return;
                 }
             }
-            var files = await _folderStorageService.GetFiles(ContentFolder);
-            foreach (var file in files)
+            var contentModels = await _contentRepository.ReadOutAll();
+            foreach (var contentModel in contentModels)
             {
-                var content = await _folderStorageService.GetFile(ContentFolder, file);
-                var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
-                var jsonCache = StorageHelper.ByteToString(decryptedBytes);
-                if (jsonCache != null)
-                {
-                    var contentModel = JsonConvert.DeserializeObject<ContentModel>(jsonCache);
-                    ContentManager.AddContent(contentModel);
-                }
+                ContentManager.AddContent(contentModel, true);
             }
+        }
+
+        private async Task SaveCollection()
+        {
+            var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
+            if (cacheConfig.BoolValue)
+            {
+                var cacheModel = ContentManager.CreateCacheModel();
+                var str = JsonConvert.SerializeObject(cacheModel);
+                var bytes = StorageHelper.StringToBytes(str);
+                var encryptedBytes = await _passwordVaultService.EncryptAsync(bytes);
+                await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, encryptedBytes);
+            }
+
+            await _contentRepository.SaveAll();
         }
 
 
@@ -96,7 +106,7 @@ namespace Famoser.MassPass.Business.Repositories
             }
             var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
             var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
-            var requestHelper = new RequestHelper(userConfig);
+            var requestHelper = await GetRequestHelper();
 
             var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
             if (res.IsSuccessfull && res.IsAuthorized)
@@ -129,7 +139,10 @@ namespace Famoser.MassPass.Business.Repositories
                 tasks.Clear();
 
                 // 3. collect missing
-                var collectionStack = new ConcurrentStack<Guid>(ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId).Distinct());
+                var collectionStack =
+                    new ConcurrentStack<Guid>(
+                        ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId)
+                            .Distinct());
                 var missingStack = new ConcurrentStack<CollectionEntryEntity>();
                 for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
                 {
@@ -146,19 +159,19 @@ namespace Famoser.MassPass.Business.Repositories
                 await Task.WhenAll(tasks);
                 tasks.Clear();
 
-
-                //todo: save & cache etc
+                await SaveCollection();
                 return true;
             }
+            _errorApiReportingService.ReportUnhandledApiError(res);
             return false;
         }
 
         private async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
         {
-            try
+            ContentModel changedContent;
+            if (stack.TryPop(out changedContent))
             {
-                ContentModel changedContent;
-                if (stack.TryPop(out changedContent))
+                try
                 {
                     changedContent.SaveDisabled = true;
                     var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
@@ -174,57 +187,66 @@ namespace Famoser.MassPass.Business.Repositories
                         changedContent.ApiInformations.ServerRelationId = req.ServerRelationId;
                         changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
-                    else if (req.ApiError == ApiError.InvalidVersionId)
-                    {
-                        //todo: error reporting
-                        changedContent.LocalStatus = LocalStatus.Conflict;
-                    }
                     else
                     {
-                        //todo: error reporting
+                        if (req.ApiError == ApiError.InvalidVersionId)
+                            changedContent.LocalStatus = LocalStatus.Conflict;
+
+                        _errorApiReportingService.ReportUnhandledApiError(req, changedContent);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
+                catch (Exception ex)
+                {
+                    LogHelper.Instance.LogException(ex);
+                }
+                finally
+                {
+                    changedContent.SaveDisabled = false;
+                }
             }
         }
 
         private async Task DownloadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
         {
-            try
+            ContentModel changedContent;
+            if (stack.TryPop(out changedContent))
             {
-                ContentModel changedContent;
-                if (stack.TryPop(out changedContent))
+                try
                 {
                     changedContent.SaveDisabled = true;
                     var req = await _dataService.ReadAsync(
                         requestHelper.ContentEntityRequest(
-                                    changedContent.ApiInformations.ServerId,
-                                    changedContent.ApiInformations.ServerRelationId,
-                                    changedContent.ApiInformations.VersionId));
+                            changedContent.ApiInformations.ServerId,
+                            changedContent.ApiInformations.ServerRelationId,
+                            changedContent.ApiInformations.VersionId));
                     if (req.IsSuccessfull)
                     {
                         ResponseHelper.WriteIntoModel(req.ContentEntity, changedContent);
                         changedContent.ApiInformations = req.ApiInformations;
                         changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
-                    //todo: error reporting
+                    else
+                    {
+                        _errorApiReportingService.ReportUnhandledApiError(req, changedContent);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
+                catch (Exception ex)
+                {
+                    LogHelper.Instance.LogException(ex);
+                }
+                finally
+                {
+                    changedContent.SaveDisabled = false;
+                }
             }
         }
 
         private async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, RequestHelper requestHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
         {
-            try
+            Guid relationGuid;
+            if (stack.TryPop(out relationGuid))
             {
-                Guid relationGuid;
-                if (stack.TryPop(out relationGuid))
+                try
                 {
                     var items = ContentManager.FlatContentModelCollection.SelectMany(
                             s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
@@ -236,21 +258,25 @@ namespace Famoser.MassPass.Business.Repositories
                             missingStack.Push(item);
                         }
                     }
-                }
+                    else
+                    {
+                        _errorApiReportingService.ReportUnhandledApiError(newItems);
+                    }
 
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Instance.LogException(ex);
+                }
             }
         }
 
         private async Task DownloadMissingWorker(ConcurrentStack<CollectionEntryEntity> stack, RequestHelper requestHelper)
         {
-            try
+            CollectionEntryEntity entry;
+            if (stack.TryPop(out entry))
             {
-                CollectionEntryEntity entry;
-                if (stack.TryPop(out entry))
+                try
                 {
                     var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId, entry.VersionId));
                     if (response.IsSuccessfull)
@@ -261,12 +287,15 @@ namespace Famoser.MassPass.Business.Repositories
                         newModel.LocalStatus = LocalStatus.UpToDate;
                         ContentManager.AddContent(newModel);
                     }
+                    else
+                    {
+                        _errorApiReportingService.ReportUnhandledApiError(response);
+                    }
                 }
-
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
+                catch (Exception ex)
+                {
+                    LogHelper.Instance.LogException(ex);
+                }
             }
         }
     }

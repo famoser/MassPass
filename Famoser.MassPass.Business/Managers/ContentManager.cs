@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace Famoser.MassPass.Business.Managers
         public static readonly ObservableCollection<ContentModel> FlatContentModelCollection = new ObservableCollection<ContentModel>();
         public static readonly ObservableCollection<ContentModel> ContentModelCollection = new ObservableCollection<ContentModel>();
 
-        private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>(); 
-        public static void AddContent(ContentModel content)
+        private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>();
+        private static readonly ConcurrentBag<ContentModel> NeedSavingModels = new ConcurrentBag<ContentModel>();
+        public static void AddContent(ContentModel content, bool isAlreadySaved = false)
         {
             FlatContentModelCollection.Add(content);
             if (content.ParentId != Guid.Empty)
@@ -22,6 +24,9 @@ namespace Famoser.MassPass.Business.Managers
                 ParentLessModels.Add(content);
             }
             ResolveParentLessModels();
+
+            if (!isAlreadySaved)
+                NeedSavingModels.Add(content);
         }
 
         public static void AddFromCache(CollectionCacheModel cache)
@@ -29,7 +34,7 @@ namespace Famoser.MassPass.Business.Managers
             var models = CacheHelper.ReadCache(cache);
             foreach (var contentModel in models)
             {
-                AddContent(contentModel);
+                AddContent(contentModel, true);
             }
         }
 
@@ -52,5 +57,16 @@ namespace Famoser.MassPass.Business.Managers
                 }
             }
         }
+
+        public static List<ContentModel> UnsavedModels()
+        {
+            var list = new List<ContentModel>();
+            ContentModel res;
+            while (NeedSavingModels.TryTake(out res))
+            {
+                list.Add(res);
+            }
+            return list;
+        } 
     }
 }

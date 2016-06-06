@@ -6,6 +6,11 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response
 {
     public class RefreshResponse : ApiResponse
     {
+        public RefreshResponse()
+        {
+            RefreshEntities = new List<RefreshEntity>();
+        }
+
         public List<RefreshEntity> RefreshEntities { get; set; }
     }
 }

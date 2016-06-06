@@ -6,6 +6,11 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request
 {
     public class RefreshRequest : ApiRequest
     {
+        public RefreshRequest()
+        {
+            RefreshEntities = new List<RefreshEntity>();
+        }
+
         public List<RefreshEntity> RefreshEntities { get; set; }
     }
 }

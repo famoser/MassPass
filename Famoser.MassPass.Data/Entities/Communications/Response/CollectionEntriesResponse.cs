@@ -6,6 +6,11 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response
 {
     public class CollectionEntriesResponse : ApiResponse
     {
+        public CollectionEntriesResponse()
+        {
+            CollectionEntryEntities = new List<CollectionEntryEntity>();
+        }
+
         public List<CollectionEntryEntity> CollectionEntryEntities { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Famoser.MassPass.Business.Models;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces
@@ -7,5 +8,8 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
     {
         Task<bool> FillValues(ContentModel model);
         Task<bool> FillHistory(ContentModel model);
+        Task<List<ContentModel>> ReadOutAll();
+
+        Task<bool> SaveAll();
     }
 }
