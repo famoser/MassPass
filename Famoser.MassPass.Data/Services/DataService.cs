@@ -9,7 +9,6 @@ using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Data.Attributes;
 using Famoser.MassPass.Data.Entities;
-using Famoser.MassPass.Data.Entities.Communications;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response;

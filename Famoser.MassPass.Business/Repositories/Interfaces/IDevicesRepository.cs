@@ -6,6 +6,6 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
 {
     public interface IDevicesRepository
     {
-        Task<ObservableCollection<DeviceModel>> GetDevices();
+        Task<ObservableCollection<DeviceModel>> GetDevices(bool forceRefresh = false);
     }
 }

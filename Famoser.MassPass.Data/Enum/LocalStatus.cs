@@ -13,5 +13,7 @@ namespace Famoser.MassPass.Data.Enum
         Changed = 2,
         [Description("unresolved conflict")]
         Conflict = 3,
+        [Description("history entry, immutable!")]
+        History = 4
     }
 }

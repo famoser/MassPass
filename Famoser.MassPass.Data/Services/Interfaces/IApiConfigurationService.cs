@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Models.Storage;
 
 namespace Famoser.MassPass.Data.Services.Interfaces

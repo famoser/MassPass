@@ -8,7 +8,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
     #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public class PasswordVaultServiceMock : IPasswordVaultService
     {
-        private Dictionary<Guid, byte[]> _passwords = new Dictionary<Guid, byte[]>();
+        private readonly Dictionary<Guid, byte[]> _passwords = new Dictionary<Guid, byte[]>();
         
         public async Task<bool> UnlockVaultAsync(string password)
         {

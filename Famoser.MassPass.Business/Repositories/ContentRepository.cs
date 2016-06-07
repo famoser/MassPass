@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
-using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.MassPass.Business.Extensions;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
+using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -20,18 +20,18 @@ namespace Famoser.MassPass.Business.Repositories
         private const string ContentFolder = "content";
 
         private readonly IFolderStorageService _folderStorageService;
-        private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IErrorApiReportingService _errorApiReportingService;
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IDataService _dataService;
+        private readonly IDevicesRepository _devicesRepository;
 
-        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IDataService dataService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService) : base(apiConfigurationService)
+        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IDataService dataService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService, IDevicesRepository devicesRepository) : base(apiConfigurationService)
         {
             _folderStorageService = folderStorageService;
             _passwordVaultService = passwordVaultService;
             _dataService = dataService;
-            _apiConfigurationService = apiConfigurationService;
             _errorApiReportingService = errorApiReportingService;
+            _devicesRepository = devicesRepository;
         }
 
         public async Task<bool> FillValues(ContentModel model)
@@ -53,9 +53,23 @@ namespace Famoser.MassPass.Business.Repositories
             var resp = await _dataService.GetHistoryAsync(reqHelper.ContentEntityHistoryRequest(model.ApiInformations.ServerId));
             if (resp.IsSuccessfull)
             {
-                //todo look for users & assign to history
-                //get users from device repository
-
+                var users = await _devicesRepository.GetDevices();
+                foreach (var historyEntry in resp.HistoryEntries)
+                {
+                    var exstingHistory = model.History.FirstOrDefault(d => d.VersionId == historyEntry.VersionId);
+                    if (exstingHistory == null)
+                    {
+                        var newHistory = new HistoryModel
+                        {
+                            DeviceModel = users.FirstOrDefault(u => u.DeviceId == historyEntry.DeviceId),
+                            Parent = model
+                        };
+                        model.History.Add(newHistory);
+                        exstingHistory = newHistory;
+                    }
+                    EntityConversionHelper.WriteValues(historyEntry, exstingHistory);
+                }
+                model.History.OrderByDescendingInside(h => h.CreationDateTime);
                 return true;
             }
             else
@@ -81,6 +95,33 @@ namespace Famoser.MassPass.Business.Repositories
                 }
             }
             return res;
+        }
+
+        public async Task<bool> GetContentModelForHistory(HistoryModel model)
+        {
+            try
+            {
+                var requestHelper = await GetRequestHelper();
+                var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(model.Parent.ApiInformations.ServerId, model.Parent.ApiInformations.ServerRelationId, model.VersionId));
+                if (response.IsSuccessfull)
+                {
+                    var newModel = new ContentModel();
+                    ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
+                    newModel.ApiInformations = response.ApiInformations;
+                    newModel.LocalStatus = LocalStatus.History;
+                    model.ContentModel = newModel;
+                    return true;
+                }
+                else
+                {
+                    _errorApiReportingService.ReportUnhandledApiError(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
         }
 
         public async Task<bool> SaveAll()

@@ -12,6 +12,7 @@ namespace Famoser.MassPass.Business.Models
         public CollectionModel()
         {
             Contents = new ObservableCollection<ContentModel>();
+            History = new ObservableCollection<HistoryModel>();
         }
 
         public Guid Id { get; set; }
@@ -48,6 +49,9 @@ namespace Famoser.MassPass.Business.Models
 
         [JsonIgnore]
         public ObservableCollection<ContentModel> Contents { get; }
+
+        [JsonIgnore]
+        public ObservableCollection<HistoryModel> History { get; }
 
         [JsonIgnore]
         public bool SaveDisabled { get; set; }

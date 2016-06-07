@@ -9,7 +9,7 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
         Task<bool> FillValues(ContentModel model);
         Task<bool> FillHistory(ContentModel model);
         Task<List<ContentModel>> ReadOutAll();
-
+        Task<bool> GetContentModelForHistory(HistoryModel model);
         Task<bool> SaveAll();
     }
 }
