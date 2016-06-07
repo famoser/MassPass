@@ -141,4 +141,9 @@ class BaseController
             $this->databaseHelper = new DatabaseHelper($this->container);
         return $this->databaseHelper;
     }
+
+    protected function renderTemplate(Response $response, $path, $args)
+    {
+        return $this->container->get("view")->render($response, $path . ".html.twig", $args);
+    }
 }

@@ -36,7 +36,10 @@ $configuration = [
         'data_path' => realpath("../../app"),
         'asset_path' => realpath("../Assets"),
         'log_path' => realpath("../../app/logs"),
-        'file_path' => realpath("../../app/files")
+        'file_path' => realpath("../../app/files"),
+        'template_path' => realpath("../../app/templates"),
+        'cache_path' => realpath("../../app/cache"),
+        'public_path' => realpath("../public")
     ],
     'api_settings' => [
         'api_version' => 1,
@@ -77,6 +80,19 @@ $c['errorHandler'] = function (Container $c) {
         return $response->withStatus(500, $exception->getMessage())->withJson($res);
     };
 };
+// Register component on container
+$c['view'] = function (Container $c) {
+    $view = new \Slim\Views\Twig($c->get("settings")["template_path"], [
+        'cache' => $c->get("settings")["cache_path"],
+        'debug' => $c->get("settings")["debug_mode"]
+    ]);
+    $view->addExtension(new \Slim\Views\TwigExtension(
+        $c['router'],
+        $c['request']->getUri()
+    ));
+
+    return $view;
+};
 
 $controllerNamespace = 'Famoser\MassPass\Controllers\\';
 
@@ -111,5 +127,7 @@ $routes = function () use ($controllerNamespace) {
 
 $app->group("/tests/1.0", $routes);
 $app->group("/1.0", $routes);
+
+$app->get("/1.0/", $controllerNamespace . 'PublicController:index');
 
 $app->run();

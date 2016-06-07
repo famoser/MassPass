@@ -42,7 +42,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return true;
         }
 
-        public async Task<bool> SetApiConfigurationAsync(string config)
+        public async Task<bool> TrySetApiConfigurationAsync(string config)
         {
             _config = JsonConvert.DeserializeObject<ApiConfiguration>(config);
             return true;
@@ -70,7 +70,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return true;
         }
 
-        public async Task<bool> SetUserConfigurationAsync(string config)
+        public async Task<bool> TrySetUserConfigurationAsync(string config)
         {
             _userConfig = JsonConvert.DeserializeObject<UserConfiguration>(config);
             return true;

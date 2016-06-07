@@ -36,7 +36,7 @@ class AuthorizationController extends BaseController
         $model = RequestHelper::parseAuthorisationRequest($request);
         if (!$this->isWellDefined($model, array("DeviceName", "UserName")))
             return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
-        
+
         $helper = $this->getDatabaseHelper();
         $user = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $model->UserId));
         if ($user == null) {
