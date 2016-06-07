@@ -31,7 +31,7 @@ namespace Famoser.MassPass.Business.Repositories
         private readonly IErrorApiReportingService _errorApiReportingService;
         private readonly IContentRepository _contentRepository;
 
-        public CollectionRepository(IDataService dataService, IConfigurationService configurationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IFolderStorageService folderStorageService, IErrorApiReportingService errorApiReportingService, IContentRepository contentRepository) : base (apiConfigurationService)
+        public CollectionRepository(IDataService dataService, IConfigurationService configurationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IFolderStorageService folderStorageService, IErrorApiReportingService errorApiReportingService, IContentRepository contentRepository) : base(apiConfigurationService)
         {
             _dataService = dataService;
             _configurationService = configurationService;
@@ -45,43 +45,57 @@ namespace Famoser.MassPass.Business.Repositories
 
         private async Task FillCollection()
         {
-            var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
-            if (cacheConfig.BoolValue)
+            try
             {
-                //read from cache
-                var byteCache = await _folderStorageService.GetCachedFileAsync(
-                            ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
-                                FileKeys.ApiConfiguration).Description);
-                var decryptedBytes = await _passwordVaultService.DecryptAsync(byteCache);
-                var jsonCache = StorageHelper.ByteToString(decryptedBytes);
-
-                if (jsonCache != null)
+                var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
+                if (cacheConfig.BoolValue)
                 {
-                    var cacheModel = JsonConvert.DeserializeObject<CollectionCacheModel>(jsonCache);
-                    ContentManager.AddFromCache(cacheModel);
-                    return;
+                    //read from cache
+                    var byteCache = await _folderStorageService.GetCachedFileAsync(
+                                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
+                                    FileKeys.ApiConfiguration).Description);
+                    var decryptedBytes = await _passwordVaultService.DecryptAsync(byteCache);
+                    var jsonCache = StorageHelper.ByteToString(decryptedBytes);
+
+                    if (jsonCache != null)
+                    {
+                        var cacheModel = JsonConvert.DeserializeObject<CollectionCacheModel>(jsonCache);
+                        ContentManager.AddFromCache(cacheModel);
+                        return;
+                    }
+                }
+                var contentModels = await _contentRepository.ReadOutAll();
+                foreach (var contentModel in contentModels)
+                {
+                    ContentManager.AddContent(contentModel, true);
                 }
             }
-            var contentModels = await _contentRepository.ReadOutAll();
-            foreach (var contentModel in contentModels)
+            catch (Exception ex)
             {
-                ContentManager.AddContent(contentModel, true);
+                LogHelper.Instance.LogException(ex);
             }
         }
 
         private async Task SaveCollection()
         {
-            var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
-            if (cacheConfig.BoolValue)
+            try
             {
-                var cacheModel = ContentManager.CreateCacheModel();
-                var str = JsonConvert.SerializeObject(cacheModel);
-                var bytes = StorageHelper.StringToBytes(str);
-                var encryptedBytes = await _passwordVaultService.EncryptAsync(bytes);
-                await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, encryptedBytes);
-            }
+                var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
+                if (cacheConfig.BoolValue)
+                {
+                    var cacheModel = ContentManager.CreateCacheModel();
+                    var str = JsonConvert.SerializeObject(cacheModel);
+                    var bytes = StorageHelper.StringToBytes(str);
+                    var encryptedBytes = await _passwordVaultService.EncryptAsync(bytes);
+                    await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, encryptedBytes);
+                }
 
-            await _contentRepository.SaveAll();
+                await _contentRepository.SaveAll();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
         }
 
 
@@ -89,80 +103,91 @@ namespace Famoser.MassPass.Business.Repositories
         private bool _initialisationStarted;
         public ObservableCollection<ContentModel> GetCollectionsAndLoad()
         {
-            if (!_initialisationStarted)
+            lock (this)
             {
-                _initialisationStarted = true;
-                _fillCollectionsTask = FillCollection();
+                if (!_initialisationStarted)
+                {
+                    _initialisationStarted = true;
+                    _fillCollectionsTask = FillCollection();
+                }
             }
             return ContentManager.ContentModelCollection;
         }
 
         public async Task<bool> SyncAsync()
         {
-            if (_fillCollectionsTask != null)
+            try
             {
-                await _fillCollectionsTask;
-                _fillCollectionsTask = null;
-            }
-            var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
-            var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
-            var requestHelper = await GetRequestHelper();
 
-            var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
-            if (res.IsSuccessfull && res.IsAuthorized)
+                if (_fillCollectionsTask != null)
+                {
+                    await _fillCollectionsTask;
+                    _fillCollectionsTask = null;
+                }
+                var workerConfig = await _configurationService.GetConfiguration(SettingKeys.MaximumWorkerNumber);
+                var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
+                var requestHelper = await GetRequestHelper();
+
+                var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
+                if (res.IsSuccessfull && res.IsAuthorized)
+                {
+                    /*
+                     * Sync:
+                     * 1. Upload locally changed if possible
+                     * 2. Refresh all changed ones online
+                     * 3. collect missing from collections
+                     * 4. download missing from collections
+                     * */
+
+                    // 1. check if version online is same, if yes, prepare for upload
+                    var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
+                    var tasks = new List<Task>();
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    {
+                        tasks.Add(UploadChangedWorker(locallyChangedStack, requestHelper));
+                    }
+                    await Task.WhenAll(tasks);
+                    tasks.Clear();
+
+                    // 2. refresh all changed ones
+                    var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    {
+                        tasks.Add(DownloadChangedWorker(remotelyChangedStack, requestHelper));
+                    }
+                    await Task.WhenAll(tasks);
+                    tasks.Clear();
+
+                    // 3. collect missing
+                    var collectionStack =
+                        new ConcurrentStack<Guid>(
+                            ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId)
+                                .Distinct());
+                    var missingStack = new ConcurrentStack<CollectionEntryEntity>();
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    {
+                        tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
+                    }
+                    await Task.WhenAll(tasks);
+                    tasks.Clear();
+
+                    // 4. download missing
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    {
+                        tasks.Add(DownloadMissingWorker(missingStack, requestHelper));
+                    }
+                    await Task.WhenAll(tasks);
+                    tasks.Clear();
+
+                    await SaveCollection();
+                    return true;
+                }
+                _errorApiReportingService.ReportUnhandledApiError(res);
+            }
+            catch (Exception ex)
             {
-                /*
-                 * Sync:
-                 * 1. Upload locally changed if possible
-                 * 2. Refresh all changed ones online
-                 * 3. collect missing from collections
-                 * 4. download missing from collections
-                 * */
-
-                // 1. check if version online is same, if yes, prepare for upload
-                var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
-                var tasks = new List<Task>();
-                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
-                {
-                    tasks.Add(UploadChangedWorker(locallyChangedStack, requestHelper));
-                }
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                // 2. refresh all changed ones
-                var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
-                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
-                {
-                    tasks.Add(DownloadChangedWorker(remotelyChangedStack, requestHelper));
-                }
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                // 3. collect missing
-                var collectionStack =
-                    new ConcurrentStack<Guid>(
-                        ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId)
-                            .Distinct());
-                var missingStack = new ConcurrentStack<CollectionEntryEntity>();
-                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
-                {
-                    tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
-                }
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                // 4. download missing
-                for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
-                {
-                    tasks.Add(DownloadMissingWorker(missingStack, requestHelper));
-                }
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                await SaveCollection();
-                return true;
+                LogHelper.Instance.LogException(ex);
             }
-            _errorApiReportingService.ReportUnhandledApiError(res);
             return false;
         }
 

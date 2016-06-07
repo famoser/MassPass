@@ -10,7 +10,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
     {
         private readonly Dictionary<Guid, byte[]> _passwords = new Dictionary<Guid, byte[]>();
         
-        public async Task<bool> UnlockVaultAsync(string password)
+        public async Task<bool> TryUnlockVaultAsync(string password)
         {
             return true;
         }

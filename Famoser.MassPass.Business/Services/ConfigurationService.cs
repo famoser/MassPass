@@ -10,6 +10,7 @@ using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Newtonsoft.Json;
+using Nito.AsyncEx;
 
 namespace Famoser.MassPass.Business.Services
 {
@@ -22,20 +23,25 @@ namespace Famoser.MassPass.Business.Services
             _storageService = storageService;
         }
 
-        private ObservableCollection<ConfigurationModel> _models;
+        private ObservableCollection<ConfigurationModel> _models = new ObservableCollection<ConfigurationModel>();
+        private bool _initializedConfiguration;
+        private readonly AsyncLock _initializedConfigurationLock = new AsyncLock();
         public async Task<ObservableCollection<ConfigurationModel>> GetConfiguration()
         {
-            try
+            using (await _initializedConfigurationLock.LockAsync())
             {
-                if (_models == null)
+                if (!_initializedConfiguration)
                 {
                     _models = new ObservableCollection<ConfigurationModel>();
                     var jsonAssets = await _storageService.GetAssetTextFileAsync(
-                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.AssetConfiguration).Description);
-                    var defaultSettings = JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(jsonAssets);
+                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.AssetConfiguration)
+                            .Description);
+                    var defaultSettings =
+                        JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(jsonAssets);
 
                     var json = await _storageService.GetCachedTextFileAsync(
-                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration).Description);
+                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration)
+                            .Description);
 
                     if (json == null)
                     {
@@ -60,7 +66,7 @@ namespace Famoser.MassPass.Business.Services
                                     configurationModel.Value = def.Value;
                                 }
                                 configurationModel.Name = def.Name;
-                               
+
                                 _models.Add(configurationModel);
                                 defaultSettings.Remove(def);
                             }
@@ -74,13 +80,10 @@ namespace Famoser.MassPass.Business.Services
                         if (save)
                             await SaveConfiguration();
                     }
+                    _initializedConfiguration = true;
                 }
+                return _models;
             }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return _models;
         }
 
         public async Task<ConfigurationModel> GetConfiguration(SettingKeys key)
@@ -91,17 +94,9 @@ namespace Famoser.MassPass.Business.Services
 
         public async Task<bool> SaveConfiguration()
         {
-            try
-            {
-                var json = JsonConvert.SerializeObject(_models);
-                return await _storageService.SetCachedTextFileAsync(
-                    ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration).Description, json);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
+            var json = JsonConvert.SerializeObject(_models);
+            return await _storageService.SetCachedTextFileAsync(
+                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration).Description, json);
         }
     }
 }

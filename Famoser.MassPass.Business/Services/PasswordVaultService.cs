@@ -31,7 +31,7 @@ namespace Famoser.MassPass.Business.Services
         private DateTime _unlockDateTime;
         private DateTime _lastActionDateTime;
         private byte[] _activePasswordPhrase;
-        public async Task<bool> UnlockVaultAsync(string password)
+        public async Task<bool> TryUnlockVaultAsync(string password)
         {
             try
             {
@@ -56,41 +56,25 @@ namespace Famoser.MassPass.Business.Services
         private byte[] _cachedLockContent;
         private async Task<byte[]> GetCachedLockContent()
         {
-            try
+            if (_cachedLockContent == null)
             {
-                if (_cachedLockContent == null)
-                {
-                    _cachedLockContent = await _storageService.GetCachedFileAsync(
-                                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
-                                    FileKeys.PasswordVault).Description);
-                }
-                return _cachedLockContent;
+                _cachedLockContent = await _storageService.GetCachedFileAsync(
+                            ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
+                                FileKeys.PasswordVault).Description);
             }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return null;
+            return _cachedLockContent;
         }
 
         private async Task<bool> SaveCachedLockContent()
         {
-            try
+            if (_storage != null)
             {
-                if (_storage != null)
-                {
-                    var json = JsonConvert.SerializeObject(_storage);
-                    var bytes = StorageHelper.StringToBytes(json);
-                    _cachedLockContent = await _encryptionService.EncryptAsync(bytes, _activePasswordPhrase);
-                    return await _storageService.SetCachedFileAsync(
-                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
-                            FileKeys.PasswordVault).Description, _cachedLockContent);
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
+                var json = JsonConvert.SerializeObject(_storage);
+                var bytes = StorageHelper.StringToBytes(json);
+                _cachedLockContent = await _encryptionService.EncryptAsync(bytes, _activePasswordPhrase);
+                return await _storageService.SetCachedFileAsync(
+                    ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
+                        FileKeys.PasswordVault).Description, _cachedLockContent);
             }
             return false;
         }

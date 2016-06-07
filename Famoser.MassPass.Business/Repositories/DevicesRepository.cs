@@ -6,6 +6,7 @@ using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Nito.AsyncEx;
 
 namespace Famoser.MassPass.Business.Repositories
 {
@@ -24,33 +25,38 @@ namespace Famoser.MassPass.Business.Repositories
 
         private readonly ObservableCollection<DeviceModel> _device = new ObservableCollection<DeviceModel>();
         private bool _hasLoadedDevices;
+        private readonly AsyncLock _asyncLock = new AsyncLock();
         public async Task<ObservableCollection<DeviceModel>> GetDevices(bool forceRefresh = false)
         {
-            if (!_hasLoadedDevices)
+            using (await _asyncLock.LockAsync())
             {
-                _hasLoadedDevices = true;
-
-                var resp = await _dataService.GetAuthorizedDevicesAsync((await GetRequestHelper()).AuthorizedDevicesRequest());
-                if (resp.IsSuccessfull)
+                if (!_hasLoadedDevices)
                 {
-                    foreach (var authorizedDeviceEntity in resp.AuthorizedDeviceEntities)
+                    _hasLoadedDevices = true;
+
+                    var resp = await _dataService.GetAuthorizedDevicesAsync((await GetRequestHelper()).AuthorizedDevicesRequest());
+                    if (resp.IsSuccessfull)
                     {
-                        var exitingDevice = _device.FirstOrDefault(d => d.DeviceId == authorizedDeviceEntity.DeviceId);
-                        if (exitingDevice == null)
+                        foreach (var authorizedDeviceEntity in resp.AuthorizedDeviceEntities)
                         {
-                            var newDevice = new DeviceModel();
-                            _device.Add(newDevice);
-                            exitingDevice = newDevice;
+                            var exitingDevice =
+                                _device.FirstOrDefault(d => d.DeviceId == authorizedDeviceEntity.DeviceId);
+                            if (exitingDevice == null)
+                            {
+                                var newDevice = new DeviceModel();
+                                _device.Add(newDevice);
+                                exitingDevice = newDevice;
+                            }
+                            EntityConversionHelper.WriteValues(authorizedDeviceEntity, exitingDevice);
                         }
-                        EntityConversionHelper.WriteValues(authorizedDeviceEntity, exitingDevice);
+                    }
+                    else
+                    {
+                        _errorApiReportingService.ReportUnhandledApiError(resp);
                     }
                 }
-                else
-                {
-                    _errorApiReportingService.ReportUnhandledApiError(resp);
-                }
+                return _device;
             }
-            return _device;
         }
     }
 }

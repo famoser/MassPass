@@ -36,65 +36,86 @@ namespace Famoser.MassPass.Business.Repositories
 
         public async Task<bool> FillValues(ContentModel model)
         {
-            var content = await _folderStorageService.GetFile(ContentFolder, model.Id.ToString());
-            var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
-            var jsonCache = StorageHelper.ByteToString(decryptedBytes);
-            if (jsonCache != null)
+            try
             {
-                var contentModel = JsonConvert.DeserializeObject<ContentModel>(jsonCache);
-                CacheHelper.WriteAllValues(model, contentModel);
-            }
-            return true;
-        }
-
-        public async Task<bool> FillHistory(ContentModel model)
-        {
-            var reqHelper = await GetRequestHelper();
-            var resp = await _dataService.GetHistoryAsync(reqHelper.ContentEntityHistoryRequest(model.ApiInformations.ServerId));
-            if (resp.IsSuccessfull)
-            {
-                var users = await _devicesRepository.GetDevices();
-                foreach (var historyEntry in resp.HistoryEntries)
-                {
-                    var exstingHistory = model.History.FirstOrDefault(d => d.VersionId == historyEntry.VersionId);
-                    if (exstingHistory == null)
-                    {
-                        var newHistory = new HistoryModel
-                        {
-                            DeviceModel = users.FirstOrDefault(u => u.DeviceId == historyEntry.DeviceId),
-                            Parent = model
-                        };
-                        model.History.Add(newHistory);
-                        exstingHistory = newHistory;
-                    }
-                    EntityConversionHelper.WriteValues(historyEntry, exstingHistory);
-                }
-                model.History.OrderByDescendingInside(h => h.CreationDateTime);
-                return true;
-            }
-            else
-            {
-                _errorApiReportingService.ReportUnhandledApiError(resp, model);
-                return false;
-            }
-        }
-
-        public async Task<List<ContentModel>> ReadOutAll()
-        {
-            var res = new List<ContentModel>();
-            var files = await _folderStorageService.GetFiles(ContentFolder);
-            foreach (var file in files)
-            {
-                var content = await _folderStorageService.GetFile(ContentFolder, file);
+                var content = await _folderStorageService.GetFile(ContentFolder, model.Id.ToString());
                 var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
                 var jsonCache = StorageHelper.ByteToString(decryptedBytes);
                 if (jsonCache != null)
                 {
                     var contentModel = JsonConvert.DeserializeObject<ContentModel>(jsonCache);
-                    res.Add(contentModel);
+                    CacheHelper.WriteAllValues(model, contentModel);
+                    return true;
                 }
             }
-            return res;
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
+        }
+
+        public async Task<bool> FillHistory(ContentModel model)
+        {
+            try
+            {
+
+                var reqHelper = await GetRequestHelper();
+                var resp = await _dataService.GetHistoryAsync(reqHelper.ContentEntityHistoryRequest(model.ApiInformations.ServerId));
+                if (resp.IsSuccessfull)
+                {
+                    var users = await _devicesRepository.GetDevices();
+                    foreach (var historyEntry in resp.HistoryEntries)
+                    {
+                        var exstingHistory = model.History.FirstOrDefault(d => d.VersionId == historyEntry.VersionId);
+                        if (exstingHistory == null)
+                        {
+                            var newHistory = new HistoryModel
+                            {
+                                DeviceModel = users.FirstOrDefault(u => u.DeviceId == historyEntry.DeviceId),
+                                Parent = model
+                            };
+                            model.History.Add(newHistory);
+                            exstingHistory = newHistory;
+                        }
+                        EntityConversionHelper.WriteValues(historyEntry, exstingHistory);
+                    }
+                    model.History.OrderByDescendingInside(h => h.CreationDateTime);
+                    return true;
+                }
+                _errorApiReportingService.ReportUnhandledApiError(resp, model);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
+        }
+
+        public async Task<List<ContentModel>> ReadOutAll()
+        {
+            try
+            {
+                var res = new List<ContentModel>();
+                var files = await _folderStorageService.GetFiles(ContentFolder);
+                foreach (var file in files)
+                {
+                    var content = await _folderStorageService.GetFile(ContentFolder, file);
+                    var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
+                    var jsonCache = StorageHelper.ByteToString(decryptedBytes);
+                    if (jsonCache != null)
+                    {
+                        var contentModel = JsonConvert.DeserializeObject<ContentModel>(jsonCache);
+                        res.Add(contentModel);
+                    }
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return new List<ContentModel>();
         }
 
         public async Task<bool> GetContentModelForHistory(HistoryModel model)
@@ -112,10 +133,7 @@ namespace Famoser.MassPass.Business.Repositories
                     model.ContentModel = newModel;
                     return true;
                 }
-                else
-                {
-                    _errorApiReportingService.ReportUnhandledApiError(response);
-                }
+                _errorApiReportingService.ReportUnhandledApiError(response);
             }
             catch (Exception ex)
             {
@@ -126,16 +144,24 @@ namespace Famoser.MassPass.Business.Repositories
 
         public async Task<bool> SaveAll()
         {
-            var toBeSaved = ContentManager.UnsavedModels();
-            foreach (var contentModel in toBeSaved)
+            try
             {
-                var json = JsonConvert.SerializeObject(contentModel);
-                var bytes = StorageHelper.StringToBytes(json);
-                var encrytedBytes = await _passwordVaultService.EncryptAsync(bytes);
-                if (!await _folderStorageService.SaveFile(ContentFolder, contentModel.Id.ToString(), encrytedBytes))
-                    LogHelper.Instance.LogFatalError("cannot save contentmodel!", this);
+                var toBeSaved = ContentManager.UnsavedModels();
+                foreach (var contentModel in toBeSaved)
+                {
+                    var json = JsonConvert.SerializeObject(contentModel);
+                    var bytes = StorageHelper.StringToBytes(json);
+                    var encrytedBytes = await _passwordVaultService.EncryptAsync(bytes);
+                    if (!await _folderStorageService.SaveFile(ContentFolder, contentModel.Id.ToString(), encrytedBytes))
+                        LogHelper.Instance.LogFatalError("cannot save contentmodel!", this);
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
         }
     }
 }

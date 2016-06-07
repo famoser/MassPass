@@ -9,6 +9,7 @@ using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
+using Nito.AsyncEx;
 
 namespace Famoser.MassPass.Business.Services
 {
@@ -21,9 +22,11 @@ namespace Famoser.MassPass.Business.Services
             _storageService = storageService;
         }
 
+        private ApiStorageModel _config;
+        private AsyncLock _asyncLock = new AsyncLock();
         private async Task<ApiStorageModel> GetStorageModelAsync()
         {
-            try
+            using (await _asyncLock.LockAsync())
             {
                 if (_config == null)
                 {
@@ -37,35 +40,17 @@ namespace Famoser.MassPass.Business.Services
                 }
                 return _config;
             }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return null;
         }
 
         private async Task<bool> SaveStorageModelAsync(ApiStorageModel config)
         {
-            try
-            {
-                _config = config;
-                if (_config != null)
-                {
-                    var json = JsonConvert.SerializeObject(_config);
-                    return await _storageService.SetCachedTextFileAsync(
-                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
-                            .Description, json);
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
+            _config = config;
+            var json = JsonConvert.SerializeObject(_config);
+            return await _storageService.SetCachedTextFileAsync(
+                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
+                    .Description, json);
         }
 
-        private ApiStorageModel _config;
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
         {
             var storage = await GetStorageModelAsync();
@@ -91,7 +76,7 @@ namespace Famoser.MassPass.Business.Services
             return false;
         }
 
-        public async Task<bool> SetApiConfigurationAsync(string config)
+        public async Task<bool> TrySetApiConfigurationAsync(string config)
         {
             try
             {
@@ -113,20 +98,12 @@ namespace Famoser.MassPass.Business.Services
 
         public async Task<bool> SetUserConfigurationAsync(UserConfiguration config)
         {
-            try
-            {
-                var storageModel = await GetStorageModelAsync();
-                storageModel.UserConfiguration = config;
-                return await SaveStorageModelAsync(storageModel);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
+            var storageModel = await GetStorageModelAsync();
+            storageModel.UserConfiguration = config;
+            return await SaveStorageModelAsync(storageModel);
         }
 
-        public async Task<bool> SetUserConfigurationAsync(string config)
+        public async Task<bool> TrySetUserConfigurationAsync(string config)
         {
             try
             {
