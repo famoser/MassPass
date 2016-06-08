@@ -2,8 +2,9 @@
 {
     public enum PageKeys
     {
-        PasswordPage,
+        UnlockPage,
         InitialisationPage,
+        PasswordPage,
         CollectionsPage,
         ContentPage
     }

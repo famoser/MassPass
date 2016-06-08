@@ -105,6 +105,11 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CustomNavigationService.cs" />
+    <Compile Include="Services\ErrorApiReportingService.cs" />
+    <Compile Include="Services\FolderStorageService.cs" />
+    <Compile Include="Services\OwnNagService.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

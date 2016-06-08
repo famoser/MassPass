@@ -1,4 +1,6 @@
 ﻿using System;
+using Famoser.FrameworkEssentials.Attributes;
+using Famoser.FrameworkEssentials.Helpers;
 using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Data.Entities.Communications.Response.Base
@@ -18,5 +20,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response.Base
         public string DebugMessage { get; set; }
         public string RawResponse { get; set; }
         public bool IsSuccessfull => Successfull && !RequestFailed && ApiError == ApiError.None && Exception == null;
+        public string GetApiErrorAsString => ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(ApiError).Description;
     }
 }

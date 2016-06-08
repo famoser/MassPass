@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="Enums\PageKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\IHistoryNavigationService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />
     <Compile Include="ViewModels\CollectionsPageViewModel.cs" />
     <Compile Include="ViewModels\ContentPageViewModel.cs" />

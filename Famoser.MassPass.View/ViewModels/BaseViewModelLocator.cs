@@ -14,8 +14,7 @@ namespace Famoser.MassPass.View.ViewModels
     {
         public BaseViewModelLocator()
         {
-
-
+            
             //data
             SimpleIoc.Default.Register<IApiEncryptionService, ApiEncryptionService>();
             SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationService>();
@@ -32,6 +31,8 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<ContentPageViewModel>();
             SimpleIoc.Default.Register<InitialisationPageViewModel>();
             SimpleIoc.Default.Register<PasswordPageViewModel>();
+
+            //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService
         }
     }
 }
