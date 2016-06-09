@@ -108,7 +108,7 @@
     <Compile Include="Services\CustomNavigationService.cs" />
     <Compile Include="Services\ErrorApiReportingService.cs" />
     <Compile Include="Services\FolderStorageService.cs" />
-    <Compile Include="Services\OwnNagService.cs" />
+    <Compile Include="Services\WindowsNavigationService.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
