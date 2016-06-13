@@ -1,4 +1,6 @@
-﻿namespace Famoser.MassPass.Business.Models
+﻿using Famoser.MassPass.Business.Enums;
+
+namespace Famoser.MassPass.Business.Models
 {
     public class ContentModel : CollectionModel
     {
@@ -14,6 +16,20 @@
         {
             get { return _contentFile; }
             set { Set(ref _contentFile, value); }
+        }
+
+        private LoadingState _contentLoadingState;
+        public LoadingState ContentLoadingState
+        {
+            get { return _contentLoadingState; }
+            set { Set(ref _contentLoadingState, value); }
+        }
+
+        private LoadingState _historyLoadingState;
+        public LoadingState HistoryLoadingState
+        {
+            get { return _historyLoadingState; }
+            set { Set(ref _historyLoadingState, value); }
         }
     }
 }

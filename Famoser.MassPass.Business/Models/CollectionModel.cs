@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Models.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
@@ -59,6 +61,11 @@ namespace Famoser.MassPass.Business.Models
         {
             get { return _saveDisabled; }
             set { Set(ref _saveDisabled, value); }
+        }
+
+        public ContentTypes ContentType
+        {
+            get { return ContentHelper.GetType(this); }
         }
     }
 }

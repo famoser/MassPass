@@ -1,8 +1,91 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
+using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Models;
+using Famoser.MassPass.Business.Repositories.Interfaces;
+using Famoser.MassPass.Data.Services.Interfaces;
+using Famoser.MassPass.View.Enums;
+using Famoser.MassPass.View.Interfaces;
+using Famoser.MassPass.View.Services.Interfaces;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 
 namespace Famoser.MassPass.View.ViewModels
 {
-    public class CollectionsPageViewModel : ViewModelBase
+    public class CollectionsPageViewModel : ViewModelBase, INavigationBackNotifier
     {
+        private IPasswordVaultService _passwordVaultService;
+        private readonly ICollectionRepository _collectionRepository;
+        private readonly IHistoryNavigationService _historyNavigationService;
+
+        public CollectionsPageViewModel(IPasswordVaultService passwordVaultService, ICollectionRepository collectionRepository, IHistoryNavigationService historyNavigationService)
+        {
+            _passwordVaultService = passwordVaultService;
+            _collectionRepository = collectionRepository;
+            _historyNavigationService = historyNavigationService;
+
+            _collections = _collectionRepository.GetCollectionsAndLoad();
+
+            _syncCommand = new RelayCommand(Sync, () => CanSync);
+        }
+
+        private ObservableCollection<ContentModel> _collections;
+        public ObservableCollection<ContentModel> Collections
+        {
+            get { return _collections; }
+            set { Set(ref _collections, value); }
+        }
+
+        private ContentModel _selectedModel;
+        public ContentModel SelecetedModel
+        {
+            get { return _selectedModel; }
+            set
+            {
+                if (Set(ref _selectedModel, value))
+                {
+                    if (_selectedModel != null)
+                    {
+                        if (_selectedModel.ContentType == ContentTypes.Folder)
+                        {
+                            var mod = _selectedModel;
+                            _selectedModel = null;
+                            _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString(), true, this, mod.Contents);
+                        }
+                        else
+                        {
+                            var mod = _selectedModel;
+                            _selectedModel = null;
+                            _historyNavigationService.NavigateTo(PageKeys.ContentPage.ToString(), true, this, mod.Contents);
+                        }
+                    }
+                }
+            }
+        }
+
+        private readonly RelayCommand _syncCommand;
+        public ICommand SyncCommand => _syncCommand;
+
+        private bool CanSync { get; set; }
+
+        private async void Sync()
+        {
+            CanSync = false;
+            _syncCommand.RaiseCanExecuteChanged();
+
+            await _collectionRepository.SyncAsync();
+
+            CanSync = true;
+            _syncCommand.RaiseCanExecuteChanged();
+        }
+
+        public void HandleNavigationBack(object message)
+        {
+            var coll = message as ObservableCollection<ContentModel>;
+            if (coll != null)
+            {
+                Collections = coll;
+            }
+        }
     }
 }

@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\PageKeys.cs" />
+    <Compile Include="Interfaces\INavigationBackNotifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IHistoryNavigationService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />

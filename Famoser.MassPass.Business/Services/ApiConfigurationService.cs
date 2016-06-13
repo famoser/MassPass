@@ -57,17 +57,40 @@ namespace Famoser.MassPass.Business.Services
             return storage?.ApiConfiguration;
         }
 
+        private bool IsValidApiConfiguration(ApiConfiguration config)
+        {
+            if (config.Version == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
         {
             try
             {
-                if (config.Version == 1)
+                if (IsValidApiConfiguration(config))
                 {
                     var storageModel = await GetStorageModelAsync();
                     storageModel.ApiConfiguration = config;
                     return await SaveStorageModelAsync(storageModel);
                 }
                 return false;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
+        }
+
+        public bool CanSetApiConfigurationAsync(string config)
+        {
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<ApiConfiguration>(config);
+                return IsValidApiConfiguration(obj);
             }
             catch (Exception ex)
             {
@@ -96,11 +119,34 @@ namespace Famoser.MassPass.Business.Services
             return storage?.UserConfiguration;
         }
 
+        private bool IsValidUserConfiguration(UserConfiguration config)
+        {
+            if (config.Version == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> SetUserConfigurationAsync(UserConfiguration config)
         {
             var storageModel = await GetStorageModelAsync();
             storageModel.UserConfiguration = config;
             return await SaveStorageModelAsync(storageModel);
+        }
+
+        public bool CanSetUserConfigurationAsync(string config)
+        {
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<UserConfiguration>(config);
+                return IsValidUserConfiguration(obj);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return false;
         }
 
         public async Task<bool> TrySetUserConfigurationAsync(string config)

@@ -91,9 +91,12 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\LoadingState.cs" />
+    <Compile Include="Enums\ContentTypes.cs" />
     <Compile Include="Enums\FileKeys.cs" />
     <Compile Include="Enums\SettingKeys.cs" />
     <Compile Include="Helpers\CacheHelper.cs" />
+    <Compile Include="Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\EntityConversionHelper.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\ResponseHelper.cs" />

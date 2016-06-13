@@ -7,10 +7,12 @@ namespace Famoser.MassPass.Data.Models.Storage
     {
         public UserConfiguration()
         {
-            ReleationIds = new List<Guid>();
+            RelationIds = new List<Guid>();
         }
+
+        public int Version { get; set; }
         public Guid UserId { get; set; }
         public Guid DeviceId { get; set; }
-        public List<Guid> ReleationIds { get; set; }
+        public List<Guid> RelationIds { get; set; }
     }
 }

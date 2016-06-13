@@ -2,10 +2,24 @@
 {
     public enum PageKeys
     {
+        /// <summary>
+        /// First page, used to put in password
+        /// </summary>
         UnlockPage,
+
+        /// <summary>
+        /// Used to configure the application
+        /// </summary>
         InitialisationPage,
-        PasswordPage,
+        
+        /// <summary>
+        /// the first page; basically a list of all entries
+        /// </summary>
         CollectionsPage,
+
+        /// <summary>
+        /// a display of an content
+        /// </summary>
         ContentPage
     }
 }

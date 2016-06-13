@@ -142,7 +142,7 @@ namespace Famoser.MassPass.Business.Repositories
                     // 1. check if version online is same, if yes, prepare for upload
                     var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
                     var tasks = new List<Task>();
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
                     {
                         tasks.Add(UploadChangedWorker(locallyChangedStack, requestHelper));
                     }
@@ -151,7 +151,7 @@ namespace Famoser.MassPass.Business.Repositories
 
                     // 2. refresh all changed ones
                     var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
                     {
                         tasks.Add(DownloadChangedWorker(remotelyChangedStack, requestHelper));
                     }
@@ -164,7 +164,7 @@ namespace Famoser.MassPass.Business.Repositories
                             ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId)
                                 .Distinct());
                     var missingStack = new ConcurrentStack<CollectionEntryEntity>();
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
                     {
                         tasks.Add(ReadCollectionWorker(collectionStack, requestHelper, missingStack));
                     }
@@ -172,7 +172,7 @@ namespace Famoser.MassPass.Business.Repositories
                     tasks.Clear();
 
                     // 4. download missing
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.ReleationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
                     {
                         tasks.Add(DownloadMissingWorker(missingStack, requestHelper));
                     }

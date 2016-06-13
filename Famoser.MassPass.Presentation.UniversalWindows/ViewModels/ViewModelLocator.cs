@@ -7,6 +7,7 @@ using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Presentation.UniversalWindows.Services;
 using Famoser.MassPass.View.Enums;
+using Famoser.MassPass.View.Services.Interfaces;
 using Famoser.MassPass.View.ViewModels;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
@@ -26,9 +27,9 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
             SimpleIoc.Default.Register(() => ns);
         }
 
-        private INavigationService GetNavigationService()
+        private IHistoryNavigationService GetNavigationService()
         {
-            var navigationService = new CustomNavigationService();
+            var navigationService = new HistoryNavigationService();
             navigationService.Configure(PageKeys.Mainpage.ToString(), typeof(MainPage));
             navigationService.Configure(PageKeys.Video.ToString(), typeof(VideoPage));
             navigationService.Configure(PageKeys.Playlist.ToString(), typeof(PlaylistPage));

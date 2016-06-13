@@ -7,17 +7,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Famoser.MassPass.View.Interfaces;
 using Famoser.MassPass.View.Services.Interfaces;
 using GalaSoft.MvvmLight.Views;
 
 namespace Famoser.MassPass.Presentation.UniversalWindows.Services
 {
     /// <summary>
-    /// //todo implememt history, and windows phone backbutton, and buttons of universal application
+    /// //todo implement history, and windows phone backbutton, and buttons of universal application
     /// </summary>
-    public class WindowsNavigationService : IHistoryNavigationService
+    public class HistoryNavigationService : IHistoryNavigationService
     {
         private readonly ConcurrentDictionary<string, Type> _pagesByKey = new ConcurrentDictionary<string, Type>();
+        private readonly ConcurrentStack<Tuple<INavigationBackNotifier, object>> _notifiers = new ConcurrentStack<Tuple<INavigationBackNotifier, object>>();
 
         public string RootPageKey => "-- ROOT--";
         public string UnknownPageKey => "-- UNKNOWN--";
@@ -49,7 +51,13 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
             Frame frame = (Frame)Window.Current.Content;
             if (!frame.CanGoBack)
                 return;
-            frame.GoBack();
+            Tuple<INavigationBackNotifier, object> res;
+            lock (this)
+            {
+                frame.GoBack();
+                while (!_notifiers.TryPop(out res)) { }
+            }
+            res?.Item1?.HandleNavigationBack(res.Item2);
         }
 
         /// <summary>
@@ -59,11 +67,15 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
         ///             method first.
         /// 
         /// </summary>
-        public virtual void NavigateTo(string pageKey, bool persist = true)
+        public virtual void NavigateTo(string pageKey, bool persist = true, INavigationBackNotifier navigationBackNotifier = null, object notifyObject = null)
         {
             if (!_pagesByKey.ContainsKey(pageKey))
                 throw new ArgumentException(string.Format("No such page: {0}. Did you forget to call NavigationService.Configure?", pageKey), "pageKey");
             ((Frame)Window.Current.Content).Navigate(_pagesByKey[pageKey]);
+            lock (this)
+            {
+                _notifiers.Push(new Tuple<INavigationBackNotifier, object>(navigationBackNotifier, notifyObject));
+            }
         }
 
         /// <summary>

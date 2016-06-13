@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.MassPass.View.Interfaces;
 
 namespace Famoser.MassPass.View.Services.Interfaces
 {
@@ -33,6 +34,13 @@ namespace Famoser.MassPass.View.Services.Interfaces
         /// </summary>
         /// <param name="pageKey">The key corresponding to the page that should be displayed.</param>
         /// <param name="persist">if the page should be persisted in the page stack</param>
-        void NavigateTo(string pageKey, bool persist = true;
+        /// <param name="navigationBackNotifier">the object to be notified when navigating back</param>
+        /// <param name="notifyObject">the object to be send when navigating back</param>
+        void NavigateTo(string pageKey, bool persist = true, INavigationBackNotifier navigationBackNotifier = null, object notifyObject = null);
+
+        /// <summary>
+        /// Adds a key/page pair to the navigation service.
+        /// </summary>
+        void Configure(string key, Type pageType);
     }
 }
