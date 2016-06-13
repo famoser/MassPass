@@ -23,7 +23,7 @@ namespace Famoser.MassPass.Business.Services
         }
 
         private ApiStorageModel _config;
-        private AsyncLock _asyncLock = new AsyncLock();
+        private readonly AsyncLock _asyncLock = new AsyncLock();
         private async Task<ApiStorageModel> GetStorageModelAsync()
         {
             using (await _asyncLock.LockAsync())
@@ -49,6 +49,12 @@ namespace Famoser.MassPass.Business.Services
             return await _storageService.SetCachedTextFileAsync(
                 ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
                     .Description, json);
+        }
+
+        public async Task<bool> IsConfigurationReady()
+        {
+            var storage = await GetStorageModelAsync();
+            return storage != null;
         }
 
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
@@ -128,8 +134,9 @@ namespace Famoser.MassPass.Business.Services
             return false;
         }
 
-        public async Task<bool> SetUserConfigurationAsync(UserConfiguration config)
+        public async Task<bool> SetUserConfigurationAsync(UserConfiguration config, Guid deviceGuid)
         {
+            config.DeviceId = deviceGuid;
             var storageModel = await GetStorageModelAsync();
             storageModel.UserConfiguration = config;
             return await SaveStorageModelAsync(storageModel);
@@ -149,12 +156,12 @@ namespace Famoser.MassPass.Business.Services
             return false;
         }
 
-        public async Task<bool> TrySetUserConfigurationAsync(string config)
+        public async Task<bool> TrySetUserConfigurationAsync(string config, Guid deviceGuid)
         {
             try
             {
                 var obj = JsonConvert.DeserializeObject<UserConfiguration>(config);
-                return await SetUserConfigurationAsync(obj);
+                return await SetUserConfigurationAsync(obj, deviceGuid);
             }
             catch (Exception ex)
             {

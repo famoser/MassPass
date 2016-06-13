@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Famoser.MassPass.Data.Models.Storage;
 
 namespace Famoser.MassPass.Data.Services.Interfaces
@@ -8,14 +9,16 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     /// </summary>
     public interface IApiConfigurationService
     {
+        Task<bool> IsConfigurationReady();
+
         Task<ApiConfiguration> GetApiConfigurationAsync();
         Task<bool> SetApiConfigurationAsync(ApiConfiguration config);
         bool CanSetApiConfigurationAsync(string config);
         Task<bool> TrySetApiConfigurationAsync(string config);
 
         Task<UserConfiguration> GetUserConfigurationAsync();
-        Task<bool> SetUserConfigurationAsync(UserConfiguration config);
+        Task<bool> SetUserConfigurationAsync(UserConfiguration config, Guid deviceGuid);
         bool CanSetUserConfigurationAsync(string config);
-        Task<bool> TrySetUserConfigurationAsync(string config);
+        Task<bool> TrySetUserConfigurationAsync(string config, Guid deviceGuid);
     }
 }

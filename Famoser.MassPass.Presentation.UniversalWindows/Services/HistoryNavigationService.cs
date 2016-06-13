@@ -67,7 +67,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
         ///             method first.
         /// 
         /// </summary>
-        public virtual void NavigateTo(string pageKey, bool persist = true, INavigationBackNotifier navigationBackNotifier = null, object notifyObject = null)
+        public virtual void NavigateTo(string pageKey, INavigationBackNotifier navigationBackNotifier = null, object notifyObject = null)
         {
             if (!_pagesByKey.ContainsKey(pageKey))
                 throw new ArgumentException(string.Format("No such page: {0}. Did you forget to call NavigationService.Configure?", pageKey), "pageKey");

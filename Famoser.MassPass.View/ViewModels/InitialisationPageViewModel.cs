@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
@@ -10,7 +11,7 @@ namespace Famoser.MassPass.View.ViewModels
 {
     public class InitialisationPageViewModel : ViewModelBase
     {
-        private IApiConfigurationService _apiConfigurationService;
+        private readonly IApiConfigurationService _apiConfigurationService;
         private IHistoryNavigationService _historyNavigationService;
 
         public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService)
@@ -83,14 +84,27 @@ namespace Famoser.MassPass.View.ViewModels
             _confirmCommand.RaiseCanExecuteChanged();
         }
 
+        private bool _createNewUserConfiguration;
+        public bool CreateNewUserConfiguration
+        {
+            get { return _createNewUserConfiguration; }
+            set
+            {
+                if (Set(ref _createNewUserConfiguration, value))
+                {
+                    _confirmCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         private readonly RelayCommand _confirmCommand;
         public ICommand ConfirmCommand => _confirmCommand;
 
         private bool CanConfirm()
         {
-            return CanSetApiConfiguration && CanSetUserConfiguration && !_isConfirming;
+            return CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming;
         }
-        
+
         private bool _isConfirming;
         private async void Confirm()
         {
@@ -98,9 +112,21 @@ namespace Famoser.MassPass.View.ViewModels
             _confirmCommand.RaiseCanExecuteChanged();
             _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
             _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
-            
-            var res1 = await _apiConfigurationService.TrySetApiConfigurationAsync(_lastApiConfiguration);
-            var res2 = await _apiConfigurationService.TrySetUserConfigurationAsync(_lastUserConfiguration);
+
+            bool res1 = await _apiConfigurationService.TrySetApiConfigurationAsync(_lastApiConfiguration);
+            bool res2;
+            if (CreateNewUserConfiguration)
+            {
+                res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
+                {
+                    UserId = Guid.NewGuid()
+                }, 
+                Guid.NewGuid());
+            }
+            else
+            {
+                res2 = await _apiConfigurationService.TrySetUserConfigurationAsync(_lastUserConfiguration, Guid.NewGuid());
+            }
             if (res1 && res2)
             {
                 _historyNavigationService.NavigateTo(PageKeys.UnlockPage.ToString());

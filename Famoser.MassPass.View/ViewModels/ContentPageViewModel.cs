@@ -11,7 +11,7 @@ namespace Famoser.MassPass.View.ViewModels
 {
     public class ContentPageViewModel : CollectionsPageViewModel
     {
-        private IContentRepository _contentRepository;
+        private readonly IContentRepository _contentRepository;
 
         public ContentPageViewModel(IContentRepository contentRepository, IPasswordVaultService passwordVaultService, ICollectionRepository collectionRepository, IHistoryNavigationService historyNavigationService) : base (passwordVaultService, collectionRepository, historyNavigationService)
         {
