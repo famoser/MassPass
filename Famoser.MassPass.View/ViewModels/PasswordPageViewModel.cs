@@ -26,7 +26,14 @@ namespace Famoser.MassPass.View.ViewModels
             _unlockCommand = new RelayCommand(Unlock);
             _initializeCommand = new RelayCommand(GoToInitializePage);
 
-            InitializeAsync();
+            if (IsInDesignMode)
+            {
+                Initialized = false;
+            }
+            else
+            {
+                InitializeAsync();
+            }
         }
 
         private async void InitializeAsync()

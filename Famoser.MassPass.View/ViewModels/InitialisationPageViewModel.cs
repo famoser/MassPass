@@ -12,11 +12,12 @@ namespace Famoser.MassPass.View.ViewModels
     public class InitialisationPageViewModel : ViewModelBase
     {
         private readonly IApiConfigurationService _apiConfigurationService;
-        private IHistoryNavigationService _historyNavigationService;
+        private readonly IHistoryNavigationService _historyNavigationService;
 
-        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService)
+        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService)
         {
             _apiConfigurationService = apiConfigurationService;
+            _historyNavigationService = historyNavigationService;
 
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);

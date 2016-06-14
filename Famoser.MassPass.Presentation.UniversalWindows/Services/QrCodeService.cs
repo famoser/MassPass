@@ -16,7 +16,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
         {
             return Task.Run(() =>
             {
-                IBarcodeWriter writer = new BarcodeWriter
+                var writer = new BarcodeWriter()
                 {
                     Format = BarcodeFormat.QR_CODE,
                     Options = new ZXing.Common.EncodingOptions
@@ -26,9 +26,12 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
                     }
                 };
 
-                var result = writer.Write(content);
+                var result = writer.Encode(content); 
+                /*
                 var wb = result.ToBitmap() as WriteableBitmap;
-                return wb?.PixelBuffer.ToArray();
+                return wb.PixelBuffer.ToArray();
+                */
+                return new byte[2];
             });
         }
     }
