@@ -17,13 +17,13 @@ namespace Famoser.MassPass.Business.Services
     public class PasswordVaultService : IPasswordVaultService
     {
         private readonly IEncryptionService _encryptionService;
-        private readonly IStorageService _storageService;
+        private readonly IFolderStorageService _folderStorageService;
         private readonly IConfigurationService _configurationService;
 
-        public PasswordVaultService(IEncryptionService encryptionService, IStorageService storageService, IConfigurationService configurationService)
+        public PasswordVaultService(IEncryptionService encryptionService, IFolderStorageService folderStorageService, IConfigurationService configurationService)
         {
             _encryptionService = encryptionService;
-            _storageService = storageService;
+            _folderStorageService = folderStorageService;
             _configurationService = configurationService;
         }
 
@@ -58,7 +58,7 @@ namespace Famoser.MassPass.Business.Services
         {
             if (_cachedLockContent == null)
             {
-                _cachedLockContent = await _storageService.GetCachedFileAsync(
+                _cachedLockContent = await _folderStorageService.GetCachedFileAsync(
                             ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
                                 FileKeys.PasswordVault).Description);
             }
@@ -72,7 +72,7 @@ namespace Famoser.MassPass.Business.Services
                 var json = JsonConvert.SerializeObject(_storage);
                 var bytes = StorageHelper.StringToBytes(json);
                 _cachedLockContent = await _encryptionService.EncryptAsync(bytes, _activePasswordPhrase);
-                return await _storageService.SetCachedFileAsync(
+                return await _folderStorageService.SetCachedFileAsync(
                     ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
                         FileKeys.PasswordVault).Description, _cachedLockContent);
             }

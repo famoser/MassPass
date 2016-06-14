@@ -6,6 +6,7 @@ using Famoser.FrameworkEssentials.Logging;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage;
+using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
@@ -15,11 +16,11 @@ namespace Famoser.MassPass.Business.Services
 {
     public class ApiConfigurationService : IApiConfigurationService
     {
-        private readonly IStorageService _storageService;
+        private readonly IFolderStorageService _folderStorageService;
 
-        public ApiConfigurationService(IStorageService storageService)
+        public ApiConfigurationService(IFolderStorageService folderStorageService)
         {
-            _storageService = storageService;
+            _folderStorageService = folderStorageService;
         }
 
         private ApiStorageModel _config;
@@ -30,9 +31,17 @@ namespace Famoser.MassPass.Business.Services
             {
                 if (_config == null)
                 {
-                    var json = await _storageService.GetCachedTextFileAsync(
-                        ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
-                            .Description);
+                    string json = null;
+                    try
+                    {
+                        json = await _folderStorageService.GetCachedTextFileAsync(
+                            ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
+                                .Description);
+                    }
+                    catch (Exception)
+                    {
+                        //most likely file not found exception, so ignore it
+                    }
                     if (json != null)
                     {
                         _config = JsonConvert.DeserializeObject<ApiStorageModel>(json);
@@ -46,7 +55,7 @@ namespace Famoser.MassPass.Business.Services
         {
             _config = config;
             var json = JsonConvert.SerializeObject(_config);
-            return await _storageService.SetCachedTextFileAsync(
+            return await _folderStorageService.SetCachedTextFileAsync(
                 ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
                     .Description, json);
         }

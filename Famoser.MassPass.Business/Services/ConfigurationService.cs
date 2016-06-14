@@ -16,11 +16,11 @@ namespace Famoser.MassPass.Business.Services
 {
     public class ConfigurationService : IConfigurationService
     {
-        private readonly IStorageService _storageService;
+        private readonly IFolderStorageService _folderStorageService;
 
-        public ConfigurationService(IStorageService storageService)
+        public ConfigurationService(IFolderStorageService folderStorageService)
         {
-            _storageService = storageService;
+            _folderStorageService = folderStorageService;
         }
 
         private ObservableCollection<ConfigurationModel> _models = new ObservableCollection<ConfigurationModel>();
@@ -33,13 +33,13 @@ namespace Famoser.MassPass.Business.Services
                 if (!_initializedConfiguration)
                 {
                     _models = new ObservableCollection<ConfigurationModel>();
-                    var jsonAssets = await _storageService.GetAssetTextFileAsync(
+                    var jsonAssets = await _folderStorageService.GetAssetTextFileAsync(
                         ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.AssetConfiguration)
                             .Description);
                     var defaultSettings =
                         JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(jsonAssets);
 
-                    var json = await _storageService.GetCachedTextFileAsync(
+                    var json = await _folderStorageService.GetCachedTextFileAsync(
                         ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration)
                             .Description);
 
@@ -95,7 +95,7 @@ namespace Famoser.MassPass.Business.Services
         public async Task<bool> SaveConfiguration()
         {
             var json = JsonConvert.SerializeObject(_models);
-            return await _storageService.SetCachedTextFileAsync(
+            return await _folderStorageService.SetCachedTextFileAsync(
                 ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration).Description, json);
         }
     }

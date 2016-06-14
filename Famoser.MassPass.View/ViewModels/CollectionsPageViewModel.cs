@@ -50,13 +50,13 @@ namespace Famoser.MassPass.View.ViewModels
                         {
                             var mod = _selectedModel;
                             _selectedModel = null;
-                            _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString(), true, this, mod.Contents);
+                            _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString(), this, mod.Contents);
                         }
                         else
                         {
                             var mod = _selectedModel;
                             _selectedModel = null;
-                            _historyNavigationService.NavigateTo(PageKeys.ContentPage.ToString(), true, this, mod.Contents);
+                            _historyNavigationService.NavigateTo(PageKeys.ContentPage.ToString(), this, mod.Contents);
                         }
                     }
                 }

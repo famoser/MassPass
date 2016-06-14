@@ -103,11 +103,13 @@
     <Compile Include="Interfaces\INavigationBackNotifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IHistoryNavigationService.cs" />
+    <Compile Include="Services\Interfaces\IQrCodeService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />
     <Compile Include="ViewModels\CollectionsPageViewModel.cs" />
     <Compile Include="ViewModels\ContentPageViewModel.cs" />
     <Compile Include="ViewModels\InitialisationPageViewModel.cs" />
     <Compile Include="ViewModels\PasswordPageViewModel.cs" />
+    <Compile Include="ViewModels\SharePageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Famoser.FrameworkEssentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

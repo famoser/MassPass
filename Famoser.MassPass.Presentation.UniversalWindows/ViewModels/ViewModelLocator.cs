@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Famoser.MassPass.Presentation.UniversalWindows.Pages;
 using Famoser.MassPass.Presentation.UniversalWindows.Services;
 using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Services.Interfaces;
@@ -23,6 +24,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
 
             SimpleIoc.Default.Register<IErrorApiReportingService, ErrorApiReportingService>();
             SimpleIoc.Default.Register<IFolderStorageService, FolderStorageService>();
+            SimpleIoc.Default.Register<IQrCodeService, QrCodeService>();
             var ns = GetNavigationService();
             SimpleIoc.Default.Register(() => ns);
         }
@@ -30,10 +32,11 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
         private IHistoryNavigationService GetNavigationService()
         {
             var navigationService = new HistoryNavigationService();
-            navigationService.Configure(PageKeys.Mainpage.ToString(), typeof(MainPage));
-            navigationService.Configure(PageKeys.Video.ToString(), typeof(VideoPage));
-            navigationService.Configure(PageKeys.Playlist.ToString(), typeof(PlaylistPage));
-            navigationService.Configure(LocalPages.ChooseImagePage.ToString(), typeof(ChooseImagePage));
+            navigationService.Configure(PageKeys.InitialisationPage.ToString(), typeof(InitialisationPage));
+            navigationService.Configure(PageKeys.CollectionsPage.ToString(), typeof(CollectionsPage));
+            navigationService.Configure(PageKeys.ContentPage.ToString(), typeof(ContentPage));
+            navigationService.Configure(PageKeys.SharePage.ToString(), typeof(SharePage));
+            navigationService.Configure(PageKeys.UnlockPage.ToString(), typeof(UnlockPage));
             return navigationService;
         }
     }

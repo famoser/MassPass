@@ -20,6 +20,11 @@
         /// <summary>
         /// a display of an content
         /// </summary>
-        ContentPage
+        ContentPage,
+
+        /// <summary>
+        /// used to display user information to connect another application
+        /// </summary>
+        SharePage
     }
 }
