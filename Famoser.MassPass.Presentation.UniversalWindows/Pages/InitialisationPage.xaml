@@ -39,6 +39,9 @@
                         <Button Content="Take Picture" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="ButtonBase_OnClick" />
                         <Button Content="Input Url" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" />
                     </Grid>
+                    <Grid Grid.Row="2">
+                        <CaptureElement x:Name="BarcodeCaptureElement" Height="400" />
+                    </Grid>
                 </Grid>
                 
             </Grid>
