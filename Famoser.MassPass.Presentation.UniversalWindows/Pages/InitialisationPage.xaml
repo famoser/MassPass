@@ -20,30 +20,50 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" >
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="1: Api Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="2: User Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetUserConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+                <Grid Grid.Row="2" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="1: Api Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="10" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button Content="Take Picture" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="ButtonBase_OnClick" />
-                        <Button Content="Input Url" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" />
-                    </Grid>
-                    <Grid Grid.Row="2">
+                    <Button Grid.Row="0" Content="Take Picture" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TakePictureButton" />
+                    <Button Grid.Row="0" Content="Type in Url" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TypeInUrlButton" />
+                    <Grid  x:Name="PictureGrid" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
                         <CaptureElement x:Name="BarcodeCaptureElement" Height="400" />
                     </Grid>
+                    <Grid x:Name="UrlGrid" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="UrlTextBox" PlaceholderText="Url" Style="{StaticResource FamoserDefaultTextBox}" />
+                        <Button Grid.Column="1" Content="Überprüfen" Style="{StaticResource FamoserDefaultButton}" Click="EvaluateUrlButton" />
+                    </Grid>
                 </Grid>
-                
             </Grid>
 
         </ScrollViewer>

@@ -22,6 +22,11 @@ namespace Famoser.MassPass.View.ViewModels
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
             _confirmCommand = new RelayCommand(Confirm, CanConfirm);
+
+            if (IsInDesignMode)
+            {
+                CanSetApiConfiguration = true;
+            }
         }
 
         private readonly RelayCommand<string> _trySetApiConfigurationCommand;

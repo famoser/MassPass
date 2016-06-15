@@ -34,6 +34,7 @@ class PublicController extends BaseController
         $apiConfig = new ApiConfiguration();
         $apiConfig->GenerationKeyInterations = 10000;
         $apiConfig->Uri = "https://api.masspass.famoser.ch";
+        $apiConfig->Version = 1;
         $apiConfig->InitialisationVector = [129, 104, 236, 64, 22, 129, 76, 125, 122, 223, 214, 33, 238, 180, 218, 126]; // generate 16 here: https://www.random.org/cgi-bin/randbyte?nbytes=16&format=d
         $apiConfig->GenerationKeyLenghtInBytes = 32;
         $apiConfig->GenerationSalt = [136, 249, 54, 92, 129, 200, 62, 128, 178, 33, 220, 177, 148, 172, 180, 223, 10, 113, 167, 206, 97, 163, 45, 228]; //generate 24 here: https://www.random.org/cgi-bin/randbyte?nbytes=24&format=d
