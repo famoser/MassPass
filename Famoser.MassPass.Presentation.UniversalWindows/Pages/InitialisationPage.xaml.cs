@@ -21,8 +21,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using com.google.zxing;
 using com.google.zxing.multi;
-using ZXing;
-using ZXing.Mobile;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -69,7 +67,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
         {
             try
             {
-                var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(Windows.Devices.Enumeration.DeviceClass.VideoCapture);
+                var devices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
 
                 if (devices.Count > 1)
                 {
