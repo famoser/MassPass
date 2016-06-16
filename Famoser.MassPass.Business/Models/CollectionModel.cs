@@ -63,9 +63,12 @@ namespace Famoser.MassPass.Business.Models
             set { Set(ref _saveDisabled, value); }
         }
 
-        public ContentTypes ContentType
+        public ContentTypes ContentType => ContentHelper.GetType(TypeId);
+
+        public void SetContentType(ContentTypes type)
         {
-            get { return ContentHelper.GetType(this); }
+            TypeId = ContentHelper.GetTypeId(type);
+            RaisePropertyChanged(() => ContentType);
         }
     }
 }

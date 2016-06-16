@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
@@ -13,11 +14,13 @@ namespace Famoser.MassPass.View.ViewModels
     {
         private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IHistoryNavigationService _historyNavigationService;
+        private readonly ICollectionRepository _collectionRepository;
 
-        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService)
+        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, ICollectionRepository collectionRepository)
         {
             _apiConfigurationService = apiConfigurationService;
             _historyNavigationService = historyNavigationService;
+            _collectionRepository = collectionRepository;
 
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
@@ -107,14 +110,26 @@ namespace Famoser.MassPass.View.ViewModels
                 if (Set(ref _createNewUserConfiguration, value))
                 {
                     _confirmCommand.RaiseCanExecuteChanged();
+                    RaisePropertyChanged(() => CanConfirm);
                 }
+            }
+        }
+
+        private string _masterPassword;
+        public string MasterPassword
+        {
+            get { return _masterPassword; }
+            set
+            {
+                if (Set(ref _masterPassword, value))
+                    RaisePropertyChanged(() => CanConfirm);
             }
         }
 
         private readonly RelayCommand _confirmCommand;
         public ICommand ConfirmCommand => _confirmCommand;
 
-        public bool CanConfirm => CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming;
+        public bool CanConfirm => CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming && !string.IsNullOrEmpty(MasterPassword);
 
         private bool _isConfirming;
         private async void Confirm()
@@ -140,6 +155,9 @@ namespace Famoser.MassPass.View.ViewModels
             }
             if (res1 && res2)
             {
+                //all done!
+                await _collectionRepository.InitializeVault(MasterPassword);
+
                 _historyNavigationService.NavigateTo(PageKeys.UnlockPage.ToString());
             }
             else

@@ -87,7 +87,7 @@ namespace Famoser.MassPass.Business.Services
             {
                 if (IsValidApiConfiguration(config))
                 {
-                    var storageModel = await GetStorageModelAsync();
+                    var storageModel = await GetStorageModelAsync() ?? new ApiStorageModel();
                     storageModel.ApiConfiguration = config;
                     return await SaveStorageModelAsync(storageModel);
                 }
@@ -146,7 +146,7 @@ namespace Famoser.MassPass.Business.Services
         public async Task<bool> SetUserConfigurationAsync(UserConfiguration config, Guid deviceGuid)
         {
             config.DeviceId = deviceGuid;
-            var storageModel = await GetStorageModelAsync();
+            var storageModel = await GetStorageModelAsync() ?? new ApiStorageModel();
             storageModel.UserConfiguration = config;
             return await SaveStorageModelAsync(storageModel);
         }

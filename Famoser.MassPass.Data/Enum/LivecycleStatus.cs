@@ -8,8 +8,8 @@ namespace Famoser.MassPass.Data.Enum
     public enum LivecycleStatus
     {
         [Description("normal")]
-        Normal = 1,
+        Normal = 0,
         [Description("deleted")]
-        Deleted = 2
+        Deleted = 1
     }
 }

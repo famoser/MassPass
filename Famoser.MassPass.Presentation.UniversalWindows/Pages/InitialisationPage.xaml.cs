@@ -128,7 +128,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
             PictureGrid.Visibility = Visibility.Collapsed;
         }
 
-        private void SetConfiguration(string config)
+        private bool SetConfiguration(string config)
         {
             if (!ViewModel.CanSetApiConfiguration)
             {
@@ -137,6 +137,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
                 if (!ViewModel.CanSetApiConfiguration)
                 {
                     ShowMessage("Cannot use this particular configuration, sorry :(");
+                    return false;
                 }
             }
             else if (!ViewModel.CanSetUserConfiguration)
@@ -146,8 +147,13 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
                 if (!ViewModel.CanSetUserConfiguration)
                 {
                     ShowMessage("Cannot use this particular configuration, sorry :(");
+                    return false;
                 }
             }
+
+            UrlGrid.Visibility = Visibility.Collapsed;
+            PictureGrid.Visibility = Visibility.Collapsed;
+            return true;
         }
 
         private async void EvaluateUrlButton(object sender, RoutedEventArgs e)
@@ -156,13 +162,15 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
             {
                 try
                 {
-
                     var rs = new RestService();
                     var res = await rs.PostAsync(new Uri(UrlTextBox.Text), new List<KeyValuePair<string, string>>());
                     if (res.IsRequestSuccessfull)
                     {
                         var resp = await res.GetResponseAsStringAsync();
-                        SetConfiguration(resp);
+                        if (SetConfiguration(resp))
+                        {
+                            UrlTextBox.Text = "";
+                        }
                     }
                     else
                     {
@@ -174,6 +182,11 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
                     ShowMessage("No internet connection or webpage cannot be found, sorry :(\n\nCheck the Url and try again");
                 }
             }
+        }
+
+        private void CreateUserButton(object sender, RoutedEventArgs e)
+        {
+            ViewModel.CreateNewUserConfiguration = true;
         }
     }
 }

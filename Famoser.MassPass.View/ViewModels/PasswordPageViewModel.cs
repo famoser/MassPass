@@ -11,7 +11,7 @@ using GalaSoft.MvvmLight.Messaging;
 
 namespace Famoser.MassPass.View.ViewModels
 {
-    public class PasswordPageViewModel : ViewModelBase
+    public class PasswordPageViewModel : ViewModelBase, INavigationBackNotifier
     {
         private readonly IHistoryNavigationService _historyNavigationService;
         private readonly IPasswordVaultService _passwordVaultService;
@@ -64,7 +64,7 @@ namespace Famoser.MassPass.View.ViewModels
             if (bo && _passwordVaultService.IsVaultUnLocked())
                 _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString());
             else
-                WrongPasswordEvent.Invoke(this, new EventArgs());
+                WrongPasswordEvent?.Invoke(this, new EventArgs());
         }
 
         private readonly RelayCommand _initializeCommand;
@@ -72,7 +72,12 @@ namespace Famoser.MassPass.View.ViewModels
 
         private void GoToInitializePage()
         {
-            _historyNavigationService.NavigateTo(PageKeys.InitialisationPage.ToString());
+            _historyNavigationService.NavigateTo(PageKeys.InitialisationPage.ToString(), this);
+        }
+
+        public void HandleNavigationBack(object message)
+        {
+            InitializeAsync();
         }
 
         public EventHandler WrongPasswordEvent;

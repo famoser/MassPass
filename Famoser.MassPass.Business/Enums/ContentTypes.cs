@@ -19,6 +19,11 @@ namespace Famoser.MassPass.Business.Enums
         Folder,
 
         /// <summary>
+        /// A Note
+        /// </summary>
+        Note,
+
+        /// <summary>
         /// An unknown Content Type
         /// </summary>
         Unknown

@@ -9,7 +9,9 @@ namespace Famoser.MassPass.Business.Helpers
             if (bytes == null || bytes.Length == 0)
                 return null;
 
-            return Convert.ToBase64String(bytes);
+            char[] chars = new char[bytes.Length / sizeof(char)];
+            Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
+            return new string(chars);
         }
 
         public static byte[] StringToBytes(string content)
@@ -17,7 +19,9 @@ namespace Famoser.MassPass.Business.Helpers
             if (string.IsNullOrEmpty(content))
                 return null;
 
-            return Convert.FromBase64String(content);
+            byte[] bytes = new byte[content.Length * sizeof(char)];
+            Buffer.BlockCopy(content.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
         }
     }
 }

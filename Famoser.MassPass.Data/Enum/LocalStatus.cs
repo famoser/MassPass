@@ -7,6 +7,8 @@ namespace Famoser.MassPass.Data.Enum
     /// </summary>
     public enum LocalStatus
     {
+        [Description("new")]
+        New,
         [Description("up to date")]
         UpToDate = 1,
         [Description("changed")]

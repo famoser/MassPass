@@ -13,7 +13,7 @@ namespace Famoser.MassPass.Business.Helpers
     {
         public static async Task<ConcurrentStack<ContentModel>> GetLocallyChangedStack(IDataService dataService, RequestHelper requestHelper)
         {
-            var changed = ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.Changed).ToList();
+            var changed = ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.Changed || c.LocalStatus == LocalStatus.New).ToList();
             if (changed.Count < 2)
             {
                 //shortcut because I'm awesome

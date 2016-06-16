@@ -16,6 +16,7 @@ using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Enum;
+using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -41,8 +42,7 @@ namespace Famoser.MassPass.Business.Repositories
             _errorApiReportingService = errorApiReportingService;
             _contentRepository = contentRepository;
         }
-
-
+        
         private async Task FillCollection()
         {
             try
@@ -101,6 +101,42 @@ namespace Famoser.MassPass.Business.Repositories
 
         private Task _fillCollectionsTask;
         private bool _initialisationStarted;
+        public async Task<bool> InitializeVault(string masterPassword)
+        {
+            try
+            {
+                await _passwordVaultService.CreateNewVault(masterPassword);
+                var serverRelationGuid = Guid.NewGuid();
+                var parentGuid = Guid.NewGuid();
+                ContentManager.AddContent(new ContentModel()
+                {
+                    ContentJson = @"{'Content': 'This is a note!'}",
+                    Name = "Example Note",
+                    Id = parentGuid,
+                    ApiInformations = new ApiInformations()
+                    {
+                        ServerRelationId = serverRelationGuid
+                    }
+                });
+                ContentManager.AddContent(new ContentModel()
+                {
+                    ContentJson = @"{'Content': 'This is a note in a note!'}",
+                    Name = "Example Note",
+                    Id = Guid.NewGuid(),
+                    ParentId = parentGuid,
+                    ApiInformations = new ApiInformations()
+                    {
+                        ServerRelationId = serverRelationGuid
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            return true;
+        }
+
         public ObservableCollection<ContentModel> GetCollectionsAndLoad()
         {
             lock (this)

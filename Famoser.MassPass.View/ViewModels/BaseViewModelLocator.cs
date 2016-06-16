@@ -1,4 +1,6 @@
-﻿using Famoser.MassPass.Business.Repositories;
+﻿using Famoser.FrameworkEssentials.Services;
+using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services;
 using Famoser.MassPass.Business.Services.Interfaces;
@@ -19,11 +21,14 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationService>();
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultService>();
+            SimpleIoc.Default.Register<IRestService, RestService>();
             SimpleIoc.Default.Register<IDataService, DataService>();
 
             //business
             SimpleIoc.Default.Register<IConfigurationService, ConfigurationService>();
             SimpleIoc.Default.Register<ICollectionRepository, CollectionRepository>();
+            SimpleIoc.Default.Register<IContentRepository, ContentRepository>();
+            SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
 
             //view
             SimpleIoc.Default.Register<CollectionsPageViewModel>();

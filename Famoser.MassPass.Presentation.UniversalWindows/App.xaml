@@ -26,6 +26,7 @@
 
             <Style x:Key="FamoserRootGrid" TargetType="Grid">
                 <Setter Property="Background" Value="{ThemeResource Background}" />
+                <Setter Property="Margin" Value="10" />
             </Style>
             
             <Style x:Key="FamoserButton" TargetType="Button">
@@ -89,6 +90,7 @@
                 <Setter Property="FontSize" Value="15" />
                 <Setter Property="LineHeight" Value="20" />
                 <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style x:Key="FamoserDefaultButton" TargetType="Button" BasedOn="{StaticResource FamoserButton}">
@@ -134,9 +136,10 @@
             <Style x:Key="AccentAlwaysScrollViewer" TargetType="ScrollViewer" BasedOn="{StaticResource AlwaysScrollViewer}">
                 <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAccentBrush}" />
             </Style>
-            
+
             <visibility:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            
+            <visibility:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+
 
         </ResourceDictionary>
     </Application.Resources>

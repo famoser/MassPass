@@ -31,6 +31,15 @@ namespace Famoser.MassPass.Business.Services
         private DateTime _unlockDateTime;
         private DateTime _lastActionDateTime;
         private byte[] _activePasswordPhrase;
+        public async Task<bool> CreateNewVault(string password)
+        {
+            _unlockDateTime = DateTime.Now;
+            _lastActionDateTime = DateTime.Now;
+            _activePasswordPhrase = await _encryptionService.GeneratePasswortPhraseAsync(password);
+            _storage = new PasswordVaultStorageModel();
+            return await SaveCachedLockContent();
+        }
+
         public async Task<bool> TryUnlockVaultAsync(string password)
         {
             try
@@ -69,6 +78,7 @@ namespace Famoser.MassPass.Business.Services
         {
             if (_storage != null)
             {
+                _storage.LastModifiedDateTime = DateTime.Now;
                 var json = JsonConvert.SerializeObject(_storage);
                 var bytes = StorageHelper.StringToBytes(json);
                 _cachedLockContent = await _encryptionService.EncryptAsync(bytes, _activePasswordPhrase);

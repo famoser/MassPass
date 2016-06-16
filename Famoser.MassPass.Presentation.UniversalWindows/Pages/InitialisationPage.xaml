@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Unlock" Style="{StaticResource FamoserHeaderTextBlock}" />
+        <TextBlock Text="Initialize" Style="{StaticResource FamoserHeaderTextBlock}" />
         <ScrollViewer Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -24,47 +24,86 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="1: Api Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
-                    <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                </Grid>
-                <Grid Grid.Row="1" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="2: User Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
-                    <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetUserConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                </Grid>
-                <Grid Grid.Row="2" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="Take Picture" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TakePictureButton" />
-                    <Button Grid.Row="0" Content="Type in Url" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TypeInUrlButton" />
-                    <Grid  x:Name="PictureGrid" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
-                        <CaptureElement x:Name="BarcodeCaptureElement" Height="400" />
-                    </Grid>
-                    <Grid x:Name="UrlGrid" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
+                    <TextBlock Grid.Row="0" Text="Set Master Password" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <TextBlock Grid.Row="1" Text="Choose a safe one (or type in your existing)!" Style="{StaticResource FamoserBodyTextBlock}" />
+                    <PasswordBox Password="{Binding MasterPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" PlaceholderText="master password" Style="{StaticResource FamoserPasswordBox}"/>
+                </Grid>
+                <Grid Grid.Row="1" Visibility="{Binding MasterPassword, Converter={StaticResource StringToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Text="Set Api Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <SymbolIcon Grid.Row="0" Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <TextBlock Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Style="{StaticResource FamoserBodyTextBlock}" >
+                        <Run Text="Choose the API to communicate with. Scan the barcode on the webpage or type in the url." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="If you do not have your own api, feel free to use mine: "></Run>
+                        <Hyperlink NavigateUri="https://api.masspass.famoser.ch/1.0/" >
+                            <Run Text="https://api.masspass.famoser.ch/1.0/" />
+                        </Hyperlink>
+                    </TextBlock>
+                </Grid>
+                <Grid Grid.Row="2" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Set User Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <SymbolIcon Grid.Row="0" Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <TextBlock Visibility="{Binding CanSetUserConfiguration, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}"  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Style="{StaticResource FamoserBodyTextBlock}" >
+                        <Run Text="If you already using this application elsewhere, connect it here." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="Create a new user if you're using the application for the first time" />
+                    </TextBlock>
+                </Grid>
+                <Grid Grid.Row="3" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
+                    <Grid Visibility="{Binding MasterPassword, Converter={StaticResource StringToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="UrlTextBox" PlaceholderText="Url" Style="{StaticResource FamoserDefaultTextBox}" />
-                        <Button Grid.Column="1" Content="Überprüfen" Style="{StaticResource FamoserDefaultButton}" Click="EvaluateUrlButton" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Button Grid.Row="0" Content="Take Picture" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TakePictureButton" />
+                        <Button Grid.Row="0" Content="Type in Url" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="TypeInUrlButton" />
+                        <Button Grid.Row="1" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,10,0,0" Content="Create new user" Grid.Column="0" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Click="CreateUserButton" />
+
+                        <Grid  x:Name="PictureGrid" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
+                            <CaptureElement x:Name="BarcodeCaptureElement" Height="400" />
+                        </Grid>
+                        <Grid x:Name="UrlGrid" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="UrlTextBox" PlaceholderText="Url" Style="{StaticResource FamoserDefaultTextBox}" />
+                            <Button Grid.Column="1" Content="Überprüfen" Style="{StaticResource FamoserDefaultButton}" Click="EvaluateUrlButton" />
+                        </Grid>
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="3" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid Grid.Row="4" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="10" />
@@ -75,7 +114,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="Confirm!" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Command="{Binding ConfirmCommand}"/>
+                    <CheckBox IsChecked="{Binding CreateNewUserConfiguration, Mode=TwoWay}" Grid.Row="1" Content="Create new user" Grid.Column="0" HorizontalAlignment="Stretch" />
+                    <Button Grid.Row="1" Content="Confirm!" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Command="{Binding ConfirmCommand}"/>
                 </Grid>
             </Grid>
 
