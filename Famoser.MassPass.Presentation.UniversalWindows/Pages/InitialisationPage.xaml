@@ -31,7 +31,7 @@
                     <TextBlock Grid.Column="0" Text="1: Api Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
                     <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </Grid>
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -39,7 +39,7 @@
                     <TextBlock Grid.Column="0" Text="2: User Configuration" Style="{StaticResource FamoserSubHeaderTextBlock}" />
                     <SymbolIcon Grid.Column="1" Style="{StaticResource FamoserSymbolIconAccept}" Visibility="{Binding CanSetUserConfiguration, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </Grid>
-                <Grid Grid.Row="2" Visibility="{Binding CanSetApiConfiguration, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
+                <Grid Grid.Row="2" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="10" />
@@ -63,6 +63,19 @@
                         <TextBox x:Name="UrlTextBox" PlaceholderText="Url" Style="{StaticResource FamoserDefaultTextBox}" />
                         <Button Grid.Column="1" Content="Überprüfen" Style="{StaticResource FamoserDefaultButton}" Click="EvaluateUrlButton" />
                     </Grid>
+                </Grid>
+                <Grid Grid.Row="3" Visibility="{Binding CanConfirm, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Content="Confirm!" Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" HorizontalAlignment="Stretch" Command="{Binding ConfirmCommand}"/>
                 </Grid>
             </Grid>
 

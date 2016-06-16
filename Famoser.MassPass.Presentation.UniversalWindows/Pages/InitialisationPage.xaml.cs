@@ -100,12 +100,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
 
                         if (result != null)
                         {
-                            if (ViewModel.TrySetApiConfigurationCommand.CanExecute(result.Text))
-                                ViewModel.TrySetApiConfigurationCommand.Execute(result.Text);
-                            if (!ViewModel.CanSetApiConfiguration)
-                            {
-                                ShowMessage("Cannot use this particular configuration, sorry :(");
-                            }
+                            SetConfiguration(result.Text);
                         }
                     }
                 }
@@ -116,7 +111,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
             }
             catch (Exception ex)
             {
-                // ignored
+                ShowMessage("Unfortunately we cannot read the QR code, sorry :(\n\nYou have to type in the url manually");
             }
         }
 
@@ -133,6 +128,28 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
             PictureGrid.Visibility = Visibility.Collapsed;
         }
 
+        private void SetConfiguration(string config)
+        {
+            if (!ViewModel.CanSetApiConfiguration)
+            {
+                if (ViewModel.TrySetApiConfigurationCommand.CanExecute(config))
+                    ViewModel.TrySetApiConfigurationCommand.Execute(config);
+                if (!ViewModel.CanSetApiConfiguration)
+                {
+                    ShowMessage("Cannot use this particular configuration, sorry :(");
+                }
+            }
+            else if (!ViewModel.CanSetUserConfiguration)
+            {
+                if (ViewModel.TrySetUserConfigurationCommand.CanExecute(config))
+                    ViewModel.TrySetUserConfigurationCommand.Execute(config);
+                if (!ViewModel.CanSetUserConfiguration)
+                {
+                    ShowMessage("Cannot use this particular configuration, sorry :(");
+                }
+            }
+        }
+
         private async void EvaluateUrlButton(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(UrlTextBox.Text))
@@ -145,12 +162,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
                     if (res.IsRequestSuccessfull)
                     {
                         var resp = await res.GetResponseAsStringAsync();
-                        if (ViewModel.TrySetApiConfigurationCommand.CanExecute(resp))
-                            ViewModel.TrySetApiConfigurationCommand.Execute(resp);
-                        if (!ViewModel.CanSetApiConfiguration)
-                        {
-                            ShowMessage("Cannot use this particular configuration, sorry :(");
-                        }
+                        SetConfiguration(resp);
                     }
                     else
                     {

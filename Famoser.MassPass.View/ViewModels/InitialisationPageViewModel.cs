@@ -21,7 +21,7 @@ namespace Famoser.MassPass.View.ViewModels
 
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
-            _confirmCommand = new RelayCommand(Confirm, CanConfirm);
+            _confirmCommand = new RelayCommand(Confirm, () => CanConfirm);
 
             if (IsInDesignMode)
             {
@@ -43,7 +43,11 @@ namespace Famoser.MassPass.View.ViewModels
         public bool CanSetApiConfiguration
         {
             get { return _canSetApiConfiguration; }
-            set { Set(ref _canSetApiConfiguration, value); }
+            set
+            {
+                if (Set(ref _canSetApiConfiguration, value))
+                    RaisePropertyChanged(() => CanConfirm);
+            }
         }
 
         private string _lastApiConfiguration;
@@ -74,7 +78,11 @@ namespace Famoser.MassPass.View.ViewModels
         public bool CanSetUserConfiguration
         {
             get { return _canSetUserConfiguration; }
-            set { Set(ref _canSetUserConfiguration, value); }
+            set
+            {
+                if (Set(ref _canSetUserConfiguration, value))
+                    RaisePropertyChanged(() => CanConfirm);
+            }
         }
         private string _lastUserConfiguration;
         private void SetUserConfiguration(string content)
@@ -106,10 +114,7 @@ namespace Famoser.MassPass.View.ViewModels
         private readonly RelayCommand _confirmCommand;
         public ICommand ConfirmCommand => _confirmCommand;
 
-        private bool CanConfirm()
-        {
-            return CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming;
-        }
+        public bool CanConfirm => CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming;
 
         private bool _isConfirming;
         private async void Confirm()
@@ -126,7 +131,7 @@ namespace Famoser.MassPass.View.ViewModels
                 res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
                 {
                     UserId = Guid.NewGuid()
-                }, 
+                },
                 Guid.NewGuid());
             }
             else
