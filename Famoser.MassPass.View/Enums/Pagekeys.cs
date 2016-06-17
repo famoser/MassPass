@@ -25,6 +25,11 @@
         /// <summary>
         /// used to display user information to connect another application
         /// </summary>
-        SharePage
+        SharePage,
+
+        /// <summary>
+        /// add new item
+        /// </summary>
+        AddPage
     }
 }

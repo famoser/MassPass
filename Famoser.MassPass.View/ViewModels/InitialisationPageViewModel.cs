@@ -155,9 +155,7 @@ namespace Famoser.MassPass.View.ViewModels
             }
             if (res1 && res2)
             {
-                //all done!
                 await _collectionRepository.InitializeVault(MasterPassword);
-
                 _historyNavigationService.NavigateTo(PageKeys.UnlockPage.ToString());
             }
             else

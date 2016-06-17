@@ -27,6 +27,14 @@ namespace Famoser.MassPass.View.ViewModels
             _collections = _collectionRepository.GetCollectionsAndLoad();
 
             _syncCommand = new RelayCommand(Sync, () => CanSync);
+            _shareCommand = new RelayCommand(Share);
+            _addCommand = new RelayCommand(Add);
+            _lockCommand = new RelayCommand(Lock);
+
+            if (IsInDesignMode)
+            {
+                Collections = _collectionRepository.GetSampleCollections();
+            }
         }
 
         private ObservableCollection<ContentModel> _collections;
@@ -77,6 +85,31 @@ namespace Famoser.MassPass.View.ViewModels
 
             CanSync = true;
             _syncCommand.RaiseCanExecuteChanged();
+        }
+
+        private readonly RelayCommand _shareCommand;
+        public ICommand ShareCommand => _shareCommand;
+
+        private void Share()
+        {
+            _historyNavigationService.NavigateTo(PageKeys.SharePage.ToString());
+        }
+
+        private readonly RelayCommand _lockCommand;
+        public ICommand LockCommand => _lockCommand;
+
+        private void Lock()
+        {
+            _passwordVaultService.LockVault();
+            _historyNavigationService.GoBack();
+        }
+
+        private readonly RelayCommand _addCommand;
+        public ICommand AddCommand => _addCommand;
+
+        private void Add()
+        {
+            _historyNavigationService.NavigateTo(PageKeys.AddPage.ToString());
         }
 
         public void HandleNavigationBack(object message)

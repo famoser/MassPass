@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Extensions;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Managers;
@@ -162,6 +163,28 @@ namespace Famoser.MassPass.Business.Repositories
                 LogHelper.Instance.LogException(ex);
             }
             return false;
+        }
+
+        public ContentModel GetSampleContent()
+        {
+            var cm = new ContentModel()
+            {
+                Name = "Note",
+                ContentJson = @"{'Content': 'This is a note!'}",
+                Contents =
+                {
+                    new ContentModel()
+                    {
+                        Name = "Additional1"
+                    },
+                    new ContentModel()
+                    {
+                        Name = "Additional2"
+                    }
+                }
+            };
+            cm.SetContentType(ContentTypes.Note);
+            return cm;
         }
     }
 }

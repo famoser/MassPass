@@ -10,7 +10,7 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     {
         Task<bool> CreateNewVault(string password);
         Task<bool> TryUnlockVaultAsync(string password);
-        Task<bool> RegisterPasswordAsync(Guid relationId, byte[] password);
+        Task<bool> RegisterPasswordAsync(Guid relationId, string password);
         byte[] GetPassword(Guid relationId);
         bool IsVaultUnLocked();
         bool LockVault();

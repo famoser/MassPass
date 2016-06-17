@@ -9,5 +9,7 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
         Task<bool> InitializeVault(string masterPassword);
         ObservableCollection<ContentModel> GetCollectionsAndLoad();
         Task<bool> SyncAsync();
+
+        ObservableCollection<ContentModel> GetSampleCollections();
     }
 }

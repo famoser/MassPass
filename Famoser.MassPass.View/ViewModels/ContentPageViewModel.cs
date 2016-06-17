@@ -18,6 +18,11 @@ namespace Famoser.MassPass.View.ViewModels
             _contentRepository = contentRepository;
 
             _fillHistoryCommand = new RelayCommand(FillHistory);
+
+            if (IsInDesignMode)
+            {
+                _contentModel = _contentRepository.GetSampleContent();
+            }
         }
 
         private ContentModel _contentModel;

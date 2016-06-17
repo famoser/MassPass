@@ -8,13 +8,19 @@
     mc:Ignorable="d"
     DataContext="{Binding CollectionsPageViewModel, Source={StaticResource Locator}}">
 
+    <Page.Resources>
+        <DataTemplate x:Key="CollectionDataTemplate">
+            <TextBlock Text="{Binding Name}" Style="{StaticResource FamoserTitleTextBlock}" />
+        </DataTemplate>
+    </Page.Resources>
+
 
     <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay" IsPaneOpen="False" 
                CompactPaneLength="0" OpenPaneLength="300" PaneBackground="{ThemeResource SystemControlBackgroundAccentBrush}">
         <SplitView.Pane>
             <ScrollViewer VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Enabled">
                 <StackPanel>
-                    
+
                 </StackPanel>
             </ScrollViewer>
         </SplitView.Pane>
@@ -25,14 +31,11 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
-                    <StackPanel>
-
-                    </StackPanel>
+                    <ListView ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" />
                 </ScrollViewer>
                 <Grid Grid.Row="0" >
                     <TextBlock Text="Sammlungen" Style="{StaticResource FamoserHeaderTextBlock}"  />
                 </Grid>
-
             </Grid>
         </SplitView.Content>
     </SplitView>
@@ -41,9 +44,10 @@
     <Page.BottomAppBar>
         <CommandBar >
             <CommandBar.PrimaryCommands>
-                <AppBarButton IsCompact="True" Icon="Add" Label="Add" />
-                <AppBarButton IsCompact="True" Icon="Link" Command="{Binding ConnectCommand}" Content="Connect" />
-                <AppBarButton IsCompact="True" Command="{Binding RefreshCommand}" Icon="Refresh" Label="Refresh" />
+                <AppBarButton IsCompact="True" Command="{Binding ShareCommand}" Icon="Link" Label="Connect" />
+                <AppBarButton IsCompact="True" Command="{Binding LockCommand}" Icon="Back" Label="Lock" />
+                <AppBarButton IsCompact="True" Command="{Binding SyncCommand}" Icon="Refresh" Label="Refresh" />
+                <AppBarButton IsCompact="True" Command="{Binding AddCommand}" Icon="Add" Label="Add" />
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

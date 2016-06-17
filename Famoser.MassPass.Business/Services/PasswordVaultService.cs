@@ -25,6 +25,13 @@ namespace Famoser.MassPass.Business.Services
             _encryptionService = encryptionService;
             _folderStorageService = folderStorageService;
             _configurationService = configurationService;
+
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+            _timeoutConfig = await _configurationService.GetConfiguration(SettingKeys.LockTimout);
         }
 
         private PasswordVaultStorageModel _storage;
@@ -50,16 +57,13 @@ namespace Famoser.MassPass.Business.Services
                 _unlockDateTime = DateTime.Now;
                 _lastActionDateTime = DateTime.Now;
 
-                if (_timeoutConfig == null)
-                    _timeoutConfig = await _configurationService.GetConfiguration(SettingKeys.LockTimout);
-
-                return true;
             }
             catch (Exception ex)
             {
                 LogHelper.Instance.LogException(ex);
+                return false;
             }
-            return false;
+            return true;
         }
 
         private byte[] _cachedLockContent;
@@ -92,7 +96,8 @@ namespace Famoser.MassPass.Business.Services
         private ConfigurationModel _timeoutConfig;
         public bool IsVaultUnLocked()
         {
-            if (_lastActionDateTime - TimeSpan.FromSeconds(_timeoutConfig.IntValue) < DateTime.Now)
+            int allowedSeconds = _timeoutConfig?.IntValue ?? 60;
+            if (_lastActionDateTime - TimeSpan.FromSeconds(allowedSeconds) < DateTime.Now)
                 return true;
             return false;
         }
@@ -108,12 +113,12 @@ namespace Famoser.MassPass.Business.Services
             return null;
         }
 
-        public async Task<bool> RegisterPasswordAsync(Guid relationId, byte[] password)
+        public async Task<bool> RegisterPasswordAsync(Guid relationId, string password)
         {
             if (IsVaultUnLocked())
             {
                 _lastActionDateTime = DateTime.Now;
-                _storage.Vault[relationId] = password;
+                _storage.Vault[relationId] = StorageHelper.StringToBytes(password);
                 return await SaveCachedLockContent();
             }
             return false;
@@ -140,7 +145,7 @@ namespace Famoser.MassPass.Business.Services
         public async Task<byte[]> EncryptAsync(byte[] data)
         {
             if (IsVaultUnLocked())
-                await _encryptionService.EncryptAsync(data, _activePasswordPhrase);
+                return await _encryptionService.EncryptAsync(data, _activePasswordPhrase);
             return null;
         }
 

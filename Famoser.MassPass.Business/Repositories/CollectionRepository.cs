@@ -129,10 +129,13 @@ namespace Famoser.MassPass.Business.Repositories
                         ServerRelationId = serverRelationGuid
                     }
                 });
+                await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
+                await SaveCollection();
             }
             catch (Exception ex)
             {
                 LogHelper.Instance.LogException(ex);
+                return false;
             }
             return true;
         }
@@ -225,6 +228,19 @@ namespace Famoser.MassPass.Business.Repositories
                 LogHelper.Instance.LogException(ex);
             }
             return false;
+        }
+
+        public ObservableCollection<ContentModel> GetSampleCollections()
+        {
+            var obs = new ObservableCollection<ContentModel>();
+            for (int i = 0; i < 5; i++)
+            {
+                obs.Add(new ContentModel()
+                {
+                    Name = "Titel" + i
+                });
+            }
+            return obs;
         }
 
         private async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)

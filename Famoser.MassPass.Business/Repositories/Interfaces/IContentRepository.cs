@@ -11,5 +11,7 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
         Task<List<ContentModel>> ReadOutAll();
         Task<bool> GetContentModelForHistory(HistoryModel model);
         Task<bool> SaveAll();
+        
+        ContentModel GetSampleContent();
     }
 }
