@@ -152,7 +152,7 @@ namespace Famoser.MassPass.Business.Services
         public async Task<byte[]> DecryptAsync(byte[] data)
         {
             if (IsVaultUnLocked())
-                await _encryptionService.DecryptAsync(data, _activePasswordPhrase);
+                return await _encryptionService.DecryptAsync(data, _activePasswordPhrase);
             return null;
         }
     }

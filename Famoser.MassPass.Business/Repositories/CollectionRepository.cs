@@ -129,6 +129,13 @@ namespace Famoser.MassPass.Business.Repositories
                         ServerRelationId = serverRelationGuid
                     }
                 });
+
+                var files = await _folderStorageService.GetFiles(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description);
+                foreach (var file in files)
+                {
+                    await _folderStorageService.DeleteFile(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, file);
+                }
+
                 await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
                 await SaveCollection();
             }
