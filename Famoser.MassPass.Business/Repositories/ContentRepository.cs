@@ -186,5 +186,23 @@ namespace Famoser.MassPass.Business.Repositories
             cm.SetContentType(ContentTypes.Note);
             return cm;
         }
+
+        public async Task<bool> DeleteAll()
+        {
+            try
+            {
+                var files = await _folderStorageService.GetFiles(ContentFolder);
+                foreach (var file in files)
+                {
+                    await _folderStorageService.DeleteFile(ContentFolder, file);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+                return false;
+            }
+            return true;
+        }
     }
 }

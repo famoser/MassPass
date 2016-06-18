@@ -67,7 +67,7 @@ namespace Famoser.MassPass.Business.Repositories
                 var contentModels = await _contentRepository.ReadOutAll();
                 foreach (var contentModel in contentModels)
                 {
-                    ContentManager.AddContent(contentModel, true);
+                    ContentManager.AddOrReplaceContent(contentModel, true);
                 }
             }
             catch (Exception ex)
@@ -108,7 +108,7 @@ namespace Famoser.MassPass.Business.Repositories
                 await _passwordVaultService.CreateNewVault(masterPassword);
                 var serverRelationGuid = Guid.NewGuid();
                 var parentGuid = Guid.NewGuid();
-                ContentManager.AddContent(new ContentModel()
+                ContentManager.AddOrReplaceContent(new ContentModel()
                 {
                     ContentJson = @"{'Content': 'This is a note!'}",
                     Name = "Example Note",
@@ -118,7 +118,7 @@ namespace Famoser.MassPass.Business.Repositories
                         ServerRelationId = serverRelationGuid
                     }
                 });
-                ContentManager.AddContent(new ContentModel()
+                ContentManager.AddOrReplaceContent(new ContentModel()
                 {
                     ContentJson = @"{'Content': 'This is a note in a note!'}",
                     Name = "Example Note",
@@ -130,11 +130,7 @@ namespace Famoser.MassPass.Business.Repositories
                     }
                 });
 
-                var files = await _folderStorageService.GetFiles(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description);
-                foreach (var file in files)
-                {
-                    await _folderStorageService.DeleteFile(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, file);
-                }
+                await _contentRepository.DeleteAll();
 
                 await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
                 await SaveCollection();
@@ -369,7 +365,7 @@ namespace Famoser.MassPass.Business.Repositories
                         ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
                         newModel.ApiInformations = response.ApiInformations;
                         newModel.LocalStatus = LocalStatus.UpToDate;
-                        ContentManager.AddContent(newModel);
+                        ContentManager.AddOrReplaceContent(newModel);
                     }
                     else
                     {

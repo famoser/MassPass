@@ -15,18 +15,31 @@ namespace Famoser.MassPass.Business.Managers
         public static readonly ObservableCollection<ContentModel> ContentModelCollection = new ObservableCollection<ContentModel>();
 
         private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>();
-        private static readonly ConcurrentBag<ContentModel> NeedSavingModels = new ConcurrentBag<ContentModel>();
-        public static void AddContent(ContentModel content, bool isAlreadySaved = false)
+        private static readonly ConcurrentQueue<ContentModel> NeedSavingModels = new ConcurrentQueue<ContentModel>();
+        public static void AddOrReplaceContent(ContentModel content, bool isAlreadySaved = false)
         {
+            //if already in collection, remove it
+            var existing = FlatContentModelCollection.FirstOrDefault(c => c.Id == content.Id);
+            if (existing != null)
+            {
+                FlatContentModelCollection.Remove(existing);
+                if (ContentModelCollection.Contains(existing))
+                    ContentModelCollection.Remove(existing);
+                if (ParentLessModels.Contains(existing))
+                    ParentLessModels.Remove(existing);
+            }
+
+            //add to collections
             FlatContentModelCollection.Add(content);
             if (content.ParentId != Guid.Empty)
-            {
                 ParentLessModels.Add(content);
-            }
+            else
+                ContentModelCollection.Add(content);
+
             ResolveParentLessModels();
 
             if (!isAlreadySaved)
-                NeedSavingModels.Add(content);
+                NeedSavingModels.Enqueue(content);
         }
 
         public static void AddFromCache(CollectionCacheModel cache)
@@ -34,7 +47,7 @@ namespace Famoser.MassPass.Business.Managers
             var models = CacheHelper.ReadCache(cache);
             foreach (var contentModel in models)
             {
-                AddContent(contentModel, true);
+                AddOrReplaceContent(contentModel, true);
             }
         }
 
@@ -62,11 +75,16 @@ namespace Famoser.MassPass.Business.Managers
         {
             var list = new List<ContentModel>();
             ContentModel res;
-            while (NeedSavingModels.TryTake(out res))
+            while (NeedSavingModels.TryDequeue(out res))
             {
                 list.Add(res);
             }
             return list;
-        } 
+        }
+
+        public static void EmptyPresentationLists()
+        {
+            
+        }
     }
 }

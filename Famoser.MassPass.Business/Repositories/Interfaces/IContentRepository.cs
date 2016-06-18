@@ -13,5 +13,6 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
         Task<bool> SaveAll();
         
         ContentModel GetSampleContent();
+        Task<bool> DeleteAll();
     }
 }
