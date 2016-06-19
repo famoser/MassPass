@@ -5,17 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Famoser.MassPass.View.Interfaces;
 using Famoser.MassPass.View.Services.Interfaces;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 
 namespace Famoser.MassPass.Presentation.UniversalWindows.Services
 {
-    /// <summary>
-    /// //todo implement history, and windows phone backbutton, and buttons of universal application
-    /// </summary>
     public class HistoryNavigationService : IHistoryNavigationService
     {
         private readonly ConcurrentDictionary<string, Type> _pagesByKey = new ConcurrentDictionary<string, Type>();
@@ -23,6 +24,43 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
 
         public string RootPageKey => "-- ROOT--";
         public string UnknownPageKey => "-- UNKNOWN--";
+
+        public HistoryNavigationService(bool hideStatusBar = true)
+        {
+            SystemNavigationManager.GetForCurrentView().BackRequested += (s, ev) =>
+            {
+                if (!ev.Handled)
+                {
+                    GoBack();
+                    ev.Handled = true;
+                }
+            };
+
+            if (hideStatusBar)
+                HideStatusBar();
+
+
+            ConfigureBackButton();
+        }
+
+        private async void HideStatusBar()
+        {
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                await statusBar.HideAsync();
+            }
+        }
+
+        private void ConfigureBackButton()
+        {
+            if (_notifiers.Count == 0)
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Collapsed;
+            else
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Visible;
+        }
 
         /// <summary>
         /// The key corresponding to the currently displayed page.
@@ -50,12 +88,13 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
         {
             Frame frame = (Frame)Window.Current.Content;
             if (!frame.CanGoBack)
-                return;
+                Window.Current.Close();
             Tuple<INavigationBackNotifier, object> res;
             lock (this)
             {
                 frame.GoBack();
                 while (!_notifiers.TryPop(out res)) { }
+                ConfigureBackButton();
             }
             res?.Item1?.HandleNavigationBack(res.Item2);
         }
@@ -75,6 +114,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
             lock (this)
             {
                 _notifiers.Push(new Tuple<INavigationBackNotifier, object>(navigationBackNotifier, notifyObject));
+                ConfigureBackButton();
             }
         }
 
@@ -89,5 +129,6 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services
                 throw new ArgumentException("This type is already configured with key " + _pagesByKey.First(p => p.Value == pageType).Key);
             while (!_pagesByKey.TryAdd(key, pageType)) ;
         }
+
     }
 }

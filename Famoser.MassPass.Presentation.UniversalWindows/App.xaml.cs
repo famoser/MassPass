@@ -1,9 +1,12 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Views;
 
 namespace Famoser.MassPass.Presentation.UniversalWindows
 {
@@ -67,6 +70,10 @@ namespace Famoser.MassPass.Presentation.UniversalWindows
                     // parameter
                     rootFrame.Navigate(typeof(Pages.UnlockPage), e.Arguments);
                 }
+
+
+
+
                 // Ensure the current window is active
                 Window.Current.Activate();
             }

@@ -74,7 +74,7 @@ namespace Famoser.MassPass.View.ViewModels
         private readonly RelayCommand _syncCommand;
         public ICommand SyncCommand => _syncCommand;
 
-        private bool CanSync { get; set; }
+        private bool CanSync { get; set; } = true;
 
         private async void Sync()
         {
