@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.UniversalWindows.Platform;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Presentation.UniversalWindows.Pages;
@@ -31,7 +33,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
 
         private IHistoryNavigationService GetNavigationService()
         {
-            var navigationService = new HistoryNavigationService();
+            var navigationService = new HistoryNavigationServices();
             navigationService.Configure(PageKeys.InitialisationPage.ToString(), typeof(InitialisationPage));
             navigationService.Configure(PageKeys.CollectionsPage.ToString(), typeof(CollectionsPage));
             navigationService.Configure(PageKeys.ContentPage.ToString(), typeof(ContentPage));

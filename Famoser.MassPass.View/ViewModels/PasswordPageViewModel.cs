@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics.Tracing;
 using System.Windows.Input;
+using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.View.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
-using Famoser.MassPass.View.Interfaces;
-using Famoser.MassPass.View.Services.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 
 namespace Famoser.MassPass.View.ViewModels
 {
