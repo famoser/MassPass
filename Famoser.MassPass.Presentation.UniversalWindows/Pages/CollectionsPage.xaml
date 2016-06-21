@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    DataContext="{Binding CollectionsPageViewModel, Source={StaticResource Locator}}">
+    DataContext="{Binding ContentPageViewModel, Source={StaticResource Locator}}">
 
     <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay" IsPaneOpen="False" 
                CompactPaneLength="0" OpenPaneLength="300" PaneBackground="{ThemeResource SystemControlBackgroundAccentBrush}">
@@ -27,7 +27,7 @@
                     <TextBlock Text="Sammlungen" Style="{StaticResource FamoserHeaderTextBlock}"  />
                 </Grid>
                 <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
-                    <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding SelecetedModel, Mode=TwoWay}" />
+                    <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" />
                 </ScrollViewer>
             </Grid>
         </SplitView.Content>

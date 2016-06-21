@@ -20,7 +20,7 @@
         /// <summary>
         /// a display of an content
         /// </summary>
-        ContentPage,
+        NotePage,
 
         /// <summary>
         /// used to display user information to connect another application

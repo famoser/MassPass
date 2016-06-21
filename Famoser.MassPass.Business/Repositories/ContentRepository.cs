@@ -60,7 +60,6 @@ namespace Famoser.MassPass.Business.Repositories
         {
             try
             {
-
                 var reqHelper = await GetRequestHelper();
                 var resp = await _dataService.GetHistoryAsync(reqHelper.ContentEntityHistoryRequest(model.ApiInformations.ServerId));
                 if (resp.IsSuccessfull)
@@ -163,6 +162,12 @@ namespace Famoser.MassPass.Business.Repositories
                 LogHelper.Instance.LogException(ex);
             }
             return false;
+        }
+
+        public Task<bool> Save(ContentModel model)
+        {
+            ContentManager.NeedsSaving(model);
+            return SaveAll();
         }
 
         public ContentModel GetSampleContent()

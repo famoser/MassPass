@@ -17,7 +17,7 @@
             <TextBlock Text="{Binding ContentModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}"  />
         </Grid>
         <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
-            <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding SelecetedModel, Mode=TwoWay}" />
+            <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" />
         </ScrollViewer>
     </Grid>
 </Page>

@@ -82,9 +82,10 @@ namespace Famoser.MassPass.Business.Managers
             return list;
         }
 
-        public static void EmptyPresentationLists()
+        public static void NeedsSaving(ContentModel model)
         {
-            
+            if (!NeedSavingModels.Contains(model))
+                NeedSavingModels.Enqueue(model);
         }
     }
 }

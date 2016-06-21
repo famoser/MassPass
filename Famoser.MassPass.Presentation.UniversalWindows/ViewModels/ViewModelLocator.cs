@@ -48,7 +48,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
             var navigationService = new HistoryNavigationServices();
             navigationService.Configure(PageKeys.InitialisationPage.ToString(), typeof(InitialisationPage));
             navigationService.Configure(PageKeys.CollectionsPage.ToString(), typeof(CollectionsPage));
-            navigationService.Configure(PageKeys.ContentPage.ToString(), typeof(ContentPage));
+            navigationService.Configure(PageKeys.NotePage.ToString(), typeof(ContentPage));
             navigationService.Configure(PageKeys.SharePage.ToString(), typeof(SharePage));
             navigationService.Configure(PageKeys.UnlockPage.ToString(), typeof(UnlockPage));
             return navigationService;

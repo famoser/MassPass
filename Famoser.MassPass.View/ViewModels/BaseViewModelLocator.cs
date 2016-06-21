@@ -31,21 +31,21 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
 
             //view
-            SimpleIoc.Default.Register<CollectionsPageViewModel>();
+            SimpleIoc.Default.Register<ContentPageViewModel>();
             SimpleIoc.Default.Register<ContentPageViewModel>();
             SimpleIoc.Default.Register<InitialisationPageViewModel>();
             SimpleIoc.Default.Register<PasswordPageViewModel>();
 
             //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
 
-            SimpleIoc.Default.Register<CollectionsPageViewModel>();
+            SimpleIoc.Default.Register<ContentPageViewModel>();
             SimpleIoc.Default.Register<ContentPageViewModel>();
             SimpleIoc.Default.Register<InitialisationPageViewModel>();
             SimpleIoc.Default.Register<PasswordPageViewModel>();
             SimpleIoc.Default.Register<SharePageViewModel>();
         }
 
-        public CollectionsPageViewModel CollectionsPageViewModel => SimpleIoc.Default.GetInstance<CollectionsPageViewModel>();
+        public ContentPageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<ContentPageViewModel>();
         public ContentPageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<ContentPageViewModel>();
         public InitialisationPageViewModel InitialisationPageViewModel => SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
         public PasswordPageViewModel PasswordPageViewModel => SimpleIoc.Default.GetInstance<PasswordPageViewModel>();

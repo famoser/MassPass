@@ -181,6 +181,8 @@ namespace Famoser.MassPass.Business.Repositories
                      * 4. download missing from collections
                      * */
 
+                    //todo save new / changed entites to local storage
+
                     // 1. check if version online is same, if yes, prepare for upload
                     var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
                     var tasks = new List<Task>();
