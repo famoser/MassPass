@@ -62,9 +62,10 @@ namespace Famoser.MassPass.View.ViewModels
                         }
                         else
                         {
+                            //todo: change archtiecture; make a root model 
                             var mod = _selectedModel;
                             _selectedModel = null;
-                            _historyNavigationService.NavigateTo(PageKeys.ContentPage.ToString(), this, mod.Contents);
+                            _historyNavigationService.NavigateTo(PageKeys.ContentPage.ToString(), this, mod);
                         }
                     }
                 }

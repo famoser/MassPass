@@ -9,6 +9,7 @@ using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Presentation.UniversalWindows.Pages;
 using Famoser.MassPass.Presentation.UniversalWindows.Services;
+using Famoser.MassPass.Presentation.UniversalWindows.Services.Mock;
 using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Services.Interfaces;
 using Famoser.MassPass.View.ViewModels;
@@ -24,11 +25,22 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            SimpleIoc.Default.Register<IErrorApiReportingService, ErrorApiReportingService>();
-            SimpleIoc.Default.Register<IFolderStorageService, FolderStorageService>();
-            SimpleIoc.Default.Register<IQrCodeService, QrCodeService>();
-            var ns = GetNavigationService();
-            SimpleIoc.Default.Register(() => ns);
+            if (IsInDesignMode)
+            {
+                SimpleIoc.Default.Register<IErrorApiReportingService, MockErrorApiReportingService>();
+                SimpleIoc.Default.Register<IFolderStorageService, MockFolderStorageService>();
+                SimpleIoc.Default.Register<IQrCodeService, MockQrCodeService>();
+                SimpleIoc.Default.Register<IHistoryNavigationService, HistoryNavigationServices>();
+            }
+            else
+            {
+                SimpleIoc.Default.Register<IErrorApiReportingService, ErrorApiReportingService>();
+                SimpleIoc.Default.Register<IFolderStorageService, FolderStorageService>();
+                SimpleIoc.Default.Register<IQrCodeService, QrCodeService>();
+
+                var ns = GetNavigationService();
+                SimpleIoc.Default.Register(() => ns);
+            }
         }
 
         private IHistoryNavigationService GetNavigationService()

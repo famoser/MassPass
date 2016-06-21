@@ -8,13 +8,6 @@
     mc:Ignorable="d"
     DataContext="{Binding CollectionsPageViewModel, Source={StaticResource Locator}}">
 
-    <Page.Resources>
-        <DataTemplate x:Key="CollectionDataTemplate">
-            <TextBlock Text="{Binding Name}" Style="{StaticResource FamoserTitleTextBlock}" />
-        </DataTemplate>
-    </Page.Resources>
-
-
     <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay" IsPaneOpen="False" 
                CompactPaneLength="0" OpenPaneLength="300" PaneBackground="{ThemeResource SystemControlBackgroundAccentBrush}">
         <SplitView.Pane>
@@ -30,12 +23,12 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
-                    <ListView ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" />
-                </ScrollViewer>
                 <Grid Grid.Row="0" >
                     <TextBlock Text="Sammlungen" Style="{StaticResource FamoserHeaderTextBlock}"  />
                 </Grid>
+                <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
+                    <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding Collections}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding SelecetedModel, Mode=TwoWay}" />
+                </ScrollViewer>
             </Grid>
         </SplitView.Content>
     </SplitView>

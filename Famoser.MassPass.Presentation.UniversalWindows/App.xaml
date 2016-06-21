@@ -5,6 +5,7 @@
     xmlns:local="using:Famoser.MassPass.Presentation.UniversalWindows"
     xmlns:viewModels="using:Famoser.MassPass.Presentation.UniversalWindows.ViewModels"
     xmlns:visibility="using:Famoser.FrameworkEssentials.UniversalWindows.Converters.Visibility"
+    xmlns:converters="using:Famoser.MassPass.Presentation.UniversalWindows.Converters"
     RequestedTheme="Light">
     <Application.Resources>
         <ResourceDictionary>
@@ -140,6 +141,19 @@
             <visibility:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <visibility:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 
+            <converters:ContentTypeIconConverter x:Key="ContentTypeIconConverter" />
+
+
+            <DataTemplate x:Key="CollectionDataTemplate">
+                <Grid Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <SymbolIcon Symbol="{Binding ContentType, Converter={StaticResource ContentTypeIconConverter}}" />
+                    <TextBlock Grid.Column="1" Text="{Binding Name}" Style="{StaticResource FamoserTitleTextBlock}" />
+                </Grid>
+            </DataTemplate>
 
         </ResourceDictionary>
     </Application.Resources>

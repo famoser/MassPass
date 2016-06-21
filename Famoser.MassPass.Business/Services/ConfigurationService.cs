@@ -44,8 +44,7 @@ namespace Famoser.MassPass.Business.Services
                         var json = await _folderStorageService.GetCachedTextFileAsync(
                             ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration)
                                 .Description);
-
-                        var save = false;
+                        
                         var savedSettings = JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(json);
                         foreach (var configurationModel in savedSettings)
                         {
@@ -63,15 +62,11 @@ namespace Famoser.MassPass.Business.Services
                                 _models.Add(configurationModel);
                                 defaultSettings.Remove(def);
                             }
-                            else
-                                save = true;
                         }
                         foreach (var configurationModel in defaultSettings)
                         {
                             _models.Add(configurationModel);
                         }
-                        if (save)
-                            await SaveConfiguration();
                     }
                     catch (Exception ex)
                     {
@@ -85,6 +80,7 @@ namespace Famoser.MassPass.Business.Services
                     _initializedConfiguration = true;
                 }
 
+                SaveConfiguration();
                 return _models;
             }
         }
