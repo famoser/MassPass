@@ -8,7 +8,7 @@ using Famoser.MassPass.View.Models.Interfaces;
 
 namespace Famoser.MassPass.View.Models
 {
-    public class NoteModel : BaseContentModel
+    public class NoteModel : NameModel
     {
         private string _content;
         public string Content
@@ -19,11 +19,6 @@ namespace Famoser.MassPass.View.Models
                 if (Set(ref _content, value))
                     RaiseCanBeSaved();
             }
-        }
-
-        public override bool CanBeSaved()
-        {
-            return true;
         }
     }
 }

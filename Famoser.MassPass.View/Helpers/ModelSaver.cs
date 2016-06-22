@@ -16,5 +16,15 @@ namespace Famoser.MassPass.View.Helpers
             model.ContentJson = JsonConvert.SerializeObject(note);
             return true;
         }
+        public static bool SaveRootModel(ContentModel model, RootModel root)
+        {
+            model.Name = root.Name;
+            return true;
+        }
+        public static bool SaveFolderModel(ContentModel model, FolderModel folder)
+        {
+            model.Name = folder.Name;
+            return true;
+        }
     }
 }

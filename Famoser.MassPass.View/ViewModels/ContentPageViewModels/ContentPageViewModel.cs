@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.View.Interfaces;
@@ -13,19 +11,17 @@ using Famoser.MassPass.View.Models.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
-namespace Famoser.MassPass.View.ViewModels
+namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 {
     public abstract class ContentPageViewModel : ViewModelBase, INavigationBackNotifier, IContentViewModel
     {
         private readonly IPasswordVaultService _passwordVaultService;
-        private readonly ICollectionRepository _collectionRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IHistoryNavigationService _historyNavigationService;
 
-        protected ContentPageViewModel(IPasswordVaultService passwordVaultService, ICollectionRepository collectionRepository, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+        protected ContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
         {
             _passwordVaultService = passwordVaultService;
-            _collectionRepository = collectionRepository;
             _historyNavigationService = historyNavigationService;
             _contentRepository = contentRepository;
 
@@ -41,7 +37,7 @@ namespace Famoser.MassPass.View.ViewModels
         private ContentModel _contentModel;
         protected ContentModel ContentModel
         {
-           get { return _contentModel; }
+            get { return _contentModel; }
             set
             {
                 if (Set(ref _contentModel, value))
@@ -55,7 +51,7 @@ namespace Famoser.MassPass.View.ViewModels
             get { return _customContentModel; }
             set
             {
-                if (_customContentModel != null)
+                if (_customContentModel?.CanBeSavedChanged != null)
                     _customContentModel.CanBeSavedChanged -= CanBeSavedChanged;
 
                 Set(ref _customContentModel, value);
@@ -79,7 +75,7 @@ namespace Famoser.MassPass.View.ViewModels
             CanSync = false;
             _syncCommand.RaiseCanExecuteChanged();
 
-            await _collectionRepository.SyncAsync();
+            await _contentRepository.SyncAsync();
 
             CanSync = true;
             _syncCommand.RaiseCanExecuteChanged();
@@ -136,7 +132,8 @@ namespace Famoser.MassPass.View.ViewModels
         public bool CanSave => CustomContentModel != null && CustomContentModel.CanBeSaved();
         public async void Save()
         {
-            SaveModel();
+            SaveToContentModel();
+            await _contentRepository.Save(ContentModel);
         }
         #endregion
 
@@ -148,7 +145,7 @@ namespace Famoser.MassPass.View.ViewModels
                 ContentModel = coll;
             }
         }
-        
+
         private async void LoadIfApplicable()
         {
             if (ContentModel.ContentLoadingState < LoadingState.Loading)
@@ -157,11 +154,11 @@ namespace Famoser.MassPass.View.ViewModels
                 await _contentRepository.FillValues(ContentModel);
                 ContentModel.ContentLoadingState = LoadingState.Loaded;
             }
-            CustomContentModel = PrepareModel();
+            CustomContentModel = PrepareCustomContentModel();
         }
 
-        
-        public abstract ICustomContentModel PrepareModel();
-        public abstract bool SaveModel();
+
+        public abstract ICustomContentModel PrepareCustomContentModel();
+        public abstract bool SaveToContentModel();
     }
 }

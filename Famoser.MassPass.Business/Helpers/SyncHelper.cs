@@ -85,18 +85,16 @@ namespace Famoser.MassPass.Business.Helpers
                 var res = await func();
                 if (res && activeModel != null)
                 {
-                    activeModel.CurrentStatus = CurrentStatus.Saving;
-                    await _contentRepository.SaveLocally(activeModel);
+                    activeModel.RuntimeStatus = RuntimeStatus.Saving;
+                    if (await _contentRepository.SaveLocally(activeModel))
+                        activeModel.RuntimeStatus = RuntimeStatus.Idle;
+                    else
+                        activeModel.RuntimeStatus = RuntimeStatus.SavingFailed;
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Instance.LogException(ex);
-            }
-            finally
-            {
-                if (activeModel != null)
-                    activeModel.CurrentStatus = CurrentStatus.Idle;
             }
             return false;
         }
@@ -108,7 +106,7 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 await ExecuteWorker(async () =>
                 {
-                    changedContent.CurrentStatus = CurrentStatus.Syncing;
+                    changedContent.RuntimeStatus = RuntimeStatus.Syncing;
                     var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
                         changedContent.ApiInformations.ServerId,
                         changedContent.ApiInformations.ServerRelationId,
@@ -124,6 +122,8 @@ namespace Famoser.MassPass.Business.Helpers
                     }
                     else
                     {
+                        changedContent.RuntimeStatus = RuntimeStatus.SyncingFailed;
+
                         if (req.ApiError == ApiError.InvalidVersionId)
                             changedContent.LocalStatus = LocalStatus.Conflict;
 
@@ -141,7 +141,7 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 await ExecuteWorker(async () =>
                 {
-                    changedContent.CurrentStatus = CurrentStatus.Syncing;
+                    changedContent.RuntimeStatus = RuntimeStatus.Syncing;
                     var req = await _dataService.ReadAsync(
                         requestHelper.ContentEntityRequest(
                             changedContent.ApiInformations.ServerId,
@@ -156,6 +156,8 @@ namespace Famoser.MassPass.Business.Helpers
                     }
                     else
                     {
+                        changedContent.RuntimeStatus = RuntimeStatus.SyncingFailed;
+
                         _errorApiReportingService.ReportUnhandledApiError(req, changedContent);
                     }
                     return true;

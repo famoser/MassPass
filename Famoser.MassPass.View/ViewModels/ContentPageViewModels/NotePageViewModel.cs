@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Famoser.FrameworkEssentials.Services.Interfaces;
+﻿using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Helpers;
 using Famoser.MassPass.View.Models;
 using Famoser.MassPass.View.Models.Interfaces;
 
-namespace Famoser.MassPass.View.ViewModels
+namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 {
     public class NotePageViewModel : ContentPageViewModel
     {
-        public NotePageViewModel(IPasswordVaultService passwordVaultService, ICollectionRepository collectionRepository,
-            IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
-            : base(passwordVaultService, collectionRepository, historyNavigationService, contentRepository)
+        public NotePageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+            : base(passwordVaultService, historyNavigationService, contentRepository)
         {
         }
         
@@ -27,13 +21,13 @@ namespace Famoser.MassPass.View.ViewModels
             set { Set(ref _noteModel, value); }
         }
 
-        public override ICustomContentModel PrepareModel()
+        public override ICustomContentModel PrepareCustomContentModel()
         {
             NoteModel = ModelConverter.ConvertToNoteModel(ContentModel);
             return NoteModel;
         }
 
-        public override bool SaveModel()
+        public override bool SaveToContentModel()
         {
             return ModelSaver.SaveNoteModel(ContentModel, NoteModel);
         }

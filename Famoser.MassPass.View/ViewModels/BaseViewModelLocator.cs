@@ -6,6 +6,7 @@ using Famoser.MassPass.Business.Services;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Famoser.MassPass.View.ViewModels.ContentPageViewModels;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using ApiEncryptionService = Famoser.MassPass.Data.Services.ApiEncryptionService;
@@ -26,7 +27,6 @@ namespace Famoser.MassPass.View.ViewModels
 
             //business
             SimpleIoc.Default.Register<IConfigurationService, ConfigurationService>();
-            SimpleIoc.Default.Register<ICollectionRepository, CollectionRepository>();
             SimpleIoc.Default.Register<IContentRepository, ContentRepository>();
             SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
 
@@ -45,8 +45,7 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<SharePageViewModel>();
         }
 
-        public ContentPageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<ContentPageViewModel>();
-        public ContentPageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<ContentPageViewModel>();
+        public NotePageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<NotePageViewModel>();
         public InitialisationPageViewModel InitialisationPageViewModel => SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
         public PasswordPageViewModel PasswordPageViewModel => SimpleIoc.Default.GetInstance<PasswordPageViewModel>();
         public SharePageViewModel SharePageViewModel => SimpleIoc.Default.GetInstance<SharePageViewModel>();

@@ -14,13 +14,13 @@ namespace Famoser.MassPass.View.ViewModels
     {
         private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IHistoryNavigationService _historyNavigationService;
-        private readonly ICollectionRepository _collectionRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, ICollectionRepository collectionRepository)
+        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
         {
             _apiConfigurationService = apiConfigurationService;
             _historyNavigationService = historyNavigationService;
-            _collectionRepository = collectionRepository;
+            _contentRepository = contentRepository;
 
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
@@ -155,7 +155,7 @@ namespace Famoser.MassPass.View.ViewModels
             }
             if (res1 && res2)
             {
-                await _collectionRepository.InitializeVault(MasterPassword);
+                await _contentRepository.InitializeVault(MasterPassword);
                 _historyNavigationService.NavigateTo(PageKeys.UnlockPage.ToString());
             }
             else

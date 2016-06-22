@@ -91,7 +91,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\CurrentStatus.cs" />
+    <Compile Include="Enums\RuntimeStatus.cs" />
     <Compile Include="Enums\LoadingState.cs" />
     <Compile Include="Enums\ContentTypes.cs" />
     <Compile Include="Enums\FileKeys.cs" />

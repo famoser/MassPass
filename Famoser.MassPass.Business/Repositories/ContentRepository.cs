@@ -341,7 +341,7 @@ namespace Famoser.MassPass.Business.Repositories
                     var newModel = new ContentModel();
                     ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
                     newModel.ApiInformations = response.ApiInformations;
-                    newModel.LocalStatus = LocalStatus.History;
+                    newModel.LocalStatus = LocalStatus.Immutable;
                     model.ContentModel = newModel;
                     return true;
                 }
@@ -358,10 +358,21 @@ namespace Famoser.MassPass.Business.Repositories
         {
             try
             {
+                var maxReptitions = 60;
+                while (model.RuntimeStatus != RuntimeStatus.Idle && model.RuntimeStatus != RuntimeStatus.SavingFailed && model.RuntimeStatus != RuntimeStatus.SyncingFailed)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    if (maxReptitions-- <= 0)
+                    {
+                        LogHelper.Instance.LogFatalError("cannot save contentmodel as it is used elsewhere", this);
+                        return false;
+                    }
+                }
+
                 var requestHelper = await GetRequestHelper();
                 var syncHelper = new SyncHelper(_dataService, _errorApiReportingService, this);
-                await syncHelper.UploadChangedWorker(new ConcurrentStack<ContentModel>(new List<ContentModel>() { model }), requestHelper);
-                return await SaveLocally(model);
+                await syncHelper.UploadChangedWorker(new ConcurrentStack<ContentModel>(new List<ContentModel>() {model}), requestHelper);
+                return model.RuntimeStatus == RuntimeStatus.Idle;
             }
             catch (Exception ex)
             {

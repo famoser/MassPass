@@ -30,5 +30,23 @@ namespace Famoser.MassPass.View.Helpers
         {
             return DeserializeSafe<NoteModel>(entity.ContentJson);
         }
+
+        public static RootModel ConvertToRootModel(ContentModel entity)
+        {
+            return new RootModel()
+            {
+                Name = entity.Name,
+                Children = entity.Contents
+            };
+        }
+
+        public static FolderModel ConvertToFolderModel(ContentModel entity)
+        {
+            return new FolderModel()
+            {
+                Name = entity.Name,
+                Children = entity.Contents
+            };
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace Famoser.MassPass.Business.Models
         }
 
         private LoadingState _contentLoadingState;
+        [JsonIgnore]
         public LoadingState ContentLoadingState
         {
             get { return _contentLoadingState; }
@@ -27,18 +28,19 @@ namespace Famoser.MassPass.Business.Models
         }
 
         private LoadingState _historyLoadingState;
+        [JsonIgnore]
         public LoadingState HistoryLoadingState
         {
             get { return _historyLoadingState; }
             set { Set(ref _historyLoadingState, value); }
         }
 
-        private CurrentStatus _currentStatus;
+        private RuntimeStatus _runtimeStatus;
         [JsonIgnore]
-        public CurrentStatus CurrentStatus
+        public RuntimeStatus RuntimeStatus
         {
-            get { return _currentStatus; }
-            set { Set(ref _currentStatus, value); }
+            get { return _runtimeStatus; }
+            set { Set(ref _runtimeStatus, value); }
         }
     }
 }

@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Famoser.MassPass.Business.Enums
 {
-    public enum CurrentStatus
+    public enum RuntimeStatus
     {
         Idle,
         Syncing,
-        Saving
+        SyncingFailed,
+        Saving,
+        SavingFailed
     }
 }

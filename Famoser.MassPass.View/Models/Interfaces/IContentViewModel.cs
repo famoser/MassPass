@@ -4,7 +4,7 @@ namespace Famoser.MassPass.View.Models.Interfaces
 {
     public interface IContentViewModel
     {
-        ICustomContentModel PrepareModel();
-        bool SaveModel();
+        ICustomContentModel PrepareCustomContentModel();
+        bool SaveToContentModel();
     }
 }

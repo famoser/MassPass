@@ -8,14 +8,14 @@ namespace Famoser.MassPass.Data.Enum
     public enum LocalStatus
     {
         [Description("new")]
-        New,
+        New = 0,
         [Description("up to date")]
         UpToDate = 1,
         [Description("changed")]
         Changed = 2,
         [Description("unresolved conflict")]
         Conflict = 3,
-        [Description("history entry, immutable!")]
-        History = 4
+        [Description("immutable")] //for example a history entry is immutable
+        Immutable = 4
     }
 }
