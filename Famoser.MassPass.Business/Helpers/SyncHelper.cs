@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
+using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
@@ -18,9 +20,9 @@ namespace Famoser.MassPass.Business.Helpers
     {
         private readonly IDataService _dataService;
         private readonly IErrorApiReportingService _errorApiReportingService;
-        private readonly IContentRepository _contentRepository;
+        private readonly ContentRepository _contentRepository;
 
-        public SyncHelper(IDataService dataService, IErrorApiReportingService errorApiReportingService, IContentRepository contentRepository)
+        public SyncHelper(IDataService dataService, IErrorApiReportingService errorApiReportingService, ContentRepository contentRepository)
         {
             _dataService = dataService;
             _errorApiReportingService = errorApiReportingService;
@@ -76,15 +78,37 @@ namespace Famoser.MassPass.Business.Helpers
             return changedStack;
         }
 
-        
+        private async Task<bool> ExecuteWorker(Func<Task<bool>> func, ContentModel activeModel = null)
+        {
+            try
+            {
+                var res = await func();
+                if (res && activeModel != null)
+                {
+                    activeModel.CurrentStatus = CurrentStatus.Saving;
+                    await _contentRepository.SaveLocally(activeModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException(ex);
+            }
+            finally
+            {
+                if (activeModel != null)
+                    activeModel.CurrentStatus = CurrentStatus.Idle;
+            }
+            return false;
+        }
+
         public async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
         {
             ContentModel changedContent;
             if (stack.TryPop(out changedContent))
             {
-                try
+                await ExecuteWorker(async () =>
                 {
-                    changedContent.SaveDisabled = true;
+                    changedContent.CurrentStatus = CurrentStatus.Syncing;
                     var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
                         changedContent.ApiInformations.ServerId,
                         changedContent.ApiInformations.ServerRelationId,
@@ -105,15 +129,8 @@ namespace Famoser.MassPass.Business.Helpers
 
                         _errorApiReportingService.ReportUnhandledApiError(req, changedContent);
                     }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Instance.LogException(ex);
-                }
-                finally
-                {
-                    changedContent.SaveDisabled = false;
-                }
+                    return true;
+                }, changedContent);
             }
         }
 
@@ -122,14 +139,15 @@ namespace Famoser.MassPass.Business.Helpers
             ContentModel changedContent;
             if (stack.TryPop(out changedContent))
             {
-                try
+                await ExecuteWorker(async () =>
                 {
-                    changedContent.SaveDisabled = true;
+                    changedContent.CurrentStatus = CurrentStatus.Syncing;
                     var req = await _dataService.ReadAsync(
                         requestHelper.ContentEntityRequest(
                             changedContent.ApiInformations.ServerId,
                             changedContent.ApiInformations.ServerRelationId,
                             changedContent.ApiInformations.VersionId));
+
                     if (req.IsSuccessfull)
                     {
                         ResponseHelper.WriteIntoModel(req.ContentEntity, changedContent);
@@ -140,15 +158,8 @@ namespace Famoser.MassPass.Business.Helpers
                     {
                         _errorApiReportingService.ReportUnhandledApiError(req, changedContent);
                     }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Instance.LogException(ex);
-                }
-                finally
-                {
-                    changedContent.SaveDisabled = false;
-                }
+                    return true;
+                }, changedContent);
             }
         }
 
@@ -157,11 +168,15 @@ namespace Famoser.MassPass.Business.Helpers
             Guid relationGuid;
             if (stack.TryPop(out relationGuid))
             {
-                try
+                await ExecuteWorker(async () =>
                 {
                     var items = ContentManager.FlatContentModelCollection.SelectMany(
-                            s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
-                    var newItems = await _dataService.ReadAsync(requestHelper.CollectionEntriesRequest(items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
+                        s => s.Contents.Where(c => c.ApiInformations.ServerRelationId == relationGuid)).ToList();
+                    var newItems =
+                        await
+                            _dataService.ReadAsync(
+                                requestHelper.CollectionEntriesRequest(
+                                    items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
                     if (newItems.IsSuccessfull)
                     {
                         foreach (var item in newItems.CollectionEntryEntities)
@@ -173,12 +188,8 @@ namespace Famoser.MassPass.Business.Helpers
                     {
                         _errorApiReportingService.ReportUnhandledApiError(newItems);
                     }
-
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Instance.LogException(ex);
-                }
+                    return true;
+                });
             }
         }
 
@@ -187,7 +198,7 @@ namespace Famoser.MassPass.Business.Helpers
             CollectionEntryEntity entry;
             if (stack.TryPop(out entry))
             {
-                try
+                await ExecuteWorker(async () =>
                 {
                     var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId, entry.VersionId));
                     if (response.IsSuccessfull)
@@ -202,11 +213,8 @@ namespace Famoser.MassPass.Business.Helpers
                     {
                         _errorApiReportingService.ReportUnhandledApiError(response);
                     }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Instance.LogException(ex);
-                }
+                    return true;
+                });
             }
         }
     }

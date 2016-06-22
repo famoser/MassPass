@@ -1,4 +1,5 @@
 ﻿using Famoser.MassPass.Business.Enums;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Models
 {
@@ -30,6 +31,14 @@ namespace Famoser.MassPass.Business.Models
         {
             get { return _historyLoadingState; }
             set { Set(ref _historyLoadingState, value); }
+        }
+
+        private CurrentStatus _currentStatus;
+        [JsonIgnore]
+        public CurrentStatus CurrentStatus
+        {
+            get { return _currentStatus; }
+            set { Set(ref _currentStatus, value); }
         }
     }
 }

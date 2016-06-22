@@ -55,14 +55,6 @@ namespace Famoser.MassPass.Business.Models
         [JsonIgnore]
         public ObservableCollection<HistoryModel> History { get; }
 
-        private bool _saveDisabled;
-        [JsonIgnore]
-        public bool SaveDisabled
-        {
-            get { return _saveDisabled; }
-            set { Set(ref _saveDisabled, value); }
-        }
-
         public ContentTypes ContentType => ContentHelper.GetType(TypeId);
 
         public void SetContentType(ContentTypes type)
