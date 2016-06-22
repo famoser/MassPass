@@ -8,6 +8,7 @@ using Famoser.FrameworkEssentials.UniversalWindows.Platform;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Presentation.UniversalWindows.Pages;
+using Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages;
 using Famoser.MassPass.Presentation.UniversalWindows.Services;
 using Famoser.MassPass.Presentation.UniversalWindows.Services.Mock;
 using Famoser.MassPass.View.Enums;
@@ -16,6 +17,8 @@ using Famoser.MassPass.View.ViewModels;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using Microsoft.Practices.ServiceLocation;
+using FolderContentPage = Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages.FolderContentPage;
+using RootContentPage = Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages.RootContentPage;
 
 namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
 {
@@ -47,8 +50,9 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
         {
             var navigationService = new HistoryNavigationServices();
             navigationService.Configure(PageKeys.InitialisationPage.ToString(), typeof(InitialisationPage));
-            navigationService.Configure(PageKeys.CollectionsPage.ToString(), typeof(CollectionsPage));
-            navigationService.Configure(PageKeys.NotePage.ToString(), typeof(ContentPage));
+            navigationService.Configure(PageKeys.RootContentPage.ToString(), typeof(RootContentPage));
+            navigationService.Configure(PageKeys.FolderContentPage.ToString(), typeof(FolderContentPage));
+            navigationService.Configure(PageKeys.NoteContentPage.ToString(), typeof(NoteContentPage));
             navigationService.Configure(PageKeys.SharePage.ToString(), typeof(SharePage));
             navigationService.Configure(PageKeys.UnlockPage.ToString(), typeof(UnlockPage));
             return navigationService;

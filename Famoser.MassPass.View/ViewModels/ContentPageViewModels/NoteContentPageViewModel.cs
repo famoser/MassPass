@@ -1,4 +1,5 @@
 ﻿using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Helpers;
@@ -7,15 +8,19 @@ using Famoser.MassPass.View.Models.Interfaces;
 
 namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 {
-    public class NotePageViewModel : ContentPageViewModel
+    public class NoteContentPageViewModel : BaseContentPageViewModel
     {
-        public NotePageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+        public NoteContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
             : base(passwordVaultService, historyNavigationService, contentRepository)
         {
+            if (IsInDesignMode)
+                SetContentModel(contentRepository.GetSampleModel(ContentTypes.Note));
+            else
+                SetContentModel(ContentModel = contentRepository.GetRootModelAndLoad());
         }
         
         private NoteModel _noteModel;
-        private NoteModel NoteModel
+        public NoteModel NoteModel
         {
             get { return _noteModel; }
             set { Set(ref _noteModel, value); }

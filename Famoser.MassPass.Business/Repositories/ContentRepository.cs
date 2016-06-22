@@ -161,6 +161,19 @@ namespace Famoser.MassPass.Business.Repositories
                 cm.ContentJson = @"{'Content': 'This is a note!'}";
             }
             cm.SetContentType(type);
+
+            var parent = new ContentModel()
+            {
+                Name = "parent",
+                Contents =
+                {
+                    cm, new ContentModel()
+                    {
+                        Name = "Par2"
+                    }
+                }
+            };
+            cm.Parent = parent;
             return cm;
         }
 
@@ -371,7 +384,7 @@ namespace Famoser.MassPass.Business.Repositories
 
                 var requestHelper = await GetRequestHelper();
                 var syncHelper = new SyncHelper(_dataService, _errorApiReportingService, this);
-                await syncHelper.UploadChangedWorker(new ConcurrentStack<ContentModel>(new List<ContentModel>() {model}), requestHelper);
+                await syncHelper.UploadChangedWorker(new ConcurrentStack<ContentModel>(new List<ContentModel>() { model }), requestHelper);
                 return model.RuntimeStatus == RuntimeStatus.Idle;
             }
             catch (Exception ex)

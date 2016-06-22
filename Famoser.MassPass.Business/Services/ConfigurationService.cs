@@ -44,37 +44,37 @@ namespace Famoser.MassPass.Business.Services
                         var json = await _folderStorageService.GetCachedTextFileAsync(
                             ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.Configuration)
                                 .Description);
-                        
-                        var savedSettings = JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(json);
-                        foreach (var configurationModel in savedSettings)
-                        {
-                            var def = defaultSettings.FirstOrDefault(s => s.Guid == configurationModel.Guid);
-                            if (def != null)
-                            {
-                                configurationModel.SettingKey = def.SettingKey;
-                                if (configurationModel.Immutable != def.Immutable)
-                                {
-                                    configurationModel.Immutable = def.Immutable;
-                                    configurationModel.Value = def.Value;
-                                }
-                                configurationModel.Name = def.Name;
 
-                                _models.Add(configurationModel);
-                                defaultSettings.Remove(def);
-                            }
-                        }
-                        foreach (var configurationModel in defaultSettings)
+                        if (!string.IsNullOrEmpty(json))
                         {
-                            _models.Add(configurationModel);
+                            var savedSettings =
+                                JsonConvert.DeserializeObject<ObservableCollection<ConfigurationModel>>(json);
+                            foreach (var configurationModel in savedSettings)
+                            {
+                                var def = defaultSettings.FirstOrDefault(s => s.Guid == configurationModel.Guid);
+                                if (def != null)
+                                {
+                                    configurationModel.SettingKey = def.SettingKey;
+                                    if (configurationModel.Immutable != def.Immutable)
+                                    {
+                                        configurationModel.Immutable = def.Immutable;
+                                        configurationModel.Value = def.Value;
+                                    }
+                                    configurationModel.Name = def.Name;
+
+                                    _models.Add(configurationModel);
+                                    defaultSettings.Remove(def);
+                                }
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
                         LogHelper.Instance.LogException(ex);
-                        foreach (var configurationModel in defaultSettings)
-                        {
-                            _models.Add(configurationModel);
-                        }
+                    }
+                    foreach (var configurationModel in defaultSettings)
+                    {
+                        _models.Add(configurationModel);
                     }
 
                     _initializedConfiguration = true;

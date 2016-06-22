@@ -102,8 +102,14 @@
     <Compile Include="Pages\CollectionsPage.xaml.cs">
       <DependentUpon>CollectionsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\ContentPage.xaml.cs">
-      <DependentUpon>ContentPage.xaml</DependentUpon>
+    <Compile Include="Pages\ContentPages\FolderContentPage.xaml.cs">
+      <DependentUpon>FolderContentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ContentPages\NoteContentPage.xaml.cs">
+      <DependentUpon>NoteContentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ContentPages\RootContentPage.xaml.cs">
+      <DependentUpon>RootContentPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\InitialisationPage.xaml.cs">
       <DependentUpon>InitialisationPage.xaml</DependentUpon>
@@ -122,6 +128,9 @@
     <Compile Include="Services\Mock\MockHistoryNavigationService.cs" />
     <Compile Include="Services\Mock\MockQrCodeService.cs" />
     <Compile Include="Services\QrCodeService.cs" />
+    <Compile Include="UserControls\ContentPages\ParentScroller.xaml.cs">
+      <DependentUpon>ParentScroller.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -149,7 +158,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\ContentPage.xaml">
+    <Page Include="Pages\ContentPages\FolderContentPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ContentPages\NoteContentPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ContentPages\RootContentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -162,6 +179,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\SharePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ContentPages\ParentScroller.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

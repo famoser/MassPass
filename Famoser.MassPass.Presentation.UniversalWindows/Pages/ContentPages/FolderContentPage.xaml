@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages.FolderContentPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Famoser.MassPass.Presentation.UniversalWindows.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:contentPages="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls.ContentPages"
+    mc:Ignorable="d"
+    DataContext="{Binding FolderContentPageViewModel, Source={StaticResource Locator}}">
+    
+    <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay" IsPaneOpen="False" CompactPaneLength="0" OpenPaneLength="300" PaneBackground="{ThemeResource SystemControlBackgroundAccentBrush}">
+        <SplitView.Pane>
+            <contentPages:ParentScroller DataContext="{Binding }" />
+        </SplitView.Pane>
+        <SplitView.Content>
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" >
+                    <TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}"  />
+                </Grid>
+                <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
+                    <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding FolderModel.Children}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding ContentModel, Mode=TwoWay}" />
+                </ScrollViewer>
+            </Grid>
+        </SplitView.Content>
+    </SplitView>
+</Page>

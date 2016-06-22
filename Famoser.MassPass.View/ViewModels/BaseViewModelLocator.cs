@@ -31,21 +31,19 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
 
             //view
-            SimpleIoc.Default.Register<ContentPageViewModel>();
-            SimpleIoc.Default.Register<ContentPageViewModel>();
-            SimpleIoc.Default.Register<InitialisationPageViewModel>();
-            SimpleIoc.Default.Register<PasswordPageViewModel>();
-
-            //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
-
-            SimpleIoc.Default.Register<ContentPageViewModel>();
-            SimpleIoc.Default.Register<ContentPageViewModel>();
+            SimpleIoc.Default.Register<RootContentPageViewModel>();
+            SimpleIoc.Default.Register<FolderContentPageViewModel>();
+            SimpleIoc.Default.Register<NoteContentPageViewModel>();
             SimpleIoc.Default.Register<InitialisationPageViewModel>();
             SimpleIoc.Default.Register<PasswordPageViewModel>();
             SimpleIoc.Default.Register<SharePageViewModel>();
+
+            //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
         }
 
-        public NotePageViewModel ContentPageViewModel => SimpleIoc.Default.GetInstance<NotePageViewModel>();
+        public RootContentPageViewModel RootContentPageViewModel => SimpleIoc.Default.GetInstance<RootContentPageViewModel>();
+        public FolderContentPageViewModel FolderContentPageViewModel => SimpleIoc.Default.GetInstance<FolderContentPageViewModel>();
+        public NoteContentPageViewModel NotePageViewModel => SimpleIoc.Default.GetInstance<NoteContentPageViewModel>();
         public InitialisationPageViewModel InitialisationPageViewModel => SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
         public PasswordPageViewModel PasswordPageViewModel => SimpleIoc.Default.GetInstance<PasswordPageViewModel>();
         public SharePageViewModel SharePageViewModel => SimpleIoc.Default.GetInstance<SharePageViewModel>();

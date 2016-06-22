@@ -3,16 +3,25 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Storage;
+using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Business.Managers
 {
     public static class ContentManager
     {
         public static readonly ObservableCollection<ContentModel> FlatContentModelCollection = new ObservableCollection<ContentModel>();
-        public static readonly ContentModel RootContentModel = new ContentModel();
+        public static readonly ContentModel RootContentModel = new ContentModel()
+        {
+            HistoryLoadingState = LoadingState.Loaded,
+            RuntimeStatus = RuntimeStatus.Idle,
+            ContentLoadingState = LoadingState.Loaded,
+            LocalStatus = LocalStatus.Immutable,
+            Name = "Sammlungen"
+        };
 
         private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>();
         public static void AddOrReplaceContent(ContentModel content)

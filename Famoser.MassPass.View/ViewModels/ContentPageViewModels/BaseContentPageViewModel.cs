@@ -13,13 +13,13 @@ using GalaSoft.MvvmLight.Command;
 
 namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 {
-    public abstract class ContentPageViewModel : ViewModelBase, INavigationBackNotifier, IContentViewModel
+    public abstract class BaseContentPageViewModel : ViewModelBase, INavigationBackNotifier, IContentViewModel
     {
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IContentRepository _contentRepository;
         private readonly IHistoryNavigationService _historyNavigationService;
 
-        protected ContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+        protected BaseContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
         {
             _passwordVaultService = passwordVaultService;
             _historyNavigationService = historyNavigationService;
@@ -34,14 +34,20 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             _saveCommand = new RelayCommand(Save, () => CanSave);
         }
 
+        protected void SetContentModel(ContentModel model)
+        {
+            _contentModel = model;
+            RaisePropertyChanged(() => ContentModel);
+        }
+
         private ContentModel _contentModel;
-        protected ContentModel ContentModel
+        public ContentModel ContentModel
         {
             get { return _contentModel; }
             set
             {
-                if (Set(ref _contentModel, value))
-                    LoadIfApplicable();
+                if (NavigateToCommand.CanExecute(value))
+                    NavigateToCommand.Execute(value);
             }
         }
 
@@ -105,14 +111,19 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 
         private readonly RelayCommand<ContentModel> _navigateToCommand;
         public ICommand NavigateToCommand => _navigateToCommand;
+        public bool CanExecuteNavigateTo(ContentModel model)
+        {
+            return model != null;
+        }
         private void NavigateTo(ContentModel model)
         {
             var oldContent = ContentModel;
             if (model.ContentType == ContentTypes.Folder)
-                _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString(), this, oldContent);
+                _historyNavigationService.NavigateTo(PageKeys.FolderContentPage.ToString(), this, oldContent);
             else if (model.ContentType == ContentTypes.Note)
-                _historyNavigationService.NavigateTo(PageKeys.NotePage.ToString(), this, oldContent);
-            ContentModel = model;
+                _historyNavigationService.NavigateTo(PageKeys.NoteContentPage.ToString(), this, oldContent);
+            SetContentModel(model);
+            LoadIfApplicable(ContentModel);
         }
 
         private readonly RelayCommand _fillHistoryCommand;
@@ -142,17 +153,17 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             var coll = message as ContentModel;
             if (coll != null)
             {
-                ContentModel = coll;
+                SetContentModel(coll);
             }
         }
 
-        private async void LoadIfApplicable()
+        private async void LoadIfApplicable(ContentModel model)
         {
-            if (ContentModel.ContentLoadingState < LoadingState.Loading)
+            if (model.ContentLoadingState < LoadingState.Loading)
             {
-                ContentModel.ContentLoadingState = LoadingState.Loading;
-                await _contentRepository.FillValues(ContentModel);
-                ContentModel.ContentLoadingState = LoadingState.Loaded;
+                model.ContentLoadingState = LoadingState.Loading;
+                await _contentRepository.FillValues(model);
+                model.ContentLoadingState = LoadingState.Loaded;
             }
             CustomContentModel = PrepareCustomContentModel();
         }

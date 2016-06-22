@@ -112,9 +112,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IQrCodeService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\ContentPageViewModel.cs" />
+    <Compile Include="ViewModels\ContentPageViewModels\BaseContentPageViewModel.cs" />
     <Compile Include="ViewModels\InitialisationPageViewModel.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\NotePageViewModel.cs" />
+    <Compile Include="ViewModels\ContentPageViewModels\NoteContentPageViewModel.cs" />
     <Compile Include="ViewModels\PasswordPageViewModel.cs" />
     <Compile Include="ViewModels\ContentPageViewModels\RootContentPageViewModel.cs" />
     <Compile Include="ViewModels\ContentPageViewModels\FolderContentPageViewModel.cs" />

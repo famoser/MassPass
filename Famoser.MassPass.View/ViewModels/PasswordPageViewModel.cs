@@ -60,7 +60,7 @@ namespace Famoser.MassPass.View.ViewModels
         {
             var bo = await _passwordVaultService.TryUnlockVaultAsync(_password);
             if (bo && _passwordVaultService.IsVaultUnLocked())
-                _historyNavigationService.NavigateTo(PageKeys.CollectionsPage.ToString());
+                _historyNavigationService.NavigateTo(PageKeys.RootContentPage.ToString());
             else
                 WrongPasswordEvent?.Invoke(this, new EventArgs());
         }

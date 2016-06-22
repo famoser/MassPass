@@ -11,16 +11,21 @@
         /// Used to configure the application
         /// </summary>
         InitialisationPage,
-        
-        /// <summary>
-        /// the first page; basically a list of all entries
-        /// </summary>
-        CollectionsPage,
 
         /// <summary>
-        /// a display of an content
+        /// the first page; a list of all collections
         /// </summary>
-        NotePage,
+        RootContentPage,
+
+        /// <summary>
+        /// a folder page; a list of all entries
+        /// </summary>
+        FolderContentPage,
+
+        /// <summary>
+        /// a note
+        /// </summary>
+        NoteContentPage,
 
         /// <summary>
         /// used to display user information to connect another application
