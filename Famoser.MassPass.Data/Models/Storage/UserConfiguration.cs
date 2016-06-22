@@ -13,6 +13,8 @@ namespace Famoser.MassPass.Data.Models.Storage
         public int Version { get; set; }
         public Guid UserId { get; set; }
         public Guid DeviceId { get; set; }
+        public string UserName { get; set; }
+        public string DeviceName { get; set; }
         public List<Guid> RelationIds { get; set; }
     }
 }

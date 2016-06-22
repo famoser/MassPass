@@ -56,7 +56,6 @@ namespace Famoser.MassPass.Business.Services
                 _storage = JsonConvert.DeserializeObject<PasswordVaultStorageModel>(StorageHelper.ByteToString(maybeJson));
                 _unlockDateTime = DateTime.Now;
                 _lastActionDateTime = DateTime.Now;
-
             }
             catch (Exception ex)
             {

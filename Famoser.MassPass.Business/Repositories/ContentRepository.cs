@@ -33,8 +33,9 @@ namespace Famoser.MassPass.Business.Repositories
         private readonly IDevicesRepository _devicesRepository;
         private readonly IConfigurationService _configurationService;
         private readonly IApiConfigurationService _apiConfigurationService;
+        private readonly IAuthorizationRepository _authorizationRepository;
 
-        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IDataService dataService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService, IDevicesRepository devicesRepository, IConfigurationService configurationService) : base(apiConfigurationService)
+        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IDataService dataService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService, IDevicesRepository devicesRepository, IConfigurationService configurationService, IAuthorizationRepository authorizationRepository) : base(apiConfigurationService)
         {
             _folderStorageService = folderStorageService;
             _passwordVaultService = passwordVaultService;
@@ -42,6 +43,7 @@ namespace Famoser.MassPass.Business.Repositories
             _errorApiReportingService = errorApiReportingService;
             _devicesRepository = devicesRepository;
             _configurationService = configurationService;
+            _authorizationRepository = authorizationRepository;
             _apiConfigurationService = apiConfigurationService;
         }
 
@@ -53,37 +55,58 @@ namespace Famoser.MassPass.Business.Repositories
             {
                 await DeleteAll();
 
-                await _passwordVaultService.CreateNewVault(masterPassword);
-
-                var serverRelationGuid = Guid.NewGuid();
-                await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
-
-                var parentGuid = Guid.NewGuid();
-                var content = new ContentModel()
+                var config = await _apiConfigurationService.GetUserConfigurationAsync();
+                if (await _authorizationRepository.AuthorizeNew(config.UserId, config.DeviceId, config.UserName, config.DeviceName))
                 {
-                    ContentJson = @"{'Content': 'This is a note!'}",
-                    Name = "Example Note",
-                    Id = parentGuid,
-                    ApiInformations = new ApiInformations()
+                    await _passwordVaultService.CreateNewVault(masterPassword);
+
+                    var serverRelationGuid = Guid.NewGuid();
+                    await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
+
+                    var parentGuid = Guid.NewGuid();
+                    var content = new ContentModel()
                     {
-                        ServerRelationId = serverRelationGuid
-                    }
-                };
-                ContentManager.AddOrReplaceContent(content);
-                await Save(content);
-                content = new ContentModel()
-                {
-                    ContentJson = @"{'Content': 'This is a note in a note!'}",
-                    Name = "Example Note",
-                    Id = Guid.NewGuid(),
-                    ParentId = parentGuid,
-                    ApiInformations = new ApiInformations()
+                        Name = "Example Folder",
+                        Id = parentGuid,
+                        ApiInformations = new ApiInformations()
+                        {
+                            ServerRelationId = serverRelationGuid
+                        }
+                    };
+                    content.SetContentType(ContentTypes.Folder);
+                    ContentManager.AddOrReplaceContent(content);
+                    await Save(content);
+
+                    content = new ContentModel()
                     {
-                        ServerRelationId = serverRelationGuid
-                    }
-                };
-                ContentManager.AddOrReplaceContent(content);
-                await Save(content);
+                        ContentJson = @"{'Content': 'This is a note with another note inside!'}",
+                        Name = "Example Note",
+                        Id = Guid.NewGuid(),
+                        ParentId = parentGuid,
+                        ApiInformations = new ApiInformations()
+                        {
+                            ServerRelationId = serverRelationGuid
+                        }
+                    };
+                    content.SetContentType(ContentTypes.Note);
+                    ContentManager.AddOrReplaceContent(content);
+                    await Save(content);
+
+                    content = new ContentModel()
+                    {
+                        ContentJson = @"{'Content': 'This is a note in a note in a folder!'}",
+                        Name = "Example Note",
+                        Id = Guid.NewGuid(),
+                        ParentId = parentGuid,
+                        ApiInformations = new ApiInformations()
+                        {
+                            ServerRelationId = serverRelationGuid
+                        }
+                    };
+                    content.SetContentType(ContentTypes.Note);
+                    ContentManager.AddOrReplaceContent(content);
+                    await Save(content);
+                }
             }
             catch (Exception ex)
             {
@@ -381,6 +404,12 @@ namespace Famoser.MassPass.Business.Repositories
                         return false;
                     }
                 }
+
+                if (model.ApiInformations.ServerId == Guid.Empty)
+                    model.ApiInformations.ServerId = Guid.NewGuid();
+
+                if (string.IsNullOrEmpty(model.ApiInformations.VersionId))
+                    model.ApiInformations.VersionId = Guid.NewGuid().ToString();
 
                 var requestHelper = await GetRequestHelper();
                 var syncHelper = new SyncHelper(_dataService, _errorApiReportingService, this);

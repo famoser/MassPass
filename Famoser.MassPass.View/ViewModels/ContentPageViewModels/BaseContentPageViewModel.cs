@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.View.Interfaces;
@@ -29,15 +30,22 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             _shareCommand = new RelayCommand(Share);
             _addCommand = new RelayCommand(Add);
             _lockCommand = new RelayCommand(Lock);
-            _navigateToCommand = new RelayCommand<ContentModel>(NavigateTo);
+            _navigateToCommand = new RelayCommand<ContentModel>(NavigateTo, CanExecuteNavigateTo);
             _fillHistoryCommand = new RelayCommand(FillHistory);
             _saveCommand = new RelayCommand(Save, () => CanSave);
         }
 
-        protected void SetContentModel(ContentModel model)
+        protected async void SetContentModel(ContentModel model)
         {
             _contentModel = model;
             RaisePropertyChanged(() => ContentModel);
+            if (model.ContentLoadingState < LoadingState.Loading)
+            {
+                model.ContentLoadingState = LoadingState.Loading;
+                await _contentRepository.FillValues(model);
+                model.ContentLoadingState = LoadingState.Loaded;
+            }
+            CustomContentModel = PrepareCustomContentModel();
         }
 
         private ContentModel _contentModel;
@@ -46,8 +54,9 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             get { return _contentModel; }
             set
             {
-                if (NavigateToCommand.CanExecute(value))
-                    NavigateToCommand.Execute(value);
+                var nm = value;
+                if (NavigateToCommand.CanExecute(nm))
+                    NavigateToCommand.Execute(nm);
             }
         }
 
@@ -111,7 +120,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 
         private readonly RelayCommand<ContentModel> _navigateToCommand;
         public ICommand NavigateToCommand => _navigateToCommand;
-        public bool CanExecuteNavigateTo(ContentModel model)
+        private bool CanExecuteNavigateTo(ContentModel model)
         {
             return model != null;
         }
@@ -123,7 +132,6 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             else if (model.ContentType == ContentTypes.Note)
                 _historyNavigationService.NavigateTo(PageKeys.NoteContentPage.ToString(), this, oldContent);
             SetContentModel(model);
-            LoadIfApplicable(ContentModel);
         }
 
         private readonly RelayCommand _fillHistoryCommand;
@@ -156,18 +164,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
                 SetContentModel(coll);
             }
         }
-
-        private async void LoadIfApplicable(ContentModel model)
-        {
-            if (model.ContentLoadingState < LoadingState.Loading)
-            {
-                model.ContentLoadingState = LoadingState.Loading;
-                await _contentRepository.FillValues(model);
-                model.ContentLoadingState = LoadingState.Loaded;
-            }
-            CustomContentModel = PrepareCustomContentModel();
-        }
-
+        
 
         public abstract ICustomContentModel PrepareCustomContentModel();
         public abstract bool SaveToContentModel();

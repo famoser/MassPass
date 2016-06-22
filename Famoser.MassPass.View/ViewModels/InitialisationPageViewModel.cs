@@ -126,10 +126,37 @@ namespace Famoser.MassPass.View.ViewModels
             }
         }
 
+        private string _deviceName;
+        public string DeviceName
+        {
+            get { return _deviceName; }
+            set
+            {
+                if (Set(ref _deviceName, value))
+                    RaisePropertyChanged(() => CanConfirm);
+            }
+        }
+
+        private string _userName;
+        public string UserName
+        {
+            get { return _userName; }
+            set
+            {
+                if (Set(ref _userName, value))
+                    RaisePropertyChanged(() => CanConfirm);
+            }
+        }
+
         private readonly RelayCommand _confirmCommand;
         public ICommand ConfirmCommand => _confirmCommand;
 
-        public bool CanConfirm => CanSetApiConfiguration && (CanSetUserConfiguration || CreateNewUserConfiguration) && !_isConfirming && !string.IsNullOrEmpty(MasterPassword);
+        public bool CanConfirm => CanSetApiConfiguration 
+            && (CanSetUserConfiguration || CreateNewUserConfiguration) 
+            && !_isConfirming
+            && !string.IsNullOrEmpty(MasterPassword)
+            && !string.IsNullOrEmpty(DeviceName)
+            && !string.IsNullOrEmpty(UserName);
 
         private bool _isConfirming;
         private async void Confirm()
@@ -145,7 +172,9 @@ namespace Famoser.MassPass.View.ViewModels
             {
                 res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
                 {
-                    UserId = Guid.NewGuid()
+                    UserId = Guid.NewGuid(),
+                    DeviceName = DeviceName,
+                    UserName = UserName
                 },
                 Guid.NewGuid());
             }
@@ -156,7 +185,7 @@ namespace Famoser.MassPass.View.ViewModels
             if (res1 && res2)
             {
                 await _contentRepository.InitializeVault(MasterPassword);
-                _historyNavigationService.NavigateTo(PageKeys.UnlockPage.ToString());
+                _historyNavigationService.GoBack();
             }
             else
             {

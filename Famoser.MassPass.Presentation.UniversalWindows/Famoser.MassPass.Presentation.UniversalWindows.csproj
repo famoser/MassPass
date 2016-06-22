@@ -99,9 +99,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ContentTypeIconConverter.cs" />
-    <Compile Include="Pages\CollectionsPage.xaml.cs">
-      <DependentUpon>CollectionsPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\ContentPages\FolderContentPage.xaml.cs">
       <DependentUpon>FolderContentPage.xaml</DependentUpon>
     </Compile>
@@ -154,10 +151,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Pages\CollectionsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\ContentPages\FolderContentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

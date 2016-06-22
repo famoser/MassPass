@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    DataContext="{Binding InitialisationPageViewModel, Source={StaticResource Locator}}">
+    DataContext="{Binding InitialisationPageViewModel, Source={StaticResource Locator}}" Loaded="Page_Loaded">
 
     <Grid Style="{StaticResource FamoserRootGrid}" >
         <Grid.RowDefinitions>
@@ -28,10 +28,17 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="Set Master Password" Style="{StaticResource FamoserSubHeaderTextBlock}" />
-                    <TextBlock Grid.Row="1" Text="Choose a safe one (or type in your existing)!" Style="{StaticResource FamoserBodyTextBlock}" />
-                    <PasswordBox Password="{Binding MasterPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" PlaceholderText="master password" Style="{StaticResource FamoserPasswordBox}"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Text="Set Master Password" Style="{StaticResource FamoserSubHeaderTextBlock}" />
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="Choose a safe one (or type in your existing)!" Style="{StaticResource FamoserBodyTextBlock}" />
+                    <PasswordBox Grid.Column="0" Grid.ColumnSpan="2" Password="{Binding MasterPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" PlaceholderText="master password" Style="{StaticResource FamoserPasswordBox}"/>
+                    <TextBox x:Name="UserName" Grid.Column="0" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" PlaceholderText="username" Style="{StaticResource FamoserTextBox}"/>
+                    <TextBox x:Name="DeviceName" Grid.Column="1" Text="{Binding DeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" PlaceholderText="devicename" Style="{StaticResource FamoserTextBox}"/>
                 </Grid>
                 <Grid Grid.Row="1" Visibility="{Binding MasterPassword, Converter={StaticResource StringToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>

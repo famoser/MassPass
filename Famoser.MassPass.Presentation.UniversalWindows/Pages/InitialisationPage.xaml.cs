@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
+using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -187,6 +188,13 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Pages
         private void CreateUserButton(object sender, RoutedEventArgs e)
         {
             ViewModel.CreateNewUserConfiguration = true;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            var dev = new EasClientDeviceInformation();
+            DeviceName.Text = dev.SystemProductName;
+            UserName.Text = dev.OperatingSystem + " User";
         }
     }
 }

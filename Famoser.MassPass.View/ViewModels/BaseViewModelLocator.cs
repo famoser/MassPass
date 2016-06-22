@@ -29,6 +29,7 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IConfigurationService, ConfigurationService>();
             SimpleIoc.Default.Register<IContentRepository, ContentRepository>();
             SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
+            SimpleIoc.Default.Register<IAuthorizationRepository, AuthorizationRepository>();
 
             //view
             SimpleIoc.Default.Register<RootContentPageViewModel>();
