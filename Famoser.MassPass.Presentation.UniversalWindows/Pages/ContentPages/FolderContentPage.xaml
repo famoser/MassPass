@@ -28,4 +28,20 @@
             </Grid>
         </SplitView.Content>
     </SplitView>
+
+
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton IsCompact="True" Icon="ShowResults" Label="Add" Click="MenuButtonClick"/>
+                <AppBarButton IsCompact="True" Command="{Binding AddCommand}" Icon="Add" Label="Add" />
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton IsCompact="True" Command="{Binding SyncCommand}" Icon="Refresh" Label="Refresh" />
+                <AppBarButton IsCompact="True" Command="{Binding ShareCommand}" Icon="Link" Label="Connect" />
+                <AppBarButton IsCompact="True" Command="{Binding LockCommand}" Icon="Back" Label="Lock" />
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>

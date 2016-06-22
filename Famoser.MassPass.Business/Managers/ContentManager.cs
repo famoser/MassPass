@@ -42,7 +42,10 @@ namespace Famoser.MassPass.Business.Managers
             if (content.ParentId != Guid.Empty)
                 ParentLessModels.Add(content);
             else
+            {
+                content.Parent = RootContentModel;
                 RootContentModel.Contents.Add(content);
+            }
 
             ResolveParentLessModels();
         }
@@ -69,7 +72,9 @@ namespace Famoser.MassPass.Business.Managers
                 var parent = FlatContentModelCollection.FirstOrDefault(p => p.Id == parentLessModel.ParentId);
                 if (parent != null)
                 {
+                    parentLessModel.Parent = parent;
                     parent.Contents.Add(parentLessModel);
+
                     ParentLessModels.Remove(parentLessModel);
                     index--;
                 }

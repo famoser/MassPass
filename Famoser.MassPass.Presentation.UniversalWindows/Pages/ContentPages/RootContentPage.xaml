@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:contentPages="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls.ContentPages"
     mc:Ignorable="d"
     DataContext="{Binding RootContentPageViewModel, Source={StaticResource Locator}}">
 
@@ -19,4 +20,17 @@
             <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding RootModel.Children}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding ContentModel, Mode=TwoWay}" />
         </ScrollViewer>
     </Grid>
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton IsCompact="True" Command="{Binding AddCommand}" Icon="Add" Label="Add" />
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton IsCompact="True" Command="{Binding SyncCommand}" Icon="Refresh" Label="Refresh" />
+                <AppBarButton IsCompact="True" Command="{Binding ShareCommand}" Icon="Link" Label="Connect" />
+                <AppBarButton IsCompact="True" Command="{Binding LockCommand}" Icon="Back" Label="Lock" />
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
