@@ -9,7 +9,7 @@ namespace Famoser.MassPass.Business.Enums
     public enum ContentTypes
     {
         /// <summary>
-        /// A folder which has no precessor
+        /// The root model, constructed at runtime from all ContentModels without parents
         /// </summary>
         Root,
 
