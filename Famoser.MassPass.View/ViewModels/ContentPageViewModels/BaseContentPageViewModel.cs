@@ -8,6 +8,7 @@ using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
+using Famoser.MassPass.View.Events;
 using Famoser.MassPass.View.Models.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -33,22 +34,59 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             _navigateToCommand = new RelayCommand<ContentModel>(NavigateTo, CanExecuteNavigateTo);
             _fillHistoryCommand = new RelayCommand(FillHistory);
             _saveCommand = new RelayCommand(Save, () => CanSave);
+
+            ContentModelChanged += SetContentModel;
+            ContentModelLoaded += PrepareContentModel;
         }
 
-        protected async void SetContentModel(ContentModel model)
+        private void PrepareContentModel(object sender, ContentModelEventArgs eventArgs)
+        {
+            var model = eventArgs.ContentModel;
+            if (IsContentTypeApplicable(model.ContentType))
+            {
+                CustomContentModel = PrepareCustomContentModel();
+            }
+        }
+
+        //set content model, load if applicable
+        private async void SetContentModel(object sender, ContentModelEventArgs eventArgs)
+        {
+            var model = eventArgs.ContentModel;
+            if (IsContentTypeApplicable(model.ContentType))
+            {
+                //applicable
+                RaisePropertyChanged(() => ContentModel);
+                var load = false;
+                //check for loading state, do stuff as applicable
+                lock (ContentModelLoadingLock)
+                {
+                    if (model.ContentLoadingState < LoadingState.Loading)
+                    {
+                        //set to loading, load it outside of lock
+                        model.ContentLoadingState = LoadingState.Loading;
+                        load = true;
+                    } else if (model.ContentLoadingState == LoadingState.Loading)
+                        //return as another viewmodel is already loading this object
+                        return;
+                }
+                //load
+                if (load)
+                {
+                    await _contentRepository.FillValues(model);
+                    model.ContentLoadingState = LoadingState.Loaded;
+                }
+                //raise event
+                ContentModelLoaded.Invoke(this, new ContentModelEventArgs(_contentModel));
+            }
+        }
+
+        protected static void SetContentModelStatic(ContentModel model)
         {
             _contentModel = model;
-            RaisePropertyChanged(() => ContentModel);
-            if (model.ContentLoadingState < LoadingState.Loading)
-            {
-                model.ContentLoadingState = LoadingState.Loading;
-                await _contentRepository.FillValues(model);
-                model.ContentLoadingState = LoadingState.Loaded;
-            }
-            CustomContentModel = PrepareCustomContentModel();
+            ContentModelChanged.Invoke(null, new ContentModelEventArgs(_contentModel));
         }
 
-        private ContentModel _contentModel;
+        private static ContentModel _contentModel;
         public ContentModel ContentModel
         {
             get { return _contentModel; }
@@ -59,6 +97,10 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
                     NavigateToCommand.Execute(nm);
             }
         }
+
+        protected static EventHandler<ContentModelEventArgs> ContentModelChanged;
+        protected static EventHandler<ContentModelEventArgs> ContentModelLoaded;
+        protected static object ContentModelLoadingLock = new object();
 
         private ICustomContentModel _customContentModel;
         private ICustomContentModel CustomContentModel
@@ -131,7 +173,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
                 _historyNavigationService.NavigateTo(PageKeys.FolderContentPage.ToString(), this, oldContent);
             else if (model.ContentType == ContentTypes.Note)
                 _historyNavigationService.NavigateTo(PageKeys.NoteContentPage.ToString(), this, oldContent);
-            SetContentModel(model);
+            SetContentModelStatic(model);
         }
 
         private readonly RelayCommand _fillHistoryCommand;
@@ -161,12 +203,14 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             var coll = message as ContentModel;
             if (coll != null)
             {
-                SetContentModel(coll);
+                SetContentModelStatic(coll);
             }
         }
-        
+
+        public abstract bool IsContentTypeApplicable(ContentTypes type);
 
         public abstract ICustomContentModel PrepareCustomContentModel();
+
         public abstract bool SaveToContentModel();
     }
 }

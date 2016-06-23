@@ -14,16 +14,21 @@ namespace Famoser.MassPass.Business.Managers
     public static class ContentManager
     {
         public static readonly ObservableCollection<ContentModel> FlatContentModelCollection = new ObservableCollection<ContentModel>();
-        public static readonly ContentModel RootContentModel = new ContentModel()
-        {
-            HistoryLoadingState = LoadingState.Loaded,
-            RuntimeStatus = RuntimeStatus.Idle,
-            ContentLoadingState = LoadingState.Loaded,
-            LocalStatus = LocalStatus.Immutable,
-            Name = "Sammlungen"
-        };
+        public static readonly ContentModel RootContentModel;
 
-        private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>();
+        static ContentManager()
+        {
+            RootContentModel = new ContentModel()
+            {
+                HistoryLoadingState = LoadingState.Loaded,
+                RuntimeStatus = RuntimeStatus.Idle,
+                ContentLoadingState = LoadingState.Loaded,
+                LocalStatus = LocalStatus.Immutable,
+                Name = "Sammlungen"
+            };
+            RootContentModel.SetContentType(ContentTypes.Root);
+        }
+
         public static void AddOrReplaceContent(ContentModel content)
         {
             //if already in collection, remove it
@@ -64,6 +69,7 @@ namespace Famoser.MassPass.Business.Managers
             return CacheHelper.CreateCache(FlatContentModelCollection);
         }
 
+        private static readonly List<ContentModel> ParentLessModels = new List<ContentModel>();
         private static void ResolveParentLessModels()
         {
             for (int index = 0; index < ParentLessModels.Count; index++)

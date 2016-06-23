@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\PageKeys.cs" />
+    <Compile Include="Events\ContentModelEventArgs.cs" />
     <Compile Include="Helpers\ModelConverter.cs" />
     <Compile Include="Helpers\ModelSaver.cs" />
     <Compile Include="Models\Interfaces\IContentViewModel.cs" />

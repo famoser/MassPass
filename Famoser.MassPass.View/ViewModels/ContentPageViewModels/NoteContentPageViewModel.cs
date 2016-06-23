@@ -14,9 +14,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             : base(passwordVaultService, historyNavigationService, contentRepository)
         {
             if (IsInDesignMode)
-                SetContentModel(contentRepository.GetSampleModel(ContentTypes.Note));
-            else
-                SetContentModel(ContentModel = contentRepository.GetRootModelAndLoad());
+                SetContentModelStatic(contentRepository.GetSampleModel(ContentTypes.Note));
         }
         
         private NoteModel _noteModel;
@@ -24,6 +22,11 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         {
             get { return _noteModel; }
             set { Set(ref _noteModel, value); }
+        }
+
+        public override bool IsContentTypeApplicable(ContentTypes type)
+        {
+            return type == ContentTypes.Note;
         }
 
         public override ICustomContentModel PrepareCustomContentModel()
