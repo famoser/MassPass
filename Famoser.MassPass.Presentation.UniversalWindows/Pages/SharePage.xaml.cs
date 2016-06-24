@@ -1,4 +1,5 @@
 ﻿using Windows.UI.Xaml.Controls;
+using Famoser.FrameworkEssentials.Services;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 

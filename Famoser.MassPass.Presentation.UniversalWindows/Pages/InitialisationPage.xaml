@@ -5,6 +5,7 @@
     xmlns:local="using:Famoser.MassPass.Presentation.UniversalWindows.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:userControls="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls"
     mc:Ignorable="d"
     DataContext="{Binding InitialisationPageViewModel, Source={StaticResource Locator}}" Loaded="Page_Loaded">
 
@@ -13,6 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <userControls:ProgressControl VerticalAlignment="Top" />
         <TextBlock Text="Initialize" Style="{StaticResource FamoserHeaderTextBlock}" />
         <ScrollViewer Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
             <Grid>

@@ -21,7 +21,6 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-            SimpleIoc.Default.Register<IProgressService, ProgressService>();
 
             if (IsInDesignMode)
             {

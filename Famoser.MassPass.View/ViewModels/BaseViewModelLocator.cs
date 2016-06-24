@@ -38,6 +38,7 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<InitialisationPageViewModel>();
             SimpleIoc.Default.Register<PasswordPageViewModel>();
             SimpleIoc.Default.Register<SharePageViewModel>();
+            SimpleIoc.Default.Register<IProgressService, ProgressService>();
 
             //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
         }
@@ -48,5 +49,6 @@ namespace Famoser.MassPass.View.ViewModels
         public InitialisationPageViewModel InitialisationPageViewModel => SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
         public PasswordPageViewModel PasswordPageViewModel => SimpleIoc.Default.GetInstance<PasswordPageViewModel>();
         public SharePageViewModel SharePageViewModel => SimpleIoc.Default.GetInstance<SharePageViewModel>();
+        public ProgressService ProgressViewModel => SimpleIoc.Default.GetInstance<IProgressService>() as ProgressService;
     }
 }

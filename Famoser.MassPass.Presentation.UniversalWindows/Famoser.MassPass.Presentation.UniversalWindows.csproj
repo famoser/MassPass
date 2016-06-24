@@ -99,6 +99,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ContentTypeIconConverter.cs" />
+    <Compile Include="Converters\ProgressConverter.cs" />
     <Compile Include="Pages\ContentPages\FolderContentPage.xaml.cs">
       <DependentUpon>FolderContentPage.xaml</DependentUpon>
     </Compile>
@@ -130,6 +131,9 @@
     </Compile>
     <Compile Include="UserControls\ContentPages\ParentScroller.xaml.cs">
       <DependentUpon>ParentScroller.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProgressControl.xaml.cs">
+      <DependentUpon>ProgressControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\ViewModelLocator.cs" />
   </ItemGroup>
@@ -183,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\ContentPages\ParentScroller.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ProgressControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:contentPages="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls.ContentPages"
+    xmlns:userControls="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls"
     mc:Ignorable="d"
     DataContext="{Binding FolderContentPageViewModel, Source={StaticResource Locator}}">
     
@@ -14,11 +15,12 @@
             <contentPages:ParentScroller DataContext="{Binding }" />
         </SplitView.Pane>
         <SplitView.Content>
-            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid Style="{StaticResource FamoserRootGrid}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+                <userControls:ProgressControl VerticalAlignment="Top" />
                 <Grid Grid.Row="0" >
                     <contentPages:EditableTextBlock Value="{Binding FolderModel.Name, Mode=TwoWay}" />
                     <!--<TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}" />-->
