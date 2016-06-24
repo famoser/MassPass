@@ -190,11 +190,12 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 
         private readonly RelayCommand _saveCommand;
         public ICommand SaveCommand => _saveCommand;
-        public bool CanSave => CustomContentModel != null && CustomContentModel.CanBeSaved();
+        public bool CanSave => CustomContentModel != null && CustomContentModel.CanBeSaved() && CustomContentModel.ContentChanged();
         public async void Save()
         {
             SaveToContentModel();
             await _contentRepository.Save(ContentModel);
+            CustomContentModel = PrepareCustomContentModel();
         }
         #endregion
 

@@ -108,10 +108,18 @@
             <Style x:Key="FamoserDefaultSymbolIcon" TargetType="SymbolIcon">
                 <Setter Property="Margin" Value="20,0"></Setter>
             </Style>
-            
+
             <Style x:Key="FamoserSymbolIconAccept" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
                 <Setter Property="Foreground" Value="{ThemeResource ApprooveGreen}" />
                 <Setter Property="Symbol" Value="Accept" />
+            </Style>
+
+            <Style x:Key="FamoserSymbolIconEdit" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
+                <Setter Property="Symbol" Value="Edit" />
+            </Style>
+            
+            <Style x:Key="FamoserSymbolIconSave" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
+                <Setter Property="Symbol" Value="Save" />
             </Style>
 
             <Style x:Key="StretchListViewItemStyle" TargetType="ListViewItem">

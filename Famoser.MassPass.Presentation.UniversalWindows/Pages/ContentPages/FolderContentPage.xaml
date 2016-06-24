@@ -20,7 +20,8 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" >
-                    <TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}"  />
+                    <contentPages:EditableTextBlock Value="{Binding FolderModel.Name, Mode=TwoWay}" />
+                    <!--<TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}" />-->
                 </Grid>
                 <ScrollViewer  Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
                     <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding FolderModel.Children}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding ContentModel, Mode=TwoWay}" />
@@ -34,6 +35,7 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
+                <AppBarButton IsCompact="True" Command="{Binding SaveCommand}" Icon="Save" Label="Save" />
                 <AppBarButton IsCompact="True" Icon="ShowResults" Label="Add" Click="MenuButtonClick"/>
                 <AppBarButton IsCompact="True" Command="{Binding AddCommand}" Icon="Add" Label="Add" />
             </CommandBar.PrimaryCommands>

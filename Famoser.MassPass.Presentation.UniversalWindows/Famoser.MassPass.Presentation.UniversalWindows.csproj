@@ -125,6 +125,9 @@
     <Compile Include="Services\Mock\MockHistoryNavigationService.cs" />
     <Compile Include="Services\Mock\MockQrCodeService.cs" />
     <Compile Include="Services\QrCodeService.cs" />
+    <Compile Include="UserControls\ContentPages\EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ContentPages\ParentScroller.xaml.cs">
       <DependentUpon>ParentScroller.xaml</DependentUpon>
     </Compile>
@@ -172,6 +175,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\SharePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ContentPages\EditableTextBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

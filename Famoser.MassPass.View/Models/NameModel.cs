@@ -15,13 +15,13 @@ namespace Famoser.MassPass.View.Models
             set
             {
                 if (Set(ref _name, value))
-                    RaiseCanBeSaved();
+                    RegisterValueChange("Name", _name);
             }
         }
 
         public override bool CanBeSaved()
         {
-            return string.IsNullOrEmpty(Name);
+            return !string.IsNullOrEmpty(Name);
         }
     }
 }

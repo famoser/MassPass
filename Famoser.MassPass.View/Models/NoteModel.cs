@@ -17,7 +17,7 @@ namespace Famoser.MassPass.View.Models
             set
             {
                 if (Set(ref _content, value))
-                    RaiseCanBeSaved();
+                    RegisterValueChange("Content", _content);
             }
         }
     }
