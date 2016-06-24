@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.View.Interfaces;
@@ -9,6 +8,7 @@ using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Events;
+using Famoser.MassPass.View.Helpers;
 using Famoser.MassPass.View.Models.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -20,19 +20,21 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IContentRepository _contentRepository;
         private readonly IHistoryNavigationService _historyNavigationService;
+        private readonly IProgressService _progressService;
 
-        protected BaseContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+        protected BaseContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService)
         {
             _passwordVaultService = passwordVaultService;
             _historyNavigationService = historyNavigationService;
             _contentRepository = contentRepository;
+            _progressService = progressService;
 
             _syncCommand = new RelayCommand(Sync, () => CanSync);
             _shareCommand = new RelayCommand(Share);
             _addCommand = new RelayCommand(Add);
             _lockCommand = new RelayCommand(Lock);
             _navigateToCommand = new RelayCommand<ContentModel>(NavigateTo, CanExecuteNavigateTo);
-            _fillHistoryCommand = new RelayCommand(FillHistory);
+            _fillHistoryCommand = new RelayCommand(FillHistory, () => CanFillHistory);
             _saveCommand = new RelayCommand(Save, () => CanSave);
 
             ContentModelChanged += SetContentModel;
@@ -65,7 +67,8 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
                         //set to loading, load it outside of lock
                         model.ContentLoadingState = LoadingState.Loading;
                         load = true;
-                    } else if (model.ContentLoadingState == LoadingState.Loading)
+                    }
+                    else if (model.ContentLoadingState == LoadingState.Loading)
                         //return as another viewmodel is already loading this object
                         return;
                 }
@@ -126,16 +129,14 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         #region commands
         private readonly RelayCommand _syncCommand;
         public ICommand SyncCommand => _syncCommand;
-        private bool CanSync { get; set; } = true;
+        private bool CanSync => !IsSyncing;
+        private bool IsSyncing { get; set; }
         private async void Sync()
         {
-            CanSync = false;
-            _syncCommand.RaiseCanExecuteChanged();
-
-            await _contentRepository.SyncAsync();
-
-            CanSync = true;
-            _syncCommand.RaiseCanExecuteChanged();
+            using (new IndeterminateProgressShower(_syncCommand, z => IsSyncing = z, ProgressKeys.Sync, _progressService))
+            {
+                await _contentRepository.SyncAsync();
+            }
         }
 
         private readonly RelayCommand _shareCommand;
@@ -178,24 +179,33 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 
         private readonly RelayCommand _fillHistoryCommand;
         public ICommand FillHistoryCommand => _fillHistoryCommand;
+        private bool CanFillHistory => !IsFillingHistory;
+        private bool IsFillingHistory { get; set; }
         public async void FillHistory()
         {
-            if (ContentModel.HistoryLoadingState < LoadingState.Loading)
+            using (new IndeterminateProgressShower(_fillHistoryCommand, z => IsFillingHistory = z, ProgressKeys.FillHistory, _progressService))
             {
-                ContentModel.HistoryLoadingState = LoadingState.Loading;
-                await _contentRepository.FillHistory(ContentModel);
-                ContentModel.HistoryLoadingState = LoadingState.Loaded;
+                if (ContentModel.HistoryLoadingState < LoadingState.Loading)
+                {
+                    ContentModel.HistoryLoadingState = LoadingState.Loading;
+                    await _contentRepository.FillHistory(ContentModel);
+                    ContentModel.HistoryLoadingState = LoadingState.Loaded;
+                }
             }
         }
 
         private readonly RelayCommand _saveCommand;
         public ICommand SaveCommand => _saveCommand;
-        public bool CanSave => CustomContentModel != null && CustomContentModel.CanBeSaved() && CustomContentModel.ContentChanged();
+        public bool CanSave => CustomContentModel != null && CustomContentModel.CanBeSaved() && CustomContentModel.ContentChanged() && !IsSaving;
+        private bool IsSaving { get; set; }
         public async void Save()
         {
-            SaveToContentModel();
-            await _contentRepository.Save(ContentModel);
-            CustomContentModel = PrepareCustomContentModel();
+            using (new IndeterminateProgressShower(_saveCommand, z => IsSaving = z, ProgressKeys.Saving, _progressService))
+            {
+                SaveToContentModel();
+                await _contentRepository.Save(ContentModel);
+                CustomContentModel = PrepareCustomContentModel();
+            }
         }
         #endregion
 

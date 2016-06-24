@@ -5,6 +5,7 @@ using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
+using Famoser.MassPass.View.Helpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -15,12 +16,14 @@ namespace Famoser.MassPass.View.ViewModels
         private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IHistoryNavigationService _historyNavigationService;
         private readonly IContentRepository _contentRepository;
+        private readonly IProgressService _progressService;
 
-        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
+        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService)
         {
             _apiConfigurationService = apiConfigurationService;
             _historyNavigationService = historyNavigationService;
             _contentRepository = contentRepository;
+            _progressService = progressService;
 
             _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
             _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
@@ -37,7 +40,7 @@ namespace Famoser.MassPass.View.ViewModels
 
         private bool CanSetApiConfguration(string config)
         {
-            return !_isSettingApiConfiguration && !_isConfirming;
+            return !_isSettingApiConfiguration && !IsConfirming;
         }
 
         private bool _isSettingApiConfiguration;
@@ -72,10 +75,10 @@ namespace Famoser.MassPass.View.ViewModels
 
         private bool CanSetUserConfguration(string config)
         {
-            return !_isSettingUserConfiguration && !_isConfirming;
+            return !IsSettingUserConfiguration && !IsConfirming;
         }
 
-        private bool _isSettingUserConfiguration;
+        private bool IsSettingUserConfiguration { get; set; }
 
         private bool _canSetUserConfiguration;
         public bool CanSetUserConfiguration
@@ -90,14 +93,11 @@ namespace Famoser.MassPass.View.ViewModels
         private string _lastUserConfiguration;
         private void SetUserConfiguration(string content)
         {
-            _isSettingUserConfiguration = true;
-            _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
-
-            CanSetUserConfiguration = _apiConfigurationService.CanSetUserConfigurationAsync(content);
-            _lastUserConfiguration = content;
-
-            _isSettingUserConfiguration = false;
-            _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
+            using (new IndeterminateProgressShower<string>(_trySetUserConfigurationCommand, z => IsSettingUserConfiguration = z, ProgressKeys.IsSettingUserConfiguration, _progressService))
+            {
+                CanSetUserConfiguration = _apiConfigurationService.CanSetUserConfigurationAsync(content);
+                _lastUserConfiguration = content;
+            }
             _confirmCommand.RaiseCanExecuteChanged();
         }
 
@@ -151,52 +151,50 @@ namespace Famoser.MassPass.View.ViewModels
         private readonly RelayCommand _confirmCommand;
         public ICommand ConfirmCommand => _confirmCommand;
 
-        public bool CanConfirm => CanSetApiConfiguration 
-            && (CanSetUserConfiguration || CreateNewUserConfiguration) 
-            && !_isConfirming
+        public bool CanConfirm => CanSetApiConfiguration
+            && (CanSetUserConfiguration || CreateNewUserConfiguration)
+            && !IsConfirming
             && !string.IsNullOrEmpty(MasterPassword)
             && !string.IsNullOrEmpty(DeviceName)
             && !string.IsNullOrEmpty(UserName);
 
-        private bool _isConfirming;
+        private bool IsConfirming;
         private async void Confirm()
         {
-            _isConfirming = true;
-            _confirmCommand.RaiseCanExecuteChanged();
-            _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
-            _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
-
-            bool res1 = await _apiConfigurationService.TrySetApiConfigurationAsync(_lastApiConfiguration);
-            bool res2;
-            if (CreateNewUserConfiguration)
+            using (new IndeterminateProgressShower(_confirmCommand, z => IsConfirming = z, ProgressKeys.IsInitializingApplication, _progressService))
             {
-                res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
+                _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
+                _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
+
+                bool res1 = await _apiConfigurationService.TrySetApiConfigurationAsync(_lastApiConfiguration);
+                bool res2;
+                if (CreateNewUserConfiguration)
                 {
-                    UserId = Guid.NewGuid(),
-                    DeviceName = DeviceName,
-                    UserName = UserName
-                },
-                Guid.NewGuid());
+                    res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
+                    {
+                        UserId = Guid.NewGuid(),
+                        DeviceName = DeviceName,
+                        UserName = UserName
+                    },
+                    Guid.NewGuid());
+                }
+                else
+                {
+                    res2 = await _apiConfigurationService.TrySetUserConfigurationAsync(_lastUserConfiguration, Guid.NewGuid());
+                }
+                if (res1 && res2)
+                {
+                    await _contentRepository.InitializeVault(MasterPassword);
+                    _historyNavigationService.GoBack();
+                }
+                else
+                {
+                    if (!res1)
+                        CanSetApiConfiguration = false;
+                    if (!res2)
+                        CanSetUserConfiguration = false;
+                }
             }
-            else
-            {
-                res2 = await _apiConfigurationService.TrySetUserConfigurationAsync(_lastUserConfiguration, Guid.NewGuid());
-            }
-            if (res1 && res2)
-            {
-                await _contentRepository.InitializeVault(MasterPassword);
-                _historyNavigationService.GoBack();
-            }
-            else
-            {
-                if (!res1)
-                    CanSetApiConfiguration = false;
-                if (!res2)
-                    CanSetUserConfiguration = false;
-            }
-
-            _isConfirming = false;
-            _confirmCommand.RaiseCanExecuteChanged();
             _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
             _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
         }

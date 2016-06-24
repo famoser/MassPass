@@ -405,12 +405,6 @@ namespace Famoser.MassPass.Business.Repositories
                     }
                 }
 
-                if (model.ApiInformations.ServerId == Guid.Empty)
-                    model.ApiInformations.ServerId = Guid.NewGuid();
-
-                if (string.IsNullOrEmpty(model.ApiInformations.VersionId))
-                    model.ApiInformations.VersionId = Guid.NewGuid().ToString();
-
                 var requestHelper = await GetRequestHelper();
                 var syncHelper = new SyncHelper(_dataService, _errorApiReportingService, this);
                 await syncHelper.UploadChangedWorker(new ConcurrentStack<ContentModel>(new List<ContentModel>() { model }), requestHelper);

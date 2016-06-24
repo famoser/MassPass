@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Logging;
-using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Services.Interfaces;

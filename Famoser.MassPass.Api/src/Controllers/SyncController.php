@@ -10,6 +10,7 @@ namespace Famoser\MassPass\Controllers;
 
 
 use Famoser\MassPass\Helpers\FormatHelper;
+use Famoser\MassPass\Helpers\GuidHelper;
 use Famoser\MassPass\Helpers\RequestHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Entities\Content;
@@ -84,39 +85,43 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseUpdateRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("RelationId", "ServerId")))
+            if (!$this->isWellDefined($model, array("RelationId")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $resp = new UpdateResponse();
             $helper = $this->getDatabaseHelper();
-            $newVersion = $helper->createUniqueVersion();
+            $versionId = GuidHelper::createGuid();
+            $serverId = $model->ServerId;
 
             //save file
             $storage = new FileSystem($this->getUserDirForContent($this->getAuthorizedUser($model)->guid));
             $file = new File('updateFile', $storage);
-            $file->setName($this->getFilenameForContent($model->ServerId, $newVersion));
+            $file->setName($this->getFilenameForContent($model->ServerId, $versionId));
             $file->upload();
 
             //update database
             $contentId = null;
-            $exiting = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
+            $exiting = null;
+            if (GuidHelper::isGuidValid($serverId))
+                $exiting = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $serverId));
             if ($exiting != null) {
                 if ($exiting->version_id != $model->VersionId) {
                     return $this->returnApiError(ApiErrorTypes::InvalidVersionId, $response);
                 }
-                
-                $exiting->version_id = $newVersion;
+
+                $exiting->version_id = $versionId;
 
                 if (!$helper->saveToDatabase($exiting)) {
                     return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
                 }
                 $contentId = $exiting->id;
             } else {
+                $serverId = GuidHelper::createGuid();
                 $newModel = new Content();
-                $newModel->guid = $model->ServerId;
+                $newModel->guid = $serverId;
                 $newModel->user_id = $this->getAuthorizedUser($model)->guid;
                 $newModel->relation_id = $model->RelationId;
-                $newModel->version_id = $newVersion;
+                $newModel->version_id = $versionId;
 
                 if (!$helper->saveToDatabase($newModel)) {
                     return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
@@ -126,7 +131,7 @@ class SyncController extends BaseController
 
             //save to history
             $newModel = new ContentHistory();
-            $newModel->version_id = $newVersion;
+            $newModel->version_id = $versionId;
             $newModel->content_id = $contentId;
             $newModel->creation_date_time = time();
             $newModel->device_id = $this->getAuthorizedDevice($model)->id;
@@ -135,8 +140,8 @@ class SyncController extends BaseController
             }
 
             $resp->ServerRelationId = $model->RelationId;
-            $resp->ServerId = $model->ServerId;
-            $resp->VersionId = $newVersion;
+            $resp->ServerId = $serverId;
+            $resp->VersionId = $versionId;
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
             return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);

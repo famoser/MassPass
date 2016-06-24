@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
-using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
-using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Business.Repositories

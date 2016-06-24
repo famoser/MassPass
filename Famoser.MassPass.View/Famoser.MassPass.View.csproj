@@ -100,9 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\PageKeys.cs" />
+    <Compile Include="Enums\ProgressKeys.cs" />
     <Compile Include="Events\ContentModelEventArgs.cs" />
+    <Compile Include="Helpers\IndeterminateProgressShower.cs" />
     <Compile Include="Helpers\ModelConverter.cs" />
     <Compile Include="Helpers\ModelSaver.cs" />
+    <Compile Include="Helpers\IndeterminateProgressShowerGeneric.cs" />
     <Compile Include="Models\Interfaces\IContentViewModel.cs" />
     <Compile Include="Models\BaseContentModel.cs" />
     <Compile Include="Models\Interfaces\ICustomContentModel.cs" />

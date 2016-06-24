@@ -7,7 +7,6 @@ using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories;
-using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Enum;

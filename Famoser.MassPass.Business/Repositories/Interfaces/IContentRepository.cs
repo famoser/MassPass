@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
 

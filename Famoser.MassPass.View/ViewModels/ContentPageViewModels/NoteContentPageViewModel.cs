@@ -10,8 +10,8 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 {
     public class NoteContentPageViewModel : BaseContentPageViewModel
     {
-        public NoteContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository)
-            : base(passwordVaultService, historyNavigationService, contentRepository)
+        public NoteContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService)
+            : base(passwordVaultService, historyNavigationService, contentRepository, progressService)
         {
             if (IsInDesignMode)
                 SetContentModelStatic(contentRepository.GetSampleModel(ContentTypes.Note));

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Popups;
-using Famoser.FrameworkEssentials.Attributes;
-using Famoser.FrameworkEssentials.Helpers;
+﻿using Windows.UI.Popups;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;

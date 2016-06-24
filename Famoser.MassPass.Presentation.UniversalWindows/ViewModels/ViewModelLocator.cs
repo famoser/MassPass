@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.UniversalWindows.Platform;
 using Famoser.MassPass.Business.Services.Interfaces;
-using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Presentation.UniversalWindows.Pages;
 using Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages;
 using Famoser.MassPass.Presentation.UniversalWindows.Services;
@@ -15,7 +10,6 @@ using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Services.Interfaces;
 using Famoser.MassPass.View.ViewModels;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Views;
 using Microsoft.Practices.ServiceLocation;
 using FolderContentPage = Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages.FolderContentPage;
 using RootContentPage = Famoser.MassPass.Presentation.UniversalWindows.Pages.ContentPages.RootContentPage;
@@ -27,6 +21,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+            SimpleIoc.Default.Register<IProgressService, ProgressService>();
 
             if (IsInDesignMode)
             {

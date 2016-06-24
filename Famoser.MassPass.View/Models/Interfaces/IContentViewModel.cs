@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Famoser.MassPass.View.Models.Interfaces
+﻿namespace Famoser.MassPass.View.Models.Interfaces
 {
     public interface IContentViewModel
     {
