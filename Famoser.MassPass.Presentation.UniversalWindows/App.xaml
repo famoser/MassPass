@@ -99,6 +99,11 @@
                 <Setter Property="FontWeight" Value="SemiLight" />
             </Style>
 
+            <Style x:Key="FamoserHeaderTextBox" TargetType="TextBox" BasedOn="{StaticResource FamoserTextBox}">
+                <Setter Property="FontSize" Value="46" />
+                <Setter Property="FontWeight" Value="Light" />
+            </Style>
+
             <Style x:Key="FamoserDefaultTextBox" TargetType="TextBox" BasedOn="{StaticResource FamoserTextBox}">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="FontWeight" Value="Light" />
