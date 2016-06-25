@@ -32,8 +32,6 @@
         </SplitView.Content>
     </SplitView>
 
-
-
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>

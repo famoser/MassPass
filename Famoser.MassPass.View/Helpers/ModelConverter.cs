@@ -24,25 +24,28 @@ namespace Famoser.MassPass.View.Helpers
 
         public static NoteModel ConvertToNoteModel(ContentModel entity)
         {
-            return DeserializeSafe<NoteModel>(entity.ContentJson);
+            var model = DeserializeSafe<NoteModel>(entity.ContentJson);
+            FillNameModel(model, entity);
+            return model;
         }
 
         public static RootModel ConvertToRootModel(ContentModel entity)
         {
-            return new RootModel()
-            {
-                Name = entity.Name,
-                Children = entity.Contents
-            };
+            var model = new RootModel() { Children = entity.Contents };
+            FillNameModel(model, entity);
+            return model;
         }
 
         public static FolderModel ConvertToFolderModel(ContentModel entity)
         {
-            return new FolderModel()
-            {
-                Name = entity.Name,
-                Children = entity.Contents
-            };
+            var model = new FolderModel() { Children = entity.Contents };
+            FillNameModel(model, entity);
+            return model;
+        }
+
+        private static void FillNameModel(NameModel model, ContentModel entity)
+        {
+            model.Name = entity.Name;
         }
     }
 }

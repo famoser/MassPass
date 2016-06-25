@@ -6,11 +6,43 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:userControls="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls"
+    xmlns:contentPages="using:Famoser.MassPass.Presentation.UniversalWindows.UserControls.ContentPages"
     mc:Ignorable="d"
     DataContext="{Binding NotePageViewModel, Source={StaticResource Locator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
 
-    </Grid>
+    <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay" IsPaneOpen="False" CompactPaneLength="0" OpenPaneLength="300" PaneBackground="{ThemeResource SystemControlBackgroundAccentBrush}">
+        <SplitView.Pane>
+            <contentPages:ParentScroller DataContext="{Binding }" />
+        </SplitView.Pane>
+        <SplitView.Content>
+            <Grid Style="{StaticResource FamoserRootGrid}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <userControls:ProgressControl VerticalAlignment="Top" />
+                <Grid Grid.Row="0" >
+                    <contentPages:EditableTextBlock Value="{Binding NoteModel.Name, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserHeaderTextBlock}" TextBoxStyle="{StaticResource FamoserHeaderTextBox}" />
+                    <!--<TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}" />-->
+                </Grid>
+                <ScrollViewer Grid.Row="1" Style="{StaticResource AlwaysScrollViewer}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource FamoserDefaultTextBoxDescriptionTextBlock}" Text="Note"/>
+                        <contentPages:EditableTextBlock Value="{Binding NoteModel.Content, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserMultiLineTextBlock}" TextBoxStyle="{StaticResource FamoserMultiLineTextBox}" />
+                        <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding ContentModel.Contents}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding ContentModel, Mode=TwoWay}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </SplitView.Content>
+    </SplitView>
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton IsCompact="True" Command="{Binding SaveCommand}" Icon="Save" Label="Save" />
+                <AppBarButton IsCompact="True" Icon="ShowResults" Label="More" Click="MenuButtonClick"/>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
