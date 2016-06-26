@@ -132,6 +132,10 @@
                 <Setter Property="Symbol" Value="Edit" />
             </Style>
             
+            <Style x:Key="FamoserSymbolIconCopy" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
+                <Setter Property="Symbol" Value="Copy" />
+            </Style>
+            
             <Style x:Key="FamoserSymbolIconSave" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
                 <Setter Property="Symbol" Value="Save" />
             </Style>
