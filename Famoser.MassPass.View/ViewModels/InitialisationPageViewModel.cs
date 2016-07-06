@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -93,7 +94,7 @@ namespace Famoser.MassPass.View.ViewModels
         private string _lastUserConfiguration;
         private void SetUserConfiguration(string content)
         {
-            using (new IndeterminateProgressShower<string>(_trySetUserConfigurationCommand, z => IsSettingUserConfiguration = z, ProgressKeys.IsSettingUserConfiguration, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, string>(_trySetUserConfigurationCommand, z => IsSettingUserConfiguration = z, ProgressKeys.IsSettingUserConfiguration, _progressService))
             {
                 CanSetUserConfiguration = _apiConfigurationService.CanSetUserConfigurationAsync(content);
                 _lastUserConfiguration = content;
@@ -161,7 +162,7 @@ namespace Famoser.MassPass.View.ViewModels
         private bool IsConfirming;
         private async void Confirm()
         {
-            using (new IndeterminateProgressShower(_confirmCommand, z => IsConfirming = z, ProgressKeys.IsInitializingApplication, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_confirmCommand, z => IsConfirming = z, ProgressKeys.IsInitializingApplication, _progressService))
             {
                 _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
                 _trySetApiConfigurationCommand.RaiseCanExecuteChanged();

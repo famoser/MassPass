@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.FrameworkEssentials.View.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
@@ -62,7 +63,7 @@ namespace Famoser.MassPass.View.ViewModels
         private bool CanUnlock => !IsUnlocking;
         private async void Unlock()
         {
-            using (new IndeterminateProgressShower(_unlockCommand, z => IsUnlocking = z, ProgressKeys.Unlocking, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_unlockCommand, z => IsUnlocking = z, ProgressKeys.Unlocking, _progressService))
             {
                 var bo = await _passwordVaultService.TryUnlockVaultAsync(_password);
                 if (bo && _passwordVaultService.IsVaultUnLocked())

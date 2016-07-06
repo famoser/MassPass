@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.FrameworkEssentials.View.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
@@ -133,7 +134,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         private bool IsSyncing { get; set; }
         private async void Sync()
         {
-            using (new IndeterminateProgressShower(_syncCommand, z => IsSyncing = z, ProgressKeys.Sync, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_syncCommand, z => IsSyncing = z, ProgressKeys.Sync, _progressService))
             {
                 await _contentRepository.SyncAsync();
             }
@@ -183,7 +184,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         private bool IsFillingHistory { get; set; }
         public async void FillHistory()
         {
-            using (new IndeterminateProgressShower(_fillHistoryCommand, z => IsFillingHistory = z, ProgressKeys.FillHistory, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_fillHistoryCommand, z => IsFillingHistory = z, ProgressKeys.FillHistory, _progressService))
             {
                 if (ContentModel.HistoryLoadingState < LoadingState.Loading)
                 {
@@ -200,7 +201,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         private bool IsSaving { get; set; }
         public async void Save()
         {
-            using (new IndeterminateProgressShower(_saveCommand, z => IsSaving = z, ProgressKeys.Saving, _progressService))
+            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_saveCommand, z => IsSaving = z, ProgressKeys.Saving, _progressService))
             {
                 SaveToContentModel();
                 await _contentRepository.Save(ContentModel);
