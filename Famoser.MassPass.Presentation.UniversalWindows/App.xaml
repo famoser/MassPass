@@ -94,9 +94,23 @@
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
+            <Style x:Key="FamoserMultiLineTextBlock" TargetType="TextBlock" BasedOn="{StaticResource FamoserBodyTextBlock}">
+            </Style>
+
+
             <Style x:Key="FamoserDefaultButton" TargetType="Button" BasedOn="{StaticResource FamoserButton}">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="FontWeight" Value="SemiLight" />
+            </Style>
+
+            <Style x:Key="FamoserHeaderTextBox" TargetType="TextBox" BasedOn="{StaticResource FamoserTextBox}">
+                <Setter Property="FontSize" Value="46" />
+                <Setter Property="FontWeight" Value="Light" />
+            </Style>
+
+            <Style x:Key="FamoserMultiLineTextBox" TargetType="TextBox" BasedOn="{StaticResource FamoserDefaultTextBox}">
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="AcceptsReturn" Value="True" />
             </Style>
 
             <Style x:Key="FamoserDefaultTextBox" TargetType="TextBox" BasedOn="{StaticResource FamoserTextBox}">
@@ -116,6 +130,10 @@
 
             <Style x:Key="FamoserSymbolIconEdit" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
                 <Setter Property="Symbol" Value="Edit" />
+            </Style>
+            
+            <Style x:Key="FamoserSymbolIconCopy" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">
+                <Setter Property="Symbol" Value="Copy" />
             </Style>
             
             <Style x:Key="FamoserSymbolIconSave" TargetType="SymbolIcon" BasedOn="{StaticResource FamoserDefaultSymbolIcon}">

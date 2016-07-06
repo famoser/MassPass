@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Famoser.MassPass.Business.Models.Base;
 using Famoser.MassPass.View.Models.Interfaces;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.View.Models
 {
@@ -30,6 +31,7 @@ namespace Famoser.MassPass.View.Models
             return _startValueDic.Any(s => _currentValueDic[s.Key] != s.Value);
         }
 
+        [JsonIgnore]
         public EventHandler CanBeSavedChanged { get; set; }
     }
 }

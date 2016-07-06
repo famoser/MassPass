@@ -15,11 +15,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock x:Name="TextBlock" Grid.Column="0" Text="{Binding Path=Value}" Style="{StaticResource FamoserTextBlock}" />
-        <TextBox x:Name="TextBox" Visibility="Collapsed" Grid.Column="0" Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FamoserTextBox}" />
+        <TextBlock x:Name="TextBlock" Grid.Column="0" Text="{Binding Path=Value}" Style="{Binding Path=TextBlockStyle}" />
+        <TextBox x:Name="TextBox" Visibility="Collapsed" Grid.Column="0" Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{Binding Path=TextBoxStyle}" />
         <Button Grid.Column="1" Style="{StaticResource FamoserDefaultButton}" Click="SwitchEditModeButton">
-            <SymbolIcon x:Name="SymbolIcon" Style="{StaticResource FamoserSymbolIconEdit}" />
+            <SymbolIcon x:Name="EditSymbolIcon" Style="{StaticResource FamoserSymbolIconEdit}" />
+        </Button>
+        <Button Grid.Column="2" Style="{StaticResource FamoserDefaultButton}" Click="CopyToClipboardButton">
+            <SymbolIcon Style="{StaticResource FamoserSymbolIconCopy}" />
         </Button>
     </Grid>
 </UserControl>

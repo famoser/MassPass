@@ -77,11 +77,12 @@ namespace Famoser.MassPass.Business.Repositories
                     ContentManager.AddOrReplaceContent(content);
                     await Save(content);
 
+                    var note1Guid = Guid.NewGuid();
                     content = new ContentModel()
                     {
                         ContentJson = @"{'Content': 'This is a note with another note inside!'}",
                         Name = "Example Note",
-                        Id = Guid.NewGuid(),
+                        Id = note1Guid,
                         ParentId = parentGuid,
                         ApiInformations = new ApiInformations()
                         {
@@ -97,7 +98,7 @@ namespace Famoser.MassPass.Business.Repositories
                         ContentJson = @"{'Content': 'This is a note in a note in a folder!'}",
                         Name = "Example Note",
                         Id = Guid.NewGuid(),
-                        ParentId = parentGuid,
+                        ParentId = note1Guid,
                         ApiInformations = new ApiInformations()
                         {
                             ServerRelationId = serverRelationGuid
