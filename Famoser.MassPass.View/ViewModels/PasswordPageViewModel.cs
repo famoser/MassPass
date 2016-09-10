@@ -27,6 +27,8 @@ namespace Famoser.MassPass.View.ViewModels
 
             _unlockCommand = new RelayCommand(Unlock, () => CanUnlock);
             _initializeCommand = new RelayCommand(GoToInitializePage);
+            _aboutCommand = new RelayCommand(GoToAboutPage);
+            
 
             if (IsInDesignMode)
             {
@@ -79,6 +81,14 @@ namespace Famoser.MassPass.View.ViewModels
         private void GoToInitializePage()
         {
             _historyNavigationService.NavigateTo(PageKeys.InitialisationPage.ToString(), this);
+        }
+
+        private readonly RelayCommand _aboutCommand;
+        public ICommand AboutCommand => _aboutCommand;
+
+        private void GoToAboutPage()
+        {
+            _historyNavigationService.NavigateTo(PageKeys.AboutPage.ToString(), this);
         }
 
         public void HandleNavigationBack(object message)

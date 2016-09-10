@@ -16,6 +16,11 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Services.Mock
             throw new NotImplementedException();
         }
 
+        public void NavigateToAndForget(string pageKey)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Configure(string key, Type pageType)
         {
             throw new NotImplementedException();

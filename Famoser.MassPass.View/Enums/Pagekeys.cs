@@ -13,6 +13,11 @@
         InitialisationPage,
 
         /// <summary>
+        /// Explain how this application works, and the ups and downs of this approach
+        /// </summary>
+        AboutPage,
+
+        /// <summary>
         /// the first page; a list of all collections
         /// </summary>
         RootContentPage,
