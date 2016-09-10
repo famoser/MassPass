@@ -1,0 +1,52 @@
+﻿<Page
+    x:Class="Famoser.MassPass.Presentation.UniversalWindows.Pages.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Famoser.MassPass.Presentation.UniversalWindows.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource FamoserRootGrid}">
+        <ScrollViewer>
+            <RichTextBlock Padding="20">
+                <Paragraph>
+                    <Bold>What is MassPass?</Bold>
+                </Paragraph>
+                <Paragraph>MassPass is a password collection, you use it to save all your password and account data</Paragraph>
+
+                <Paragraph Margin="0,10,0,0">
+                    <Bold>Why should I use MassPass?</Bold>
+                </Paragraph>
+                <Paragraph>
+                    MassPass allows you to create a password collection; all your passwords and account data at the same place.
+                    You won't need to remember passwords anymore, and therefore can choose different, strong passwords for each one of your logins.
+                    All your data is then synced over all your devies, so you will have everything with you at all times.
+                    </Paragraph>
+
+                <Paragraph Margin="0,10,0,0">
+                    <Bold>How do I secure MassPass?</Bold>
+                </Paragraph>
+                <Paragraph>
+                    You secure your password collection with a master password, one very safe password only you know.
+                    Some other authentication methods may be added later on, like your fingerprint or a rythm</Paragraph>
+
+
+                <Paragraph Margin="0,10,0,0">
+                    <Bold>Can I recover my data if I forget my master password?</Bold>
+                </Paragraph>
+                <Paragraph>
+                    No, you cannot. All files are saved encrypted, only with your master password will you be able to decrypt them. 
+                    Noone has access to your password collection but you.
+                </Paragraph>
+                <Paragraph Margin="0,10,0,0">
+                    <Bold>How is my data synced?</Bold>
+                </Paragraph>
+                <Paragraph>
+                    All data is encrypted, and then send to a the server (in switzerland), attached to an identifier. All devices which have that identifier can download those encrypted files.
+                    If they are able to decrypt it (with the correct master password) they can view or edit it.
+                    The edit history of your entries is saved, you can see which device has made the last changes, and you will even be able to revert a change you no longer need</Paragraph>
+            </RichTextBlock>
+        </ScrollViewer>
+    </Grid>
+</Page>

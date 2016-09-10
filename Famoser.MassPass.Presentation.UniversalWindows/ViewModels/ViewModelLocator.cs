@@ -49,6 +49,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.ViewModels
             navigationService.Configure(PageKeys.NoteContentPage.ToString(), typeof(NoteContentPage));
             navigationService.Configure(PageKeys.SharePage.ToString(), typeof(SharePage));
             navigationService.Configure(PageKeys.UnlockPage.ToString(), typeof(UnlockPage));
+            navigationService.Configure(PageKeys.AboutPage.ToString(), typeof(AboutPage));
             return navigationService;
         }
     }
