@@ -65,8 +65,7 @@ namespace Famoser.MassPass.Data.Services
             var rawResponse = "";
             try
             {
-                var response = await _restService.PostJsonAsync(await GetUri(type),
-                    JsonConvert.SerializeObject(request));
+                var response = await _restService.PostJsonAsync(await GetUri(type), JsonConvert.SerializeObject(request));
                 rawResponse = await response.GetResponseAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<T>(rawResponse);
                 if (obj != null)

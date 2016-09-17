@@ -3,19 +3,19 @@
     public enum ContentTypes
     {
         /// <summary>
-        /// The root model, constructed at runtime from all ContentModels without parents
-        /// </summary>
-        Root,
-
-        /// <summary>
-        /// A folder (only collections are important)
-        /// </summary>
-        Folder,
-
-        /// <summary>
         /// A Note
         /// </summary>
         Note,
+
+        /// <summary>
+        /// A Web login
+        /// </summary>
+        Login,
+
+        /// <summary>
+        /// A credit card
+        /// </summary>
+        CreditCard,
 
         /// <summary>
         /// An unknown Content Type

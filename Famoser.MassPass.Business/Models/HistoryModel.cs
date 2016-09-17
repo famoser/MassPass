@@ -1,5 +1,6 @@
 ﻿using System;
 using Famoser.MassPass.Business.Models.Base;
+using Famoser.MassPass.Business.Models.Sync;
 
 namespace Famoser.MassPass.Business.Models
 {
@@ -12,16 +13,14 @@ namespace Famoser.MassPass.Business.Models
             set { Set(ref _deviceModel, value); }
         }
 
-        private ContentModel _contentModel;
-        public ContentModel ContentModel
+        private BaseSyncModel _baseSyncModel;
+        public BaseSyncModel BaseSyncModel
         {
-            get { return _contentModel; }
-            set { Set(ref _contentModel, value); }
+            get { return _baseSyncModel; }
+            set { Set(ref _baseSyncModel, value); }
         }
 
         public DateTime CreationDateTime { get; set; }
         public string VersionId { get; set; }
-
-        public ContentModel Parent { get; set; }
     }
 }
