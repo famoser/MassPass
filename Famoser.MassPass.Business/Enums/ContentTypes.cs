@@ -3,6 +3,11 @@
     public enum ContentTypes
     {
         /// <summary>
+        /// A Collection
+        /// </summary>
+        Collection,
+
+        /// <summary>
         /// A Note
         /// </summary>
         Note,

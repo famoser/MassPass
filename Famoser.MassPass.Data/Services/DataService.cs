@@ -11,6 +11,7 @@ using Famoser.MassPass.Data.Attributes;
 using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
+using Famoser.MassPass.Data.Entities.Communications.Request.Raw;
 using Famoser.MassPass.Data.Entities.Communications.Response;
 using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
@@ -146,12 +147,12 @@ namespace Famoser.MassPass.Data.Services
                         {
                             ApiError = ApiError.None,
                             ContentEntity = JsonConvert.DeserializeObject<ContentEntity>(str),
-                            ApiInformations = new ApiInformations()
+                            ContentApiInformations = new ContentApiInformations()
                             {
-                                ApiStatus = ApiStatus.UpToDate,
+                                ServerStatus = ServerStatus.UpToDate,
                                 ServerId = request.ServerId,
                                 VersionId = request.VersionId,
-                                ServerRelationId = request.RelationId
+                                ServerCollectionId = request.RelationId
                             },
                             Successfull = true
                         };

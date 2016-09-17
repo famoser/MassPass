@@ -9,7 +9,7 @@ namespace Famoser.MassPass.Business.Models.Storage
         public Guid Id { get; set; }
         public Guid TypeId { get; set; }
         public Guid ParentId { get; set; }
-        public ApiInformations ApiInformations { get; set; }
+        public ContentApiInformations ContentApiInformations { get; set; }
         public LocalStatus LocalStatus { get; set; }
         public LivecycleStatus LivecycleStatus { get; set; }
         public string Name { get; set; }

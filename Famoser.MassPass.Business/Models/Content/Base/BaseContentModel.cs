@@ -1,29 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
-using Newtonsoft.Json;
 
-namespace Famoser.MassPass.Business.Models.Sync
+namespace Famoser.MassPass.Business.Models.Content.Base
 {
-    public class BaseSyncModel : BaseModel
+    public abstract class BaseContentModel : BaseModel
     {
-        public BaseSyncModel(Guid id)
+        protected BaseContentModel(Guid id, ContentTypes type)
         {
             Id = id;
+            ContentType = type;
             Contents = new ObservableCollection<BaseContentModel>();
             History = new ObservableCollection<HistoryModel>();
         }
 
         public Guid Id { get; private set; }
+        public ContentApiInformations ContentApiInformations { get; set; }
+        public ContentTypes ContentType { get; private set; }
+        
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+            set { Set(ref _name, value); }
+        }
 
-        public ApiInformations ApiInformations { get; set; }
+        private string _description;
+        public string Description
+        {
+            get { return _description; }
+            set { Set(ref _description, value); }
+        }
 
         private LocalStatus _localStatus;
         public LocalStatus LocalStatus
@@ -38,7 +48,7 @@ namespace Famoser.MassPass.Business.Models.Sync
             get { return _livecycleStatus; }
             set { Set(ref _livecycleStatus, value); }
         }
-        
+
         public ObservableCollection<BaseContentModel> Contents { get; }
 
         private LoadingState _contentLoadingState;

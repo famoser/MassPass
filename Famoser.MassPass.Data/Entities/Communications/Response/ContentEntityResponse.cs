@@ -6,6 +6,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response
     public class ContentEntityResponse : ApiResponse
     {
         public ContentEntity ContentEntity { get; set; }
-        public ApiInformations ApiInformations { get; set; }
+        public ContentApiInformations ContentApiInformations { get; set; }
     }
 }

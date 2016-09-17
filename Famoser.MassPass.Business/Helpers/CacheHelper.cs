@@ -33,7 +33,7 @@ namespace Famoser.MassPass.Business.Helpers
                 TypeId = entity.TypeId,
                 LivecycleStatus = entity.LivecycleStatus,
                 LocalStatus = entity.LocalStatus,
-                ApiInformations = entity.ApiInformations,
+                ApiInformations = entity.ContentApiInformations,
                 Name = entity.Name
             };
         }
@@ -47,7 +47,7 @@ namespace Famoser.MassPass.Business.Helpers
                 TypeId = entity.TypeId,
                 LivecycleStatus = entity.LivecycleStatus,
                 LocalStatus = entity.LocalStatus,
-                ApiInformations = entity.ApiInformations,
+                ContentApiInformations = entity.ApiInformations,
                 Name = entity.Name
             };
         }

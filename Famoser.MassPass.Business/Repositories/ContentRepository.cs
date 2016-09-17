@@ -68,9 +68,9 @@ namespace Famoser.MassPass.Business.Repositories
                     {
                         Name = "Example Folder",
                         Id = parentGuid,
-                        ApiInformations = new ApiInformations()
+                        ApiInformations = new ContentApiInformations()
                         {
-                            ServerRelationId = serverRelationGuid
+                            ServerCollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Folder);
@@ -84,9 +84,9 @@ namespace Famoser.MassPass.Business.Repositories
                         Name = "Example Note",
                         Id = note1Guid,
                         ParentId = parentGuid,
-                        ApiInformations = new ApiInformations()
+                        ApiInformations = new ContentApiInformations()
                         {
-                            ServerRelationId = serverRelationGuid
+                            ServerCollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Note);
@@ -99,9 +99,9 @@ namespace Famoser.MassPass.Business.Repositories
                         Name = "Example Note",
                         Id = Guid.NewGuid(),
                         ParentId = note1Guid,
-                        ApiInformations = new ApiInformations()
+                        ApiInformations = new ContentApiInformations()
                         {
-                            ServerRelationId = serverRelationGuid
+                            ServerCollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Note);
@@ -377,7 +377,7 @@ namespace Famoser.MassPass.Business.Repositories
                 {
                     var newModel = new ContentModel();
                     ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
-                    newModel.ApiInformations = response.ApiInformations;
+                    newModel.ApiInformations = response.ContentApiInformations;
                     newModel.LocalStatus = LocalStatus.Immutable;
                     model.ContentModel = newModel;
                     return true;

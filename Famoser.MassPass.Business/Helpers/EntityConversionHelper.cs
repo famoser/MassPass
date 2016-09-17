@@ -10,7 +10,7 @@ namespace Famoser.MassPass.Business.Helpers
 {
     public class EntityConversionHelper
     {
-        public static ContentModel Convert(ContentEntity entity, ApiInformations infos)
+        public static ContentModel Convert(ContentEntity entity, ContentApiInformations infos)
         {
             return new ContentModel()
             {

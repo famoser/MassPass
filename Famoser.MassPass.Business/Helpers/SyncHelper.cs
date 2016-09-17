@@ -48,7 +48,7 @@ namespace Famoser.MassPass.Business.Helpers
                 var refreshEntity =
                     onlineVersion.RefreshEntities.FirstOrDefault(
                         e => e.ServerId == contentModel.ApiInformations.ServerId);
-                if (refreshEntity == null || refreshEntity.ApiStatus != ApiStatus.Changed)
+                if (refreshEntity == null || refreshEntity.ServerStatus != ServerStatus.Changed)
                     changedStack.Push(contentModel);
                 else
                     contentModel.LocalStatus = LocalStatus.Conflict;
@@ -71,7 +71,7 @@ namespace Famoser.MassPass.Business.Helpers
                 var refreshEntity =
                     onlineVersion.RefreshEntities.FirstOrDefault(
                         e => e.ServerId == contentModel.ApiInformations.ServerId);
-                if (refreshEntity == null || refreshEntity.ApiStatus != ApiStatus.Changed)
+                if (refreshEntity == null || refreshEntity.ServerStatus != ServerStatus.Changed)
                     changedStack.Push(contentModel);
             }
             return changedStack;
@@ -150,7 +150,7 @@ namespace Famoser.MassPass.Business.Helpers
                     if (req.IsSuccessfull)
                     {
                         ResponseHelper.WriteIntoModel(req.ContentEntity, changedContent);
-                        changedContent.ApiInformations = req.ApiInformations;
+                        changedContent.ApiInformations = req.ContentApiInformations;
                         changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
                     else
@@ -206,7 +206,7 @@ namespace Famoser.MassPass.Business.Helpers
                     {
                         var newModel = new ContentModel();
                         ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
-                        newModel.ApiInformations = response.ApiInformations;
+                        newModel.ApiInformations = response.ContentApiInformations;
                         newModel.LocalStatus = LocalStatus.UpToDate;
                         ContentManager.AddOrReplaceContent(newModel);
                     }
