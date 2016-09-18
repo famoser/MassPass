@@ -14,10 +14,8 @@ use Famoser\MassPass\Helpers\GuidHelper;
 use Famoser\MassPass\Helpers\RequestHelper;
 use Famoser\MassPass\Helpers\ResponseHelper;
 use Famoser\MassPass\Models\Entities\Content;
-use Famoser\MassPass\Models\Entities\ContentHistory;
 use Famoser\MassPass\Models\Entities\Device;
 use Famoser\MassPass\Models\Entities\User;
-use Famoser\MassPass\Models\Request\CollectionEntriesRequest;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Models\Response\CollectionEntriesResponse;
 use Famoser\MassPass\Models\Response\ContentEntityHistoryResponse;
@@ -42,8 +40,6 @@ class SyncController extends BaseController
             if (!$this->isWellDefined($model, null, array("RefreshEntities")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
-            $helper = $this->getDatabaseHelper();
-
             $contentIds = [];
             $contentVersionById = [];
             foreach ($model->RefreshEntities as $refreshEntity) {
@@ -57,10 +53,12 @@ class SyncController extends BaseController
             $resp = new RefreshResponse();
             $resp->RefreshEntities = [];
             $collectionIds = [];
+            $foundIds = [];
             //updating info of existing
             for ($i = 0; $i < count($results); $i++) {
                 if (!in_array($results[$i]->collection_id, $collectionIds))
                     $collectionIds[] = $results[$i]->collection_id;
+                $foundIds[] = $results[$i]->content_id;
 
                 if ($contentVersionById[$results[$i]->content_id] != $results[$i]->version_id) {
                     $entity = new RefreshEntity();
@@ -95,7 +93,8 @@ class SyncController extends BaseController
                     }
                 }
             }
-            //adding missing
+
+            //adding missing from database
             $missings = $helper->getFromDatabase(new Content(), "content_id NOT IN (" . implode(",", $contentIds) . ") AND collection_id IN (" . implode(",", $collectionIds) . ")", null, "content_id, creation_date_time DESC");
             foreach ($missings as $missing) {
                 $entity = new RefreshEntity();
@@ -113,6 +112,17 @@ class SyncController extends BaseController
                 }
             }
 
+            //add missing from request
+            foreach ($model->RefreshEntities as $refreshEntity) {
+                if (!in_array($refreshEntity->ContentId, $foundIds)) {
+                    $entity = new RefreshEntity();
+                    $entity->VersionId = $refreshEntity->VersionId;
+                    $entity->ContentId = $refreshEntity->ContentId;
+                    $entity->RemoteStatus = ServerVersion::None;
+                    $resp->RefreshEntities[] = $entity;
+                }
+            }
+
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
             return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
@@ -123,7 +133,7 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseUpdateRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("CollectionId")))
+            if (!$this->isWellDefined($model, array("CollectionId", "ContentId", "VersionId")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $helper = $this->getDatabaseHelper();

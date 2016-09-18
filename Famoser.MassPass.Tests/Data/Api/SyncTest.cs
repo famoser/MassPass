@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Famoser.MassPass.Data.Entities.Communications.Request;
@@ -19,254 +20,182 @@ namespace Famoser.MassPass.Tests.Data.Api
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var ds = helper.GetDataService();
-                var guids = await helper.CreateAuthroizedClient();
-                var serverId = Guid.NewGuid();
-                var relationId = Guid.NewGuid();
-                var entity = EntityMockHelper.GetContentEntity();
-
-                var newEntity = new UpdateRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    ContentId = serverId,
-                    RelationId = relationId,
-                    TransferEntity = entity
-                };
-                var entityRequest = new ContentEntityRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    ContentId = serverId
-                };
+                var client = await helper.CreateAuthorizedClient1Async();
+                var entityGuid = Guid.NewGuid();
+                var entityBytes = new byte[] { 12, 2, 3, 14, 61, 23, 73 };
+                var collectionGuid = Guid.NewGuid();
+                var versionId1 = Guid.NewGuid().ToString();
 
                 //act
-                var res1 = await ds.UpdateAsync(newEntity);
-                entityRequest.VersionId = res1.VersionId;
-                var res2 = await ds.ReadAsync(entityRequest);
+                var resp1 = await client.UpdateAsync(new UpdateRequest()
+                {
+                    VersionId = versionId1,
+                    ContentId = entityGuid,
+                    CollectionId = collectionGuid
+                }, entityBytes);
+                AssertionHelper.CheckForSuccessfull(resp1, "resp1");
 
-                //assert
-                AssertionHelper.CheckForSuccessfull(res1, "res1");
-                AssertionHelper.CheckForSuccessfull(res2, "res2");
-                AssertionHelper.CheckForEquality(res2.TransferEntity, entity);
-
-                Assert.IsTrue(res1.VersionId != null, "versionId undefined");
-                Assert.IsTrue(res1.ServerId == serverId, "server id was modified, not intended behaviour");
-                Assert.IsTrue(res1.ServerRelationId != null, "server relation id undefined");
+                var resp2 = await client.ReadAsync(new ContentEntityRequest()
+                {
+                    VersionId = versionId1,
+                    ContentId = entityGuid
+                });
+                AssertionHelper.CheckForSuccessfull(resp2, "resp2");
+                AssertionHelper.CheckForEquality(resp2.EncryptedBytes, entityBytes);
             }
         }
 
         [TestMethod]
-        public async Task Refresh()
-        {
-            using (var helper = new ApiHelper())
-            {
-                var ds = helper.GetDataService();
-                var guids = await helper.CreateAuthroizedClient();
-                var serverId = Guid.NewGuid();
-                var serverId2 = Guid.NewGuid();
-                var relationId = Guid.NewGuid();
-                var entity = EntityMockHelper.GetContentEntity();
-
-                var newEntity = new UpdateRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    ContentId = serverId,
-                    RelationId = relationId,
-                    TransferEntity = entity
-                };
-                var newEntity2 = new UpdateRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    ContentId = serverId2,
-                    RelationId = relationId,
-                    TransferEntity = entity
-                };
-                var res1 = await ds.UpdateAsync(newEntity);
-                var res2 = await ds.UpdateAsync(newEntity2);
-                AssertionHelper.CheckForSuccessfull(res1, "res1");
-                AssertionHelper.CheckForSuccessfull(res2, "res2");
-                var version1 = res1.VersionId;
-                var version2 = res2.VersionId;
-                var refreshRequest1 = new SyncRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    RefreshEntities = new List<RefreshEntity>()
-                    {
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId,
-                            VersionId = "invalidVersion"
-                        },
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId2,
-                            VersionId = version2
-                        }
-                    }
-                };
-                var refreshRequest2 = new SyncRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    RefreshEntities = new List<RefreshEntity>()
-                    {
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId,
-                            VersionId = version1
-                        },
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId2,
-                            VersionId = version2
-                        }
-                    }
-                };
-                var refreshRequest3 = new SyncRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    RefreshEntities = new List<RefreshEntity>()
-                    {
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId,
-                            VersionId = "invalid"
-                        },
-                        new RefreshEntity()
-                        {
-                            ContentId = serverId2,
-                            VersionId = "invalid"
-                        }
-                    }
-                };
-
-                //act
-                var versionRes1 = await ds.RefreshAsync(refreshRequest1);
-                var versionRes2 = await ds.RefreshAsync(refreshRequest2);
-                var versionRes3 = await ds.RefreshAsync(refreshRequest3);
-
-                //assert
-                AssertionHelper.CheckForSuccessfull(versionRes1, "versionRes1");
-                AssertionHelper.CheckForSuccessfull(versionRes2, "versionRes2");
-                AssertionHelper.CheckForSuccessfull(versionRes3, "versionRes3");
-
-                Assert.IsTrue(versionRes1.RefreshEntities.Count == 1, "versionRes1: invalid count");
-                Assert.IsTrue(versionRes2.RefreshEntities.Count == 0, "versionRes2: invalid count");
-                Assert.IsTrue(versionRes3.RefreshEntities.Count == 2, "versionRes3: invalid count");
-
-                Assert.IsTrue(versionRes1.RefreshEntities[0].ServerVersion == ServerVersion.Older, "versionRes1: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[0].ServerVersion == ServerVersion.Older, "versionRes3: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[1].ServerVersion == ServerVersion.Older, "versionRes3: invalid remote status (2)");
-
-                Assert.IsTrue(versionRes1.RefreshEntities[0].VersionId == version1, "versionRes1: invalid version");
-                if (versionRes3.RefreshEntities[0].VersionId == version1)
-                {
-                    Assert.IsTrue(versionRes3.RefreshEntities[1].VersionId == version2, "versionRes3: invalid version (1)");
-                }
-                else
-                {
-                    Assert.IsTrue(versionRes3.RefreshEntities[0].VersionId == version2, "versionRes3: invalid version (2)");
-                    Assert.IsTrue(versionRes3.RefreshEntities[1].VersionId == version1, "versionRes3: invalid version (3)");
-                }
-            }
-        }
-        
-        [TestMethod]
-        public async Task ReadCollection()
+        public async Task Sync()
         {
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var ds = helper.GetDataService();
-                var guids = await helper.CreateAuthroizedClient();
-                var relationId = Guid.NewGuid();
-                var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
-                var entityGuids2 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
-                var entityGuids3 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
-
-                var collectionEntriesRequestEmpty = new CollectionEntriesRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    CollectionId = relationId
-                };
-                var collectionEntriesRequestFull = new CollectionEntriesRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    CollectionId = relationId,
-                    KnownContentIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2, entityGuids3.Item2 }
-                };
-                var collectionEntriesRequest2Of3 = new CollectionEntriesRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    CollectionId = relationId,
-                    KnownContentIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2 }
-                };
+                var client = await helper.CreateAuthorizedClient1Async();
+                var entityGuid = Guid.NewGuid();
+                var entityBytes = new byte[] { 12, 2, 3, 14, 61, 23, 73 };
+                var collectionGuid = Guid.NewGuid();
+                var versionId1 = Guid.NewGuid().ToString();
+                var versionId2 = Guid.NewGuid().ToString();
+                var versionId3 = Guid.NewGuid().ToString();
 
                 //act
-                var res1 = await ds.ReadAsync(collectionEntriesRequestEmpty);
-                var res2 = await ds.ReadAsync(collectionEntriesRequestFull);
-                var res3 = await ds.ReadAsync(collectionEntriesRequest2Of3);
-
-                //assert
-                AssertionHelper.CheckForSuccessfull(res1, "res1");
-                AssertionHelper.CheckForSuccessfull(res2, "res2");
-                AssertionHelper.CheckForSuccessfull(res3, "res3");
-
-                Assert.IsTrue(res1.CollectionEntryEntities.Count == 3, "not all entities returned (1)");
-                Assert.IsTrue(res2.CollectionEntryEntities.Count == 0, "not all entities returned (2)");
-                Assert.IsTrue(res3.CollectionEntryEntities.Count == 1, "not all entities returned (3)");
-                Assert.IsTrue(res3.CollectionEntryEntities[0].ContentId == entityGuids3.Item2, "not correct serverId returned (1)");
-                Assert.IsTrue(res3.CollectionEntryEntities[0].VersionId == entityGuids3.Item3, "not correct versionId returned (1)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids3.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (2)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids2.Item2 && s.VersionId == entityGuids2.Item3), "not correct serverId or versionId returned (3)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids1.Item2 && s.VersionId == entityGuids1.Item3), "not correct serverId or versionId returned (4)");
-            }
-        }
-
-        [TestMethod]
-        public async Task CollectionHistory()
-        {
-            using (var helper = new ApiHelper())
-            {
-                var ds = helper.GetDataService();
-                var guids = await helper.CreateAuthroizedClient();
-                var relationId = Guid.NewGuid();
-                var serverId = Guid.NewGuid();
-                var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
-                var entityGuids2 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
-                var entityGuids3 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);
-
-                var collectionEntriesRequestEmpty = new ContentEntityHistoryRequest()
+                //empty test
+                var resp1 = await client.SyncAsync(new SyncRequest()
                 {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    ContentId = serverId
-                };
-                
+                    RefreshEntities = new List<RefreshEntity>()
+                });
+                AssertionHelper.CheckForSuccessfull(resp1, "resp1");
+                Assert.IsTrue(resp1.RefreshEntities.Count == 0, "count not 0 at resp1");
 
-                //act
-                var res1 = await ds.GetHistoryAsync(collectionEntriesRequestEmpty);
-
-                //assert
-                AssertionHelper.CheckForSuccessfull(res1, "res1");
-
-                Assert.IsTrue(res1.HistoryEntries.Count == 3, "not all entities returned");
-                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids3.Item3), "not correct versionId returned (2)");
-                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids2.Item3), "not correct versionId returned (3)");
-                Assert.IsTrue(res1.HistoryEntries.Any(s => s.VersionId == entityGuids1.Item3), "not correct versionId returned (4)");
-                foreach (var historyEntry in res1.HistoryEntries)
+                var resp2 = await client.SyncAsync(new SyncRequest()
                 {
-                    Assert.IsTrue(historyEntry.CreationDateTime < DateTime.Now + TimeSpan.FromSeconds(20) && historyEntry.CreationDateTime > DateTime.Now - TimeSpan.FromSeconds(20), "Datetime not correct");
-                    Assert.IsTrue(historyEntry.DeviceId == guids.Item2, "DeviceId not correct");
-                }
+                    RefreshEntities = new List<RefreshEntity>()
+                    {
+                        new RefreshEntity()
+                        {
+                            ContentId = entityGuid,
+                            VersionId = versionId1
+                        }
+                    }
+                });
+                AssertionHelper.CheckForSuccessfull(resp2, "resp2");
+                Assert.IsTrue(resp2.RefreshEntities.Count == 1, "count not 1 at resp2");
+                Assert.IsTrue(resp2.RefreshEntities[0].ServerVersion == ServerVersion.None, "ServerVersion not None at resp2");
+                Assert.IsTrue(resp2.RefreshEntities[0].VersionId == versionId1, "VersionId wrong at resp2");
+                Assert.IsTrue(resp2.RefreshEntities[0].ContentId == entityGuid, "ContentId wrong at resp2");
+
+                //put it on server
+                var resp3 = await client.UpdateAsync(new UpdateRequest()
+                {
+                    VersionId = versionId1,
+                    ContentId = entityGuid
+                }, entityBytes);
+                AssertionHelper.CheckForSuccessfull(resp3, "resp3");
+
+                //check if on server
+                var resp4 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                });
+                AssertionHelper.CheckForSuccessfull(resp4, "resp4");
+                Assert.IsTrue(resp4.RefreshEntities.Count == 1, "count not 1 at resp4");
+                Assert.IsTrue(resp4.RefreshEntities[0].ServerVersion == ServerVersion.Newer, "ServerVersion not Newer at resp4");
+                Assert.IsTrue(resp4.RefreshEntities[0].VersionId == versionId1, "VersionId wrong at resp4");
+                Assert.IsTrue(resp4.RefreshEntities[0].ContentId == entityGuid, "ContentId wrong at resp4");
+
+                //check if sync works variante 1
+                var resp5 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                    {
+                        new RefreshEntity()
+                        {
+                            VersionId = versionId1,
+                            ContentId = entityGuid
+                        }
+                    }
+                });
+                AssertionHelper.CheckForSuccessfull(resp5, "resp5");
+                Assert.IsTrue(resp5.RefreshEntities.Count == 0, "count not 0 at resp5");
+
+                //check if sync works variante 2
+                var resp6 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                    {
+                        new RefreshEntity()
+                        {
+                            VersionId = versionId2,
+                            ContentId = entityGuid
+                        }
+                    }
+                });
+                AssertionHelper.CheckForSuccessfull(resp6, "resp6");
+                Assert.IsTrue(resp6.RefreshEntities.Count == 1, "count not 1 at resp6");
+                Assert.IsTrue(resp6.RefreshEntities[0].ServerVersion == ServerVersion.Older, "ServerVersion not Older at resp6");
+                Assert.IsTrue(resp6.RefreshEntities[0].VersionId == versionId1, "VersionId wrong at resp6");
+                Assert.IsTrue(resp6.RefreshEntities[0].ContentId == entityGuid, "ContentId wrong at resp6");
+
+                //put it on server
+                var resp7 = await client.UpdateAsync(new UpdateRequest()
+                {
+                    VersionId = versionId2,
+                    ContentId = entityGuid
+                }, entityBytes);
+                AssertionHelper.CheckForSuccessfull(resp7, "resp7");
+
+                //check if on server
+                var resp8 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                });
+                AssertionHelper.CheckForSuccessfull(resp8, "resp8");
+                Assert.IsTrue(resp8.RefreshEntities.Count == 1, "count not 1 at resp8");
+                Assert.IsTrue(resp8.RefreshEntities[0].ServerVersion == ServerVersion.Newer, "ServerVersion not Newer at resp8");
+                Assert.IsTrue(resp8.RefreshEntities[0].VersionId == versionId1, "VersionId wrong at resp8");
+                Assert.IsTrue(resp8.RefreshEntities[0].ContentId == entityGuid, "ContentId wrong at resp8");
+
+                //check if sync works variante 1
+                var resp9 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                    {
+                        new RefreshEntity()
+                        {
+                            VersionId = versionId2,
+                            ContentId = entityGuid
+                        }
+                    }
+                });
+                AssertionHelper.CheckForSuccessfull(resp9, "resp9");
+                Assert.IsTrue(resp9.RefreshEntities.Count == 0, "count not 0 at resp9");
+
+                //check if sync works variante 2
+                var resp10 = await client.SyncAsync(new SyncRequest()
+                {
+                    RefreshEntities = new List<RefreshEntity>()
+                    {
+                        new RefreshEntity()
+                        {
+                            VersionId = versionId1,
+                            ContentId = entityGuid
+                        }
+                    }
+                });
+                AssertionHelper.CheckForSuccessfull(resp10, "resp10");
+                Assert.IsTrue(resp10.RefreshEntities.Count == 1, "count not 1 at resp10");
+                Assert.IsTrue(resp10.RefreshEntities[0].ServerVersion == ServerVersion.Newer, "ServerVersion not Newer at resp10");
+                Assert.IsTrue(resp10.RefreshEntities[0].VersionId == versionId2, "VersionId wrong at resp10");
+                Assert.IsTrue(resp10.RefreshEntities[0].ContentId == entityGuid, "ContentId wrong at resp10");
+
+                //get history
+                var resp11 = await client.GetHistoryAsync(new ContentEntityHistoryRequest()
+                {
+                    ContentId = entityGuid
+                });
+                AssertionHelper.CheckForSuccessfull(resp11, "resp11");
+                Assert.IsTrue(resp11.HistoryEntries.Count == 2, "count not 2 at resp11");
             }
         }
     }

@@ -98,16 +98,6 @@ class RequestHelper
 
     /**
      * @param Request $request
-     * @return CollectionEntriesRequest
-     * @throws \JsonMapper_Exception
-     */
-    public static function parseCollectionEntriesRequest(Request $request)
-    {
-        return RequestHelper::executeJsonMapper($request, new CollectionEntriesRequest());
-    }
-
-    /**
-     * @param Request $request
      * @return ContentEntityHistoryRequest
      * @throws \JsonMapper_Exception
      */
