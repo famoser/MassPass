@@ -5,13 +5,15 @@ namespace Famoser.MassPass.Data.Enum
     /// <summary>
     /// response from the server; indicates if contentmodel is up to date or not
     /// </summary>
-    public enum ServerStatus
+    public enum ServerVersion
     {
         [Description("no version on server")]
-        New = 0,
+        None = 0,
         [Description("same version on server")]
-        UpToDate = 1,
+        Same = 1,
         [Description("older version on server")]
-        Changed = 2
+        Older = 2,
+        [Description("newer version on server")]
+        Newer = 3
     }
 }

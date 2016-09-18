@@ -21,7 +21,7 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
-            SimpleIoc.Default.Register<IDataService, DataService>();
+            SimpleIoc.Default.Register<IDataService, ApiClient>();
             SimpleIoc.Default.Register<IApiEncryptionService, ApiEncryptionService>();
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultServiceMock>();
             SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationServiceMock>();
@@ -104,9 +104,9 @@ namespace Famoser.MassPass.Tests.Data.Api
             {
                 UserId = userId,
                 DeviceId = deviceId,
-                ServerId = serverId.Value,
+                ContentId = serverId.Value,
                 RelationId = relationId.Value,
-                ContentEntity = EntityMockHelper.GetContentEntity()
+                TransferEntity = EntityMockHelper.GetContentEntity()
             };
 
             var res1 = await GetDataService().UpdateAsync(newEntity);

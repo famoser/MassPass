@@ -47,7 +47,7 @@ namespace Famoser.MassPass.Business.Helpers
         {
             return new RefreshEntity()
             {
-                ServerId = model.ApiInformations.ServerId,
+                ContentId = model.ApiInformations.ServerId,
                 VersionId = model.ApiInformations.VersionId
             };
         }

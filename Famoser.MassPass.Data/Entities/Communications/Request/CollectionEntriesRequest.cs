@@ -8,9 +8,9 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request
     {
         public CollectionEntriesRequest()
         {
-            KnownServerIds = new List<Guid>();
+            KnownContentIds = new List<Guid>();
         }
-        public Guid RelationId { get; set; }
-        public List<Guid> KnownServerIds { get; set; }
+        public Guid CollectionId { get; set; }
+        public List<Guid> KnownContentIds { get; set; }
     }
 }

@@ -4,19 +4,20 @@ using System.Threading.Tasks;
 namespace Famoser.MassPass.Data.Services.Interfaces
 {
     /// <summary>
-    /// the vault which can be unlocked with a master pass and provides all passwords 
+    /// the vault, it contains the decryption passwords for the collections & the user api infos 
     /// </summary>
     public interface IPasswordVaultService
     {
-        Task<bool> CreateNewVault(string password);
-        Task<bool> TryUnlockVaultAsync(string password);
-        Task<bool> RegisterPasswordAsync(Guid relationId, string password);
-        byte[] GetPassword(Guid relationId);
+        Task<bool> CreateNewVault(string masterPassword);
+        Task<bool> TryUnlockVaultAsync(string masterPassword);
         bool IsVaultUnLocked();
         bool LockVault();
         bool ResetTimeout();
         
-        Task<byte[]> EncryptAsync(byte[] data);
-        Task<byte[]> DecryptAsync(byte[] data);
+        Task<bool> RegisterPasswordAsync(Guid collectionId, string password);
+        Task<string> GetPasswordAsync(Guid relationId);
+        
+        Task<byte[]> EncryptWithMasterPasswordAsync(byte[] data);
+        Task<byte[]> DecryptWithMasterPasswordAsync(byte[] data);
     }
 }

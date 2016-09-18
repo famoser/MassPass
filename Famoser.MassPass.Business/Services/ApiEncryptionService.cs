@@ -15,21 +15,21 @@ namespace Famoser.MassPass.Business.Services
             _encryptionService = encryptionService;
         }
 
-        public async Task<byte[]> EncryptAsync(byte[] data, Guid relationId)
+        public async Task<byte[]> EncryptAsync(byte[] data, Guid collectionId)
         {
             if (!_passwordVaultService.IsVaultUnLocked())
             {
-                var passwordPhrase = _passwordVaultService.GetPassword(relationId);
+                var passwordPhrase = _passwordVaultService.GetPasswordAsync(collectionId);
                 return await _encryptionService.EncryptAsync(data, passwordPhrase);
             }
             return null;
         }
 
-        public async Task<byte[]> DecryptAsync(byte[] data, Guid relationId)
+        public async Task<byte[]> DecryptAsync(byte[] data, Guid collectionId)
         {
             if (!_passwordVaultService.IsVaultUnLocked())
             {
-                var passwordPhrase = _passwordVaultService.GetPassword(relationId);
+                var passwordPhrase = _passwordVaultService.GetPasswordAsync(collectionId);
                 return await _encryptionService.DecryptAsync(data, passwordPhrase);
             }
             return null;

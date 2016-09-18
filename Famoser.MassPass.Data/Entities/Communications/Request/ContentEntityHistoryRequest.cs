@@ -5,6 +5,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request
 {
     public class ContentEntityHistoryRequest : ApiRequest
     {
-        public Guid ServerId { get; set; }
+        public Guid ContentId { get; set; }
     }
 }

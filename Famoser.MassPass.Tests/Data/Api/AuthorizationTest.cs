@@ -135,7 +135,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     DeviceId = deviceGuid,
                     UserId = userGuid,
-                    ContentEntity = new ContentEntity()
+                    TransferEntity = new ContentEntity()
                 }));
 
                 //7

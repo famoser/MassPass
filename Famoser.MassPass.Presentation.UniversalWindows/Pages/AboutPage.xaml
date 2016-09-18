@@ -13,14 +13,14 @@
                 <Paragraph>
                     <Bold>What is MassPass?</Bold>
                 </Paragraph>
-                <Paragraph>MassPass is a password collection, you use it to save all your password and account data</Paragraph>
+                <Paragraph>MassPass is a masterPassword collection, you use it to save all your masterPassword and account data</Paragraph>
 
                 <Paragraph Margin="0,10,0,0">
                     <Bold>Why should I use MassPass?</Bold>
                 </Paragraph>
                 <Paragraph>
-                    MassPass allows you to create a password collection; all your passwords and account data at the same place.
-                    You won't need to remember passwords anymore, and therefore can choose different, strong passwords for each one of your logins.
+                    MassPass allows you to create a masterPassword collection; all your masterPasswords and account data at the same place.
+                    You won't need to remember masterPasswords anymore, and therefore can choose different, strong masterPasswords for each one of your logins.
                     All your data is then synced over all your devies, so you will have everything with you at all times.
                     </Paragraph>
 
@@ -28,23 +28,23 @@
                     <Bold>How do I secure MassPass?</Bold>
                 </Paragraph>
                 <Paragraph>
-                    You secure your password collection with a master password, one very safe password only you know.
+                    You secure your masterPassword collection with a master masterPassword, one very safe masterPassword only you know.
                     Some other authentication methods may be added later on, like your fingerprint or a rythm</Paragraph>
 
 
                 <Paragraph Margin="0,10,0,0">
-                    <Bold>Can I recover my data if I forget my master password?</Bold>
+                    <Bold>Can I recover my data if I forget my master masterPassword?</Bold>
                 </Paragraph>
                 <Paragraph>
-                    No, you cannot. All files are saved encrypted, only with your master password will you be able to decrypt them. 
-                    Noone has access to your password collection but you.
+                    No, you cannot. All files are saved encrypted, only with your master masterPassword will you be able to decrypt them. 
+                    Noone has access to your masterPassword collection but you.
                 </Paragraph>
                 <Paragraph Margin="0,10,0,0">
                     <Bold>How is my data synced?</Bold>
                 </Paragraph>
                 <Paragraph>
                     All data is encrypted, and then send to a the server (in switzerland), attached to an identifier. All devices which have that identifier can download those encrypted files.
-                    If they are able to decrypt it (with the correct master password) they can view or edit it.
+                    If they are able to decrypt it (with the correct master masterPassword) they can view or edit it.
                     The edit history of your entries is saved, you can see which device has made the last changes, and you will even be able to revert a change you no longer need</Paragraph>
             </RichTextBlock>
         </ScrollViewer>

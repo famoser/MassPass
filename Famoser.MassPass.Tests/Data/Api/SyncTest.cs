@@ -29,15 +29,15 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    ServerId = serverId,
+                    ContentId = serverId,
                     RelationId = relationId,
-                    ContentEntity = entity
+                    TransferEntity = entity
                 };
                 var entityRequest = new ContentEntityRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    ServerId = serverId
+                    ContentId = serverId
                 };
 
                 //act
@@ -48,7 +48,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 //assert
                 AssertionHelper.CheckForSuccessfull(res1, "res1");
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
-                AssertionHelper.CheckForEquality(res2.ContentEntity, entity);
+                AssertionHelper.CheckForEquality(res2.TransferEntity, entity);
 
                 Assert.IsTrue(res1.VersionId != null, "versionId undefined");
                 Assert.IsTrue(res1.ServerId == serverId, "server id was modified, not intended behaviour");
@@ -72,17 +72,17 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    ServerId = serverId,
+                    ContentId = serverId,
                     RelationId = relationId,
-                    ContentEntity = entity
+                    TransferEntity = entity
                 };
                 var newEntity2 = new UpdateRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    ServerId = serverId2,
+                    ContentId = serverId2,
                     RelationId = relationId,
-                    ContentEntity = entity
+                    TransferEntity = entity
                 };
                 var res1 = await ds.UpdateAsync(newEntity);
                 var res2 = await ds.UpdateAsync(newEntity2);
@@ -98,12 +98,12 @@ namespace Famoser.MassPass.Tests.Data.Api
                     {
                         new RefreshEntity()
                         {
-                            ServerId = serverId,
+                            ContentId = serverId,
                             VersionId = "invalidVersion"
                         },
                         new RefreshEntity()
                         {
-                            ServerId = serverId2,
+                            ContentId = serverId2,
                             VersionId = version2
                         }
                     }
@@ -116,12 +116,12 @@ namespace Famoser.MassPass.Tests.Data.Api
                     {
                         new RefreshEntity()
                         {
-                            ServerId = serverId,
+                            ContentId = serverId,
                             VersionId = version1
                         },
                         new RefreshEntity()
                         {
-                            ServerId = serverId2,
+                            ContentId = serverId2,
                             VersionId = version2
                         }
                     }
@@ -134,12 +134,12 @@ namespace Famoser.MassPass.Tests.Data.Api
                     {
                         new RefreshEntity()
                         {
-                            ServerId = serverId,
+                            ContentId = serverId,
                             VersionId = "invalid"
                         },
                         new RefreshEntity()
                         {
-                            ServerId = serverId2,
+                            ContentId = serverId2,
                             VersionId = "invalid"
                         }
                     }
@@ -159,9 +159,9 @@ namespace Famoser.MassPass.Tests.Data.Api
                 Assert.IsTrue(versionRes2.RefreshEntities.Count == 0, "versionRes2: invalid count");
                 Assert.IsTrue(versionRes3.RefreshEntities.Count == 2, "versionRes3: invalid count");
 
-                Assert.IsTrue(versionRes1.RefreshEntities[0].ServerStatus == ServerStatus.Changed, "versionRes1: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[0].ServerStatus == ServerStatus.Changed, "versionRes3: invalid remote status");
-                Assert.IsTrue(versionRes3.RefreshEntities[1].ServerStatus == ServerStatus.Changed, "versionRes3: invalid remote status (2)");
+                Assert.IsTrue(versionRes1.RefreshEntities[0].ServerVersion == ServerVersion.Older, "versionRes1: invalid remote status");
+                Assert.IsTrue(versionRes3.RefreshEntities[0].ServerVersion == ServerVersion.Older, "versionRes3: invalid remote status");
+                Assert.IsTrue(versionRes3.RefreshEntities[1].ServerVersion == ServerVersion.Older, "versionRes3: invalid remote status (2)");
 
                 Assert.IsTrue(versionRes1.RefreshEntities[0].VersionId == version1, "versionRes1: invalid version");
                 if (versionRes3.RefreshEntities[0].VersionId == version1)
@@ -193,21 +193,21 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    RelationId = relationId
+                    CollectionId = relationId
                 };
                 var collectionEntriesRequestFull = new CollectionEntriesRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    RelationId = relationId,
-                    KnownServerIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2, entityGuids3.Item2 }
+                    CollectionId = relationId,
+                    KnownContentIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2, entityGuids3.Item2 }
                 };
                 var collectionEntriesRequest2Of3 = new CollectionEntriesRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    RelationId = relationId,
-                    KnownServerIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2 }
+                    CollectionId = relationId,
+                    KnownContentIds = new List<Guid>() { entityGuids1.Item2, entityGuids2.Item2 }
                 };
 
                 //act
@@ -223,11 +223,11 @@ namespace Famoser.MassPass.Tests.Data.Api
                 Assert.IsTrue(res1.CollectionEntryEntities.Count == 3, "not all entities returned (1)");
                 Assert.IsTrue(res2.CollectionEntryEntities.Count == 0, "not all entities returned (2)");
                 Assert.IsTrue(res3.CollectionEntryEntities.Count == 1, "not all entities returned (3)");
-                Assert.IsTrue(res3.CollectionEntryEntities[0].ServerId == entityGuids3.Item2, "not correct serverId returned (1)");
+                Assert.IsTrue(res3.CollectionEntryEntities[0].ContentId == entityGuids3.Item2, "not correct serverId returned (1)");
                 Assert.IsTrue(res3.CollectionEntryEntities[0].VersionId == entityGuids3.Item3, "not correct versionId returned (1)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids3.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (2)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids2.Item2 && s.VersionId == entityGuids2.Item3), "not correct serverId or versionId returned (3)");
-                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ServerId == entityGuids1.Item2 && s.VersionId == entityGuids1.Item3), "not correct serverId or versionId returned (4)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids3.Item2 && s.VersionId == entityGuids3.Item3), "not correct serverId or versionId returned (2)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids2.Item2 && s.VersionId == entityGuids2.Item3), "not correct serverId or versionId returned (3)");
+                Assert.IsTrue(res1.CollectionEntryEntities.Any(s => s.ContentId == entityGuids1.Item2 && s.VersionId == entityGuids1.Item3), "not correct serverId or versionId returned (4)");
             }
         }
 
@@ -248,7 +248,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
-                    ServerId = serverId
+                    ContentId = serverId
                 };
                 
 

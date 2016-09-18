@@ -70,7 +70,7 @@ namespace Famoser.MassPass.Business.Repositories
                         Id = parentGuid,
                         ApiInformations = new ContentApiInformations()
                         {
-                            ServerCollectionId = serverRelationGuid
+                            CollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Folder);
@@ -86,7 +86,7 @@ namespace Famoser.MassPass.Business.Repositories
                         ParentId = parentGuid,
                         ApiInformations = new ContentApiInformations()
                         {
-                            ServerCollectionId = serverRelationGuid
+                            CollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Note);
@@ -101,7 +101,7 @@ namespace Famoser.MassPass.Business.Repositories
                         ParentId = note1Guid,
                         ApiInformations = new ContentApiInformations()
                         {
-                            ServerCollectionId = serverRelationGuid
+                            CollectionId = serverRelationGuid
                         }
                     };
                     content.SetContentType(ContentTypes.Note);
@@ -141,7 +141,7 @@ namespace Famoser.MassPass.Business.Repositories
                     var byteCache = await _folderStorageService.GetCachedFileAsync(
                                 ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
                                     FileKeys.ApiConfiguration).Description);
-                    var decryptedBytes = await _passwordVaultService.DecryptAsync(byteCache);
+                    var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(byteCache);
                     var jsonCache = StorageHelper.ByteToString(decryptedBytes);
 
                     if (jsonCache != null)
@@ -230,7 +230,7 @@ namespace Famoser.MassPass.Business.Repositories
                     // 1. check if version online is same, if yes, prepare for upload
                     var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
                     var tasks = new List<Task>();
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
                     {
                         tasks.Add(syncHelper.UploadChangedWorker(locallyChangedStack, requestHelper));
                     }
@@ -239,7 +239,7 @@ namespace Famoser.MassPass.Business.Repositories
 
                     // 2. refresh all changed ones
                     var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
                     {
                         tasks.Add(syncHelper.DownloadChangedWorker(remotelyChangedStack, requestHelper));
                     }
@@ -250,7 +250,7 @@ namespace Famoser.MassPass.Business.Repositories
                     var collectionStack = new ConcurrentStack<Guid>(
                         ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId).Distinct());
                     var missingStack = new ConcurrentStack<CollectionEntryEntity>();
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
                     {
                         tasks.Add(syncHelper.ReadCollectionWorker(collectionStack, requestHelper, missingStack));
                     }
@@ -258,7 +258,7 @@ namespace Famoser.MassPass.Business.Repositories
                     tasks.Clear();
 
                     // 4. download missing
-                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.RelationIds.Count; i++)
+                    for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
                     {
                         tasks.Add(syncHelper.DownloadMissingWorker(missingStack, requestHelper));
                     }
@@ -287,7 +287,7 @@ namespace Famoser.MassPass.Business.Repositories
             var cacheModel = ContentManager.CreateCacheModel();
             var str = JsonConvert.SerializeObject(cacheModel);
             var bytes = StorageHelper.StringToBytes(str);
-            var encryptedBytes = await _passwordVaultService.EncryptAsync(bytes);
+            var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
             return await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, encryptedBytes);
         }
 
@@ -297,7 +297,7 @@ namespace Famoser.MassPass.Business.Repositories
             try
             {
                 var content = await _folderStorageService.GetFile(ContentFolder, model.Id.ToString());
-                var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
+                var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(content);
                 var jsonCache = StorageHelper.ByteToString(decryptedBytes);
                 if (jsonCache != null)
                 {
@@ -356,7 +356,7 @@ namespace Famoser.MassPass.Business.Repositories
             foreach (var file in files)
             {
                 var content = await _folderStorageService.GetFile(ContentFolder, file);
-                var decryptedBytes = await _passwordVaultService.DecryptAsync(content);
+                var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(content);
                 var jsonCache = StorageHelper.ByteToString(decryptedBytes);
                 if (jsonCache != null)
                 {
@@ -376,7 +376,7 @@ namespace Famoser.MassPass.Business.Repositories
                 if (response.IsSuccessfull)
                 {
                     var newModel = new ContentModel();
-                    ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
+                    ResponseHelper.WriteIntoModel(response.TransferEntity, newModel);
                     newModel.ApiInformations = response.ContentApiInformations;
                     newModel.LocalStatus = LocalStatus.Immutable;
                     model.ContentModel = newModel;
@@ -425,7 +425,7 @@ namespace Famoser.MassPass.Business.Repositories
             {
                 var json = JsonConvert.SerializeObject(model);
                 var bytes = StorageHelper.StringToBytes(json);
-                var encrytedBytes = await _passwordVaultService.EncryptAsync(bytes);
+                var encrytedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
                 if (await _folderStorageService.SaveFile(ContentFolder, model.Id.ToString(), encrytedBytes))
                     return true;
             }

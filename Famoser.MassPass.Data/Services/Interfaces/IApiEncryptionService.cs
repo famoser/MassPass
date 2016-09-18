@@ -8,7 +8,7 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     /// </summary>
     public interface IApiEncryptionService
     {
-        Task<byte[]> EncryptAsync(byte[] data, Guid relationId);
-        Task<byte[]> DecryptAsync(byte[] data, Guid relationId);
+        Task<byte[]> EncryptAsync(byte[] data, Guid collectionId);
+        Task<byte[]> DecryptAsync(byte[] data, Guid collectionId);
     }
 }

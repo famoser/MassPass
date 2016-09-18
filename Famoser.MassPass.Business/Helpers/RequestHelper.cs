@@ -90,8 +90,8 @@ namespace Famoser.MassPass.Business.Helpers
         {
             return FillUserConfigurationAndReturn(new CollectionEntriesRequest()
             {
-                KnownServerIds = knownServerGuids,
-                RelationId = relationId
+                KnownContentIds = knownServerGuids,
+                CollectionId = relationId
             });
         }
 
@@ -99,7 +99,7 @@ namespace Famoser.MassPass.Business.Helpers
         {
             return FillUserConfigurationAndReturn(new ContentEntityRequest()
             {
-                ServerId = serverId,
+                ContentId = serverId,
                 VersionId = versionId,
                 RelationId = relationId
             });
@@ -109,7 +109,7 @@ namespace Famoser.MassPass.Business.Helpers
         {
             return FillUserConfigurationAndReturn(new ContentEntityHistoryRequest()
             {
-                ServerId = serverId
+                ContentId = serverId
             });
         }
 
@@ -132,8 +132,8 @@ namespace Famoser.MassPass.Business.Helpers
             return FillUserConfigurationAndReturn(new UpdateRequest()
             {
                 RelationId = relationId,
-                ServerId = serverId,
-                ContentEntity = ToContentEntity(contentModel),
+                ContentId = serverId,
+                TransferEntity = ToContentEntity(contentModel),
                 VersionId = versionId
             });
         }

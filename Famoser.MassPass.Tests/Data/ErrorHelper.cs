@@ -18,7 +18,7 @@ namespace Famoser.MassPass.Tests.Data
             res += "\nRequest successfull: " + !resp.RequestFailed;
             res += "\nApi Successfull: " + resp.Successfull;
             res += "\nApi Error: " + ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(resp.ApiError).Description;
-            res += "\nDebug Message: " + resp.DebugMessage;
+            res += "\nDebug Message: " + resp.ApiMessage;
             res += "\nException: " + resp.Exception?.Message;
             return res;
         }

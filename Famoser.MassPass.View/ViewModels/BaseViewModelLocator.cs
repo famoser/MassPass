@@ -23,7 +23,7 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultService>();
             SimpleIoc.Default.Register<IRestService, RestService>();
-            SimpleIoc.Default.Register<IDataService, DataService>();
+            SimpleIoc.Default.Register<IDataService, ApiClient>();
 
             //business
             SimpleIoc.Default.Register<IConfigurationService, ConfigurationService>();

@@ -38,7 +38,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Text="Set Master Password" Style="{StaticResource FamoserSubHeaderTextBlock}" />
                     <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="Choose a safe one (or type in your existing)!" Style="{StaticResource FamoserBodyTextBlock}" />
-                    <PasswordBox Grid.Column="0" Grid.ColumnSpan="2" Password="{Binding MasterPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" PlaceholderText="master password" Style="{StaticResource FamoserPasswordBox}"/>
+                    <PasswordBox Grid.Column="0" Grid.ColumnSpan="2" Password="{Binding MasterPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" PlaceholderText="master masterPassword" Style="{StaticResource FamoserPasswordBox}"/>
                     <TextBox x:Name="UserName" Grid.Column="0" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" PlaceholderText="username" Style="{StaticResource FamoserTextBox}"/>
                     <TextBox x:Name="DeviceName" Grid.Column="1" Text="{Binding DeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" PlaceholderText="devicename" Style="{StaticResource FamoserTextBox}"/>
                 </Grid>

@@ -1,6 +1,7 @@
 ﻿using System;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
+using Famoser.FrameworkEssentials.Models.RestService;
 using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Data.Entities.Communications.Response.Base
@@ -12,14 +13,10 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response.Base
             ApiError = ApiError.None;
         }
 
-        public bool Successfull { get; set; }
         public ApiError ApiError { get; set; }
-
-        public bool RequestFailed { get; set; }
-        public Exception Exception { get; set; }
-        public string DebugMessage { get; set; }
-        public string RawResponse { get; set; }
-        public bool IsSuccessfull => Successfull && !RequestFailed && ApiError == ApiError.None && Exception == null;
+        public string ApiMessage { get; set; }
+        public HttpResponseModel RawResponse { get; set; }
+        public bool IsSuccessfull => RawResponse != null && RawResponse.IsRequestSuccessfull && ApiError == ApiError.None;
         public string GetApiErrorAsString => ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, ApiError>(ApiError).Description;
     }
 }

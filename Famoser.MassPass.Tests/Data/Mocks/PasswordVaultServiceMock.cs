@@ -10,7 +10,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
     {
         private readonly Dictionary<Guid, byte[]> _passwords = new Dictionary<Guid, byte[]>();
         
-        public async Task<bool> TryUnlockVaultAsync(string password)
+        public async Task<bool> TryUnlockVaultAsync(string masterPassword)
         {
             return true;
         }
@@ -41,12 +41,12 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             return true;
         }
 
-        public async Task<byte[]> EncryptAsync(byte[] data)
+        public async Task<byte[]> EncryptWithMasterPasswordAsync(byte[] data)
         {
             return null;
         }
 
-        public async Task<byte[]> DecryptAsync(byte[] data)
+        public async Task<byte[]> DecryptWithMasterPasswordAsync(byte[] data)
         {
             return null;
         }

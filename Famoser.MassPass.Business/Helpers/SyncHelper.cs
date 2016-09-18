@@ -39,7 +39,7 @@ namespace Famoser.MassPass.Business.Helpers
             var changedStack = new ConcurrentStack<ContentModel>();
             var versions = changed.Select(s => new RefreshEntity()
             {
-                ServerId = s.ApiInformations.ServerId,
+                ContentId = s.ApiInformations.ServerId,
                 VersionId = s.ApiInformations.VersionId
             }).ToList();
             var onlineVersion = await dataService.RefreshAsync(requestHelper.RefreshRequest(versions));
@@ -47,8 +47,8 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 var refreshEntity =
                     onlineVersion.RefreshEntities.FirstOrDefault(
-                        e => e.ServerId == contentModel.ApiInformations.ServerId);
-                if (refreshEntity == null || refreshEntity.ServerStatus != ServerStatus.Changed)
+                        e => e.ContentId == contentModel.ApiInformations.ServerId);
+                if (refreshEntity == null || refreshEntity.ServerVersion != ServerVersion.Older)
                     changedStack.Push(contentModel);
                 else
                     contentModel.LocalStatus = LocalStatus.Conflict;
@@ -62,7 +62,7 @@ namespace Famoser.MassPass.Business.Helpers
             var changedStack = new ConcurrentStack<ContentModel>();
             var versions = changed.Select(s => new RefreshEntity()
             {
-                ServerId = s.ApiInformations.ServerId,
+                ContentId = s.ApiInformations.ServerId,
                 VersionId = s.ApiInformations.VersionId
             }).ToList();
             var onlineVersion = await dataService.RefreshAsync(requestHelper.RefreshRequest(versions));
@@ -70,8 +70,8 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 var refreshEntity =
                     onlineVersion.RefreshEntities.FirstOrDefault(
-                        e => e.ServerId == contentModel.ApiInformations.ServerId);
-                if (refreshEntity == null || refreshEntity.ServerStatus != ServerStatus.Changed)
+                        e => e.ContentId == contentModel.ApiInformations.ServerId);
+                if (refreshEntity == null || refreshEntity.ServerVersion != ServerVersion.Older)
                     changedStack.Push(contentModel);
             }
             return changedStack;
@@ -149,7 +149,7 @@ namespace Famoser.MassPass.Business.Helpers
 
                     if (req.IsSuccessfull)
                     {
-                        ResponseHelper.WriteIntoModel(req.ContentEntity, changedContent);
+                        ResponseHelper.WriteIntoModel(req.TransferEntity, changedContent);
                         changedContent.ApiInformations = req.ContentApiInformations;
                         changedContent.LocalStatus = LocalStatus.UpToDate;
                     }
@@ -201,11 +201,11 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 await ExecuteWorker(async () =>
                 {
-                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ServerId, entry.RelationId, entry.VersionId));
+                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ContentId, entry.CollectionId, entry.VersionId));
                     if (response.IsSuccessfull)
                     {
                         var newModel = new ContentModel();
-                        ResponseHelper.WriteIntoModel(response.ContentEntity, newModel);
+                        ResponseHelper.WriteIntoModel(response.TransferEntity, newModel);
                         newModel.ApiInformations = response.ContentApiInformations;
                         newModel.LocalStatus = LocalStatus.UpToDate;
                         ContentManager.AddOrReplaceContent(newModel);

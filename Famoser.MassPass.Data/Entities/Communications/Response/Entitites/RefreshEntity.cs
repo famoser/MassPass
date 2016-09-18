@@ -5,8 +5,8 @@ namespace Famoser.MassPass.Data.Entities.Communications.Response.Entitites
 {
     public class RefreshEntity
     {
-        public Guid ServerId { get; set; }
+        public Guid ContentId { get; set; }
         public string VersionId { get; set; }
-        public ServerStatus ServerStatus { get; set; }
+        public ServerVersion ServerVersion { get; set; }
     }
 }

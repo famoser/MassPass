@@ -55,7 +55,7 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             {
                 UserId = Guid.NewGuid(),
                 DeviceId = Guid.NewGuid(),
-                RelationIds = new List<Guid>()
+                CollectionIds = new List<Guid>()
                 {
                     Guid.NewGuid(),
                     Guid.NewGuid(),

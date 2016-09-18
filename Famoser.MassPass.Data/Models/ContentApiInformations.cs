@@ -6,14 +6,14 @@ namespace Famoser.MassPass.Data.Models
     public class ContentApiInformations
     {
         /// <summary>
-        /// Id of the element on server
+        /// ContentId of the element on server
         /// </summary>
-        public Guid ServerId { get; set; }
+        public Guid ContentId { get; set; }
 
         /// <summary>
-        /// Id of the collection on server
+        /// ContentId of the collection on server
         /// </summary>
-        public Guid ServerCollectionId { get; set; }
+        public Guid CollectionId { get; set; }
         
         /// <summary>
         /// version 
@@ -23,6 +23,6 @@ namespace Famoser.MassPass.Data.Models
         /// <summary>
         /// status of the entity on server (new, updated, up to date)
         /// </summary>
-        public ServerStatus ServerStatus { get; set; }
+        public ServerVersion ServerVersion { get; set; }
     }
 }
