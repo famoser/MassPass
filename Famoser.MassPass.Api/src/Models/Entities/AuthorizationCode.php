@@ -14,9 +14,8 @@ use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 class AuthorizationCode extends BaseEntity
 {
     public $user_id;
-    public $content_id;
     public $code;
-    public $valid_from;
+    public $content;
     public $valid_till;
 
     public function getTableName()

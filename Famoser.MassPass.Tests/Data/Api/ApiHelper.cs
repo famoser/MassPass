@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Singleton;
+using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Services;
@@ -14,109 +17,81 @@ namespace Famoser.MassPass.Tests.Data.Api
 {
     public class ApiHelper : SingletonBase<ApiHelper>, IDisposable
     {
-        private static IDataService _dataService;
         private static IApiConfigurationService _apiConfigurationService;
+        private static readonly Tuple<Guid, Guid> UserDevice1Tuple = new Tuple<Guid, Guid>(Guid.Parse("d0e47801-2571-4790-a7a3-5c9f6ceba9e3"), Guid.Parse("99311fab-cb31-4f95-83f3-1f4fb965928b"));
+        private static readonly Tuple<Guid, Guid> UserDevice2Tuple = new Tuple<Guid, Guid>(Guid.Parse("d0e47801-2571-4790-a7a3-5c9f6ceba9e3"), Guid.Parse("993111ab-cb31-4395-83f3-1f4fb965928b"));
 
         public ApiHelper()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
-            SimpleIoc.Default.Register<IDataService, ApiClient>();
             SimpleIoc.Default.Register<IApiEncryptionService, ApiEncryptionService>();
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultServiceMock>();
             SimpleIoc.Default.Register<IApiConfigurationService, ApiConfigurationServiceMock>();
-            _dataService = SimpleIoc.Default.GetInstance<IDataService>();
             _apiConfigurationService = SimpleIoc.Default.GetInstance<IApiConfigurationService>();
         }
 
-        public IDataService GetDataService()
+        public async Task<ApiClient> CreateUnAuthorizedClient()
         {
-            return _dataService;
-        }
-
-        public static async Task CleanUpApi()
-        {
-            var config = await _apiConfigurationService.GetApiConfigurationAsync();
-            var newUri = new Uri(config.Uri.AbsoluteUri + "/1.0/cleanup");
-            var service = new HttpService();
-            await service.DownloadAsync(newUri);
+            return new ApiClient((await _apiConfigurationService.GetApiConfigurationAsync()).Uri, Guid.NewGuid(), Guid.NewGuid());
         }
 
         /// <summary>
         /// validate a new user to the API
         /// </summary>
         /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
-        public async Task<Tuple<Guid, Guid>> CreateValidatedDevice(string userName = "my user", string deviceName = "my device")
+        public async Task<ApiClient> CreateAuthorizedClient1Async(string userName = "my user", string deviceName = "my device")
         {
-            var userGuid = Guid.NewGuid();
-            var deviceGuid = Guid.NewGuid();
-            var authRequest = new AuthorizationRequest
+            var client = new ApiClient((await _apiConfigurationService.GetApiConfigurationAsync()).Uri, UserDevice1Tuple.Item1, UserDevice1Tuple.Item2);
+
+            var status = await client.GetAuthorizationStatusAsync(new AuthorizationStatusRequest());
+            AssertionHelper.CheckForSuccessfull(status);
+            if (!status.IsAuthorized)
             {
-                DeviceId = deviceGuid,
-                UserName = userName,
-                DeviceName = deviceName,
-                UserId = userGuid
-            };
-            var res = await GetDataService().AuthorizeAsync(authRequest);
-            AssertionHelper.CheckForSuccessfull(res, "auth request in CreateValidatesDevice");
-            return new Tuple<Guid, Guid>(userGuid, deviceGuid);
+                //authorize
+                var respo = await client.CreateUserAsync(new CreateUserRequest()
+                {
+                    UserName = userName,
+                    DeviceName = deviceName
+                });
+                AssertionHelper.CheckForSuccessfull(respo);
+            }
+
+            return client;
         }
 
         /// <summary>
         /// validate a new user to the API
         /// </summary>
         /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
-        public async Task<Guid> AddValidatedDevice(Guid userId, Guid deviceId, string deviceName = "new device", string userName = "my user")
+        public async Task<ApiClient> AddValidatedDevice2Async(ApiClient client, string deviceName = "new device")
         {
-            var userGuid = userId;
-            var newDeviceId = Guid.NewGuid();
             var authCode = Guid.NewGuid().ToString();
-            var createAuthRequest = new CreateAuthorizationRequest()
+            var resp1 = await client.CreateAuthorizationAsync(new CreateAuthorizationRequest()
             {
-                DeviceId = deviceId,
                 AuthorisationCode = authCode,
-                UserId = userGuid
-            };
-            var authRequest = new AuthorizationRequest
+                Content = "testcontent"
+            });
+            AssertionHelper.CheckForSuccessfull(resp1);
+            var newCLient = new ApiClient(client.BaseUri, UserDevice2Tuple.Item1, UserDevice2Tuple.Item2);
+            var resp2 = await newCLient.AuthorizeAsync(new AuthorizationRequest
             {
-                DeviceId = newDeviceId,
-                UserName = userName,
                 DeviceName = deviceName,
-                UserId = userGuid,
                 AuthorisationCode = authCode
-            };
-            var res1 = await GetDataService().CreateAuthorizationAsync(createAuthRequest);
-            var res2 = await GetDataService().AuthorizeAsync(authRequest);
-            AssertionHelper.CheckForSuccessfull(res1, "create auth request in AddCreateValidatedDevice");
-            AssertionHelper.CheckForSuccessfull(res2, "auth request in AddCreateValidatedDevice");
-            return newDeviceId;
+            });
+            AssertionHelper.CheckForSuccessfull(resp2);
+            return newCLient;
         }
 
-        /// <summary>
-        /// validate a new user to the API
-        /// </summary>
-        /// <returns>Tuple with Item1 = userGuid and Item2 = deviceGuid</returns>
-        public async Task<Tuple<Guid, Guid, string>> AddEntity(Guid userId, Guid deviceId, Guid? relationId = null, Guid? serverId = null)
+        private async Task CleanUpApiAsync()
         {
-            serverId = serverId ?? Guid.NewGuid();
-            relationId = relationId ?? Guid.NewGuid();
-            var newEntity = new UpdateRequest()
-            {
-                UserId = userId,
-                DeviceId = deviceId,
-                ContentId = serverId.Value,
-                RelationId = relationId.Value,
-                TransferEntity = EntityMockHelper.GetContentEntity()
-            };
-
-            var res1 = await GetDataService().UpdateAsync(newEntity);
-            AssertionHelper.CheckForSuccessfull(res1, "AddEntity request in AddEntity");
-            return new Tuple<Guid, Guid, string>(relationId.Value, serverId.Value, res1.VersionId);
+            var client = new ApiClient((await _apiConfigurationService.GetApiConfigurationAsync()).Uri, UserDevice1Tuple.Item1, UserDevice1Tuple.Item2);
+            await client.WipeUserAsync(new WipeUserRequest());
         }
 
         public void Dispose()
         {
-            CleanUpApi().Wait();
+            CleanUpApiAsync().Wait();
         }
     }
 }

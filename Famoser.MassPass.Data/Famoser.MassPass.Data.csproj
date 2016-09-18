@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes\ApiUriAttribute.cs" />
+    <Compile Include="Entities\Communications\Request\Authorization\WipeUserRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationStatusRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\CreateAuthorizationRequest.cs" />
@@ -98,24 +99,25 @@
     <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\UnAuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityHistoryRequest.cs" />
-    <Compile Include="Entities\Communications\Request\Raw\RawUpdateRequest.cs" />
+    <Compile Include="Entities\Communications\Request\Authorization\CreateUserRequest.cs" />
+    <Compile Include="Entities\Communications\Request\UpdateRequest.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizationStatusResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\CreateAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizedDevicesResponse.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\CreateUserResponse.cs" />
+    <Compile Include="Entities\Communications\Response\Authorization\WipeUserResponse.cs" />
     <Compile Include="Entities\Communications\Response\ContentEntityHistoryResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\AuthorizedDeviceEntity.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\CollectionEntryEntity.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\HistoryEntry.cs" />
-    <Compile Include="Entities\Communications\Request\UpdateRequest.cs" />
-    <Compile Include="Entities\Communications\Request\Raw\RawTransferEntityRequest.cs" />
     <Compile Include="Entities\Communications\Request\Entities\RefreshEntity.cs" />
-    <Compile Include="Entities\Communications\Request\RefreshRequest.cs" />
+    <Compile Include="Entities\Communications\Request\SyncRequest.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\AuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\Base\ApiResponse.cs" />
     <Compile Include="Entities\Communications\Response\CollectionEntriesResponse.cs" />
     <Compile Include="Entities\Communications\Response\TransferEntityResponse.cs" />
     <Compile Include="Entities\Communications\Response\Entitites\RefreshEntity.cs" />
-    <Compile Include="Entities\Communications\Response\RefreshResponse.cs" />
+    <Compile Include="Entities\Communications\Response\SyncResponse.cs" />
     <Compile Include="Entities\Communications\Response\Authorization\UnAuthorizationResponse.cs" />
     <Compile Include="Entities\Communications\Response\UpdateResponse.cs" />
     <Compile Include="Entities\TransferEntity.cs" />
@@ -124,7 +126,7 @@
     <Compile Include="Enum\LivecycleStatus.cs" />
     <Compile Include="Enum\LocalStatus.cs" />
     <Compile Include="Enum\ServerVersion.cs" />
-    <Compile Include="Enum\ApiRequest.cs" />
+    <Compile Include="Enum\ApiNode.cs" />
     <Compile Include="Exceptions\DecryptionFailedException.cs" />
     <Compile Include="Exceptions\UploadFailedException.cs" />
     <Compile Include="Models\Storage\ApiConfiguration.cs" />
@@ -132,7 +134,7 @@
     <Compile Include="Models\Storage\UserConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />
-    <Compile Include="Services\ApiClient.cs" />
+    <Compile Include="ApiClient.cs" />
     <Compile Include="Services\EncryptionService.cs" />
     <Compile Include="Services\Interfaces\IApiEncryptionService.cs" />
     <Compile Include="Services\Interfaces\IApiConfigurationService.cs" />

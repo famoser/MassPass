@@ -14,4 +14,5 @@ use Famoser\MassPass\Models\Response\Base\ApiResponse;
 class AuthorizationResponse extends ApiResponse
 {
     public $Message;
+    public $Content;
 }

@@ -14,4 +14,5 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 class CreateAuthorizationRequest extends ApiRequest
 {
     public $AuthorisationCode;
+    public $Content;
 }

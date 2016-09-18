@@ -14,8 +14,8 @@ use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 class Device extends BaseEntity
 {
     public $user_id;
-    public $guid;
-    public $name;
+    public $device_id;
+    public $device_name;
     public $has_access;
     public $last_modification_date_time;
     public $last_request_date_time;

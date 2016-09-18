@@ -4,7 +4,7 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request.Base
 {
     public class ApiRequest
     {
-        public Guid DeviceId { get; set; }
-        public Guid UserId { get; set; }
+        internal Guid DeviceId { get; set; }
+        internal Guid UserId { get; set; }
     }
 }

@@ -12,7 +12,6 @@ namespace Famoser\MassPass\Models;
 class ApiConfiguration
 {
     public $Uri;
-    public $Version;
     public $GenerationSalt;
     public $GenerationKeyLenghtInBytes;
     public $GenerationKeyInterations;

@@ -15,7 +15,7 @@ use Famoser\MassPass\Middleware\JsonMiddleware;
 use Famoser\MassPass\Middleware\LoggingMiddleware;
 use Famoser\MassPass\Middleware\TestsMiddleware;
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
-use Famoser\MassPass\Models\Request\RefreshRequest;
+use Famoser\MassPass\Models\Request\SyncRequest;
 use Famoser\MassPass\Models\Response\Base\ApiResponse;
 use Famoser\MassPass\Types\ApiErrorTypes;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -52,7 +52,7 @@ $c['notFoundHandler'] = function (Container $c) {
     return function (Request $req, Response $resp) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
         if ($c->get("settings")["debug_mode"])
-            $res->DebugMessage = "requested: " . $req->getRequestTarget();
+            $res->ApiMessage = "requested: " . $req->getRequestTarget();
 
         return $resp->withStatus(404, "endpoint not found")->withJson($res);
     };
@@ -61,7 +61,7 @@ $c['notAllowedHandler'] = function (Container $c) {
     return function (Request $req, Response $resp) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::RequestUriInvalid);
         if ($c->get("settings")["debug_mode"])
-            $res->DebugMessage = "requested: " . $req->getRequestTarget();
+            $res->ApiMessage = "requested: " . $req->getRequestTarget();
 
         return $resp->withStatus(405, "wrong method")->withJson($res);
     };
@@ -76,7 +76,7 @@ $c['errorHandler'] = function (Container $c) {
     return function (Request $request, Response $response, Exception $exception) use ($c) {
         $res = new ApiResponse(false, ApiErrorTypes::ServerFailure);
         if ($c->get("settings")["debug_mode"])
-            $res->DebugMessage = "Exception: " . $exception->getMessage() . " \nStack: " . $exception->getTraceAsString();
+            $res->ApiMessage = "Exception: " . $exception->getMessage() . " \nStack: " . $exception->getTraceAsString();
         return $response->withStatus(500, $exception->getMessage())->withJson($res);
     };
 };
@@ -105,21 +105,18 @@ $app->add(new LoggingMiddleware($c));
 
 $routes = function () use ($controllerNamespace) {
     $this->group("/authorization", function () use ($controllerNamespace) {
+        $this->post('/createuser', $controllerNamespace . 'AuthorizationController:createUser');
+        $this->post('/wipeuser', $controllerNamespace . 'AuthorizationController:wipeUser');
         $this->post('/authorize', $controllerNamespace . 'AuthorizationController:authorize');
         $this->post('/status', $controllerNamespace . 'AuthorizationController:status');
         $this->post('/createauthorization', $controllerNamespace . 'AuthorizationController:createAuthorization');
         $this->post('/unauthorize', $controllerNamespace . 'AuthorizationController:unAuthorize');
         $this->post('/authorizeddevices', $controllerNamespace . 'AuthorizationController:authorizedDevices');
     });
-    $this->group("/actions", function () use ($controllerNamespace) {
-        $this->get('/cleanup', $controllerNamespace . 'ActionsController:cleanup');
-        $this->get('/setup', $controllerNamespace . 'ActionsController:setup');
-    });
     $this->group("/sync", function () use ($controllerNamespace) {
-        $this->post('/refresh', $controllerNamespace . 'SyncController:refresh');
+        $this->post('/sync', $controllerNamespace . 'SyncController:sync');
         $this->post('/update', $controllerNamespace . 'SyncController:update');
         $this->post('/readcontententity', $controllerNamespace . 'SyncController:readContentEntity');
-        $this->post('/readcollectionentries', $controllerNamespace . 'SyncController:readCollectionEntries');
         $this->post('/gethistory', $controllerNamespace . 'SyncController:getHistory');
     });
 };

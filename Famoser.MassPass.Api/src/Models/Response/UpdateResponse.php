@@ -13,7 +13,5 @@ use Famoser\MassPass\Models\Response\Base\ApiResponse;
 
 class UpdateResponse extends ApiResponse
 {
-    public $ServerId;
-    public $ServerRelationId;
-    public $VersionId;
+
 }

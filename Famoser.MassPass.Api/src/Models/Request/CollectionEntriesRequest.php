@@ -13,7 +13,7 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
 class CollectionEntriesRequest extends ApiRequest
 {
-    public $RelationId;
+    public $CollectionId;
     
     /*
      * @var string[]

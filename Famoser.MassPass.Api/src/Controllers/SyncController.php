@@ -27,7 +27,7 @@ use Famoser\MassPass\Models\Response\Entities\RefreshEntity;
 use Famoser\MassPass\Models\Response\RefreshResponse;
 use Famoser\MassPass\Models\Response\UpdateResponse;
 use Famoser\MassPass\Types\ApiErrorTypes;
-use Famoser\MassPass\Types\RemoteStatus;
+use Famoser\MassPass\Types\ServerVersion;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Upload\File;
@@ -35,43 +35,81 @@ use Upload\Storage\FileSystem;
 
 class SyncController extends BaseController
 {
-    public function refresh(Request $request, Response $response, $args)
+    public function sync(Request $request, Response $response, $args)
     {
-        $model = RequestHelper::parseRefreshRequest($request);
+        $model = RequestHelper::parseSyncRequest($request);
         if ($this->isAuthorized($model)) {
             if (!$this->isWellDefined($model, null, array("RefreshEntities")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
-            $guids = [];
-            for ($i = 0; $i < count($model->RefreshEntities); $i++) {
-                $guids[] = $model->RefreshEntities[$i]->ServerId;
-            }
             $helper = $this->getDatabaseHelper();
-            $results = $helper->getWithInFromDatabase(new Content(), "guid", $guids);
+
+            $contentIds = [];
+            $contentVersionById = [];
+            foreach ($model->RefreshEntities as $refreshEntity) {
+                $contentIds[] = $refreshEntity->ContentId;
+                $contentVersionById[$refreshEntity->ContentId] = $refreshEntity->VersionId;
+            }
+
+            $helper = $this->getDatabaseHelper();
+            $results = $helper->getWithInFromDatabase(new Content(), "content_id", $contentIds, false, null, null, "content_id, creation_date_time DESC");
 
             $resp = new RefreshResponse();
             $resp->RefreshEntities = [];
+            $collectionIds = [];
+            //updating info of existing
             for ($i = 0; $i < count($results); $i++) {
-                $found = false;
-                for ($j = 0; $j < count($model->RefreshEntities); $j++) {
-                    if ($model->RefreshEntities[$j]->ServerId == $results[$i]->guid) {
-                        $found = true;
-                        if ($model->RefreshEntities[$j]->VersionId != $results[$i]->version_id) {
-                            $entity = new RefreshEntity();
-                            $entity->VersionId = $results[$i]->version_id;
-                            $entity->ServerId = $results[$i]->guid;
-                            $entity->RemoteStatus = RemoteStatus::Changed;
-                            $resp->RefreshEntities[] = $entity;
-                        }
-                        break;
-                    }
-                }
-                if (!$found) {
+                if (!in_array($results[$i]->collection_id, $collectionIds))
+                    $collectionIds[] = $results[$i]->collection_id;
+
+                if ($contentVersionById[$results[$i]->content_id] != $results[$i]->version_id) {
                     $entity = new RefreshEntity();
                     $entity->VersionId = $results[$i]->version_id;
-                    $entity->ServerId = $results[$i]->guid;
-                    $entity->RemoteStatus = RemoteStatus::NotFound;
+                    $entity->ContentId = $results[$i]->content_id;
+                    //check if requested version is already on server
+                    $found = false;
+                    for (; $i < count($results); $i++) {
+                        if ($results[$i]->content_id != $entity->ContentId) { //break out if not same content anymore
+                            $i--;
+                            break;
+                        }
+                        if ($contentVersionById[$results[$i]->content_id] != $results[$i]->version_id) {
+                            $found = true;
+                        }
+                    }
+
+                    if ($found)
+                        $entity->RemoteStatus = ServerVersion::Older;
+                    else
+                        $entity->RemoteStatus = ServerVersion::Newer;
+
                     $resp->RefreshEntities[] = $entity;
+                } else {
+                    $currentContentId = $results[$i]->content_id;
+                    //skip to next content type
+                    for (; $i < count($results); $i++) {
+                        if ($results[$i]->content_id != $currentContentId) { //break out if not same content anymore
+                            $i--;
+                            break;
+                        }
+                    }
+                }
+            }
+            //adding missing
+            $missings = $helper->getFromDatabase(new Content(), "content_id NOT IN (" . implode(",", $contentIds) . ") AND collection_id IN (" . implode(",", $collectionIds) . ")", null, "content_id, creation_date_time DESC");
+            foreach ($missings as $missing) {
+                $entity = new RefreshEntity();
+                $entity->VersionId = $missing->version_id;
+                $entity->ContentId = $missing->content_id;
+                //check if requested version is already on server
+                $entity->RemoteStatus = ServerVersion::Newer;
+                $resp->RefreshEntities[] = $entity;
+
+                for (; $i < count($results); $i++) {
+                    if ($results[$i]->content_id != $entity->ContentId) { //break out if not same content anymore
+                        $i--;
+                        break;
+                    }
                 }
             }
 
@@ -85,63 +123,33 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseUpdateRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("RelationId")))
+            if (!$this->isWellDefined($model, array("CollectionId")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
-            $resp = new UpdateResponse();
             $helper = $this->getDatabaseHelper();
-            $versionId = GuidHelper::createGuid();
-            $serverId = $model->ServerId;
+            $exiting = $helper->getSingleFromDatabase(new Content(), "content_id=:content_id AND version_id=:version_id", array("content_id" => $model->ContentId, "version_id" => $model->VersionId));
+            if ($exiting != null)
+                return $this->returnApiError(ApiErrorTypes::InvalidVersionId, $response);
 
             //save file
-            $storage = new FileSystem($this->getUserDirForContent($this->getAuthorizedUser($model)->guid));
+            $storage = new FileSystem($this->getUserDirForContent($this->getAuthorizedUser($model)->user_id));
             $file = new File('updateFile', $storage);
-            $file->setName($this->getFilenameForContent($model->ServerId, $versionId));
+            $file->setName($this->getFilenameForContent($model->ContentId, $model->VersionId));
             $file->upload();
 
             //update database
-            $contentId = null;
-            $exiting = null;
-            if (GuidHelper::isGuidValid($serverId))
-                $exiting = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $serverId));
-            if ($exiting != null) {
-                if ($exiting->version_id != $model->VersionId) {
-                    return $this->returnApiError(ApiErrorTypes::InvalidVersionId, $response);
-                }
-
-                $exiting->version_id = $versionId;
-
-                if (!$helper->saveToDatabase($exiting)) {
-                    return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
-                }
-                $contentId = $exiting->id;
-            } else {
-                $serverId = GuidHelper::createGuid();
-                $newModel = new Content();
-                $newModel->guid = $serverId;
-                $newModel->user_id = $this->getAuthorizedUser($model)->guid;
-                $newModel->relation_id = $model->RelationId;
-                $newModel->version_id = $versionId;
-
-                if (!$helper->saveToDatabase($newModel)) {
-                    return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
-                }
-                $contentId = $newModel->id;
-            }
-
-            //save to history
-            $newModel = new ContentHistory();
-            $newModel->version_id = $versionId;
-            $newModel->content_id = $contentId;
+            $newModel = new Content();
+            $newModel->device_id = $model->DeviceId;
+            $newModel->user_id = $this->getAuthorizedUser($model)->user_id;
+            $newModel->collection_id = $model->CollectionId;
+            $newModel->content_id = $model->ContentId;
             $newModel->creation_date_time = time();
-            $newModel->device_id = $this->getAuthorizedDevice($model)->id;
+            $newModel->version_id = $model->VersionId;
             if (!$helper->saveToDatabase($newModel)) {
                 return $this->returnApiError(ApiErrorTypes::DatabaseFailure, $response);
             }
 
-            $resp->ServerRelationId = $model->RelationId;
-            $resp->ServerId = $serverId;
-            $resp->VersionId = $versionId;
+            $resp = new UpdateResponse();
             return ResponseHelper::getJsonResponse($response, $resp);
         } else {
             return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
@@ -152,10 +160,10 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseContentEntityRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("VersionId", "ServerId")))
+            if (!$this->isWellDefined($model, array("VersionId", "ContentId")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
-            $path = $this->getPathForContent($this->getAuthorizedUser($model)->guid, $model->ServerId, $model->VersionId);
+            $path = $this->getPathForContent($this->getAuthorizedUser($model)->user_id, $model->ContentId, $model->VersionId);
             if (!file_exists($path)) {
                 return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response, $path);
             }
@@ -166,83 +174,43 @@ class SyncController extends BaseController
         }
     }
 
-    public function readCollectionEntries(Request $request, Response $response, $args)
-    {
-        $model = RequestHelper::parseCollectionEntriesRequest($request);
-        if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("RelationId"), array("KnownServerIds")))
-                return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
-
-            $helper = $this->getDatabaseHelper();
-            if (count($model->KnownServerIds) > 0) {
-                $guids = [];
-                for ($i = 0; $i < count($model->KnownServerIds); $i++) {
-                    $guids[] = $model->KnownServerIds[$i];
-                }
-
-                $contents = $helper->getWithInFromDatabase(new Content(), "guid", $guids, true, "relation_id=:relation_id", array("relation_id" => $model->RelationId));
-            } else {
-                $contents = $helper->getFromDatabase(new Content(), "relation_id=:relation_id", array("relation_id" => $model->RelationId));
-            }
-
-            $resp = new CollectionEntriesResponse();
-            $resp->CollectionEntryEntities = [];
-            if ($contents != null) {
-                foreach ($contents as $content) {
-                    $entity = new CollectionEntryEntity();
-                    $entity->VersionId = $content->version_id;
-                    $entity->ServerId = $content->guid;
-                    $entity->RelationId = $content->relation_id;
-                    $resp->CollectionEntryEntities[] = $entity;
-                }
-            }
-
-            return ResponseHelper::getJsonResponse($response, $resp);
-        } else {
-            return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
-        }
-    }
-
     public function getHistory(Request $request, Response $response, $args)
     {
         $model = RequestHelper::parseContentEntityHistoryRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, array("ServerId")))
+            if (!$this->isWellDefined($model, array("ContentId")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $helper = $this->getDatabaseHelper();
-            $collection = $helper->getSingleFromDatabase(new Content(), "guid=:guid", array("guid" => $model->ServerId));
-            if ($collection != null) {
-                //get all entries
-                $historyEntries = $helper->getFromDatabase(new ContentHistory(), "content_id=:content_id", array("content_id" => $collection->id), "creation_date_time DESC");
 
-                //cache all devices
-                $ids = [];
-                for ($i = 0; $i < count($historyEntries); $i++) {
-                    $ids[] = $historyEntries[$i]->device_id;
-                }
-                $helper = $this->getDatabaseHelper();
-                $devices = $helper->getWithInFromDatabase(new Device(), "id", $ids);
+            //get all entries
+            $historyEntries = $helper->getFromDatabase(new Content(), "content_id=:content_id", array("content_id" => $model->ContentId), "creation_date_time DESC");
 
-                //create response
-                $resp = new ContentEntityHistoryResponse();
-                $resp->HistoryEntries = [];
-                foreach ($historyEntries as $historyEntry) {
-                    $entity = new HistoryEntry();
-                    $entity->CreationDateTime = FormatHelper::toCSharpDateTime($historyEntry->creation_date_time);
-                    $entity->VersionId = $historyEntry->version_id;
-                    foreach ($devices as $device) {
-                        if ($device->id == $historyEntry->device_id) {
-                            $entity->DeviceId = $device->guid;
-                            break;
-                        }
-                    }
-                    $resp->HistoryEntries[] = $entity;
-                }
-                return ResponseHelper::getJsonResponse($response, $resp);
-            } else {
-                return $this->returnApiError(ApiErrorTypes::ContentNotFound, $response);
+            //cache all devices
+            $deviceIds = [];
+            foreach ($historyEntries as $historyEntry) {
+                if (!in_array($historyEntry->device_id, $deviceIds))
+                    $deviceIds[] = $historyEntry->device_id;
             }
+            $helper = $this->getDatabaseHelper();
+            $devices = $helper->getWithInFromDatabase(new Device(), "id", $deviceIds);
+            $deviceIdAdapter = [];
+            foreach ($devices as $device) {
+                $deviceIdAdapter[$device->id] = $device->device_id;
+            }
+
+            //create response
+            $resp = new ContentEntityHistoryResponse();
+            $resp->HistoryEntries = [];
+            foreach ($historyEntries as $historyEntry) {
+                $entity = new HistoryEntry();
+                $entity->CreationDateTime = FormatHelper::toCSharpDateTime($historyEntry->creation_date_time);
+                $entity->VersionId = $historyEntry->version_id;
+                $entity->DeviceId = $deviceIdAdapter[$historyEntry->device_id];
+                $resp->HistoryEntries[] = $entity;
+            }
+            return ResponseHelper::getJsonResponse($response, $resp);
+
         } else {
             return $this->returnApiError(ApiErrorTypes::NotAuthorized, $response);
         }

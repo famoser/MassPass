@@ -21,5 +21,5 @@ class ApiResponse
 
     public $Successfull;
     public $ApiError;
-    public $DebugMessage;
+    public $ApiMessage;
 }

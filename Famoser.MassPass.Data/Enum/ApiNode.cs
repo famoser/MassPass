@@ -2,7 +2,7 @@
 
 namespace Famoser.MassPass.Data.Enum
 {
-    public enum ApiRequest
+    public enum ApiNode
     {
         [ApiUri("")]
         Index,
@@ -13,11 +13,17 @@ namespace Famoser.MassPass.Data.Enum
         [ApiUri("status", Authorization)]
         AuthorizationStatus,
 
+        [ApiUri("createuser", Authorization)]
+        CreateUser,
+
         [ApiUri("authorize", Authorization)]
         Authorize,
 
         [ApiUri("createauthorization", Authorization)]
         CreateAuthorization,
+
+        [ApiUri("wipeuser", Authorization)]
+        WipeUser,
 
         [ApiUri("unauthorize", Authorization)]
         UnAuthorize,
@@ -28,17 +34,14 @@ namespace Famoser.MassPass.Data.Enum
         [ApiUri("sync")]
         Sync,
 
-        [ApiUri("refresh", Sync)]
-        Refresh,
+        [ApiUri("sync", Sync)]
+        SyncContent,
 
         [ApiUri("update", Sync)]
         Update,
 
         [ApiUri("readcontententity", Sync)]
         ReadContentEntity,
-
-        [ApiUri("readcollectionentries", Sync)]
-        ReadCollectionEntries,
 
         [ApiUri("gethistory", Sync)]
         GetHistory

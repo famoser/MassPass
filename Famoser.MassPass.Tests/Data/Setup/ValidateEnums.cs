@@ -18,7 +18,7 @@ namespace Famoser.MassPass.Tests.Data.Setup
         [TestMethod]
         public void AllApiRequestValuesHaveApiUrlAttribute()
         {
-            AllEnumValuesHaveAttribute<ApiRequest, ApiUriAttribute>();
+            AllEnumValuesHaveAttribute<ApiNode, ApiUriAttribute>();
         }
 
         [TestMethod]

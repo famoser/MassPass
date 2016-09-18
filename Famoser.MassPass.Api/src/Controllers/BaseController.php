@@ -55,7 +55,7 @@ class BaseController
         }
 
         $resp = new ApiResponse(false, $apiErrorType);
-        $resp->DebugMessage = $debugMessage;
+        $resp->ApiMessage = $debugMessage;
 
         return $response->withStatus($apiError[$apiErrorType])->withJson($resp);
     }
@@ -101,7 +101,7 @@ class BaseController
         if ($this->authorizedUser == null) {
             if ($request->UserId != null) {
                 $helper = $this->getDatabaseHelper();
-                $this->authorizedUser = $helper->getSingleFromDatabase(new User(), "guid=:guid", array("guid" => $request->UserId));
+                $this->authorizedUser = $helper->getSingleFromDatabase(new User(), "user_id=:user_id", array("user_id" => $request->UserId));
             }
         }
         return $this->authorizedUser;
@@ -121,7 +121,7 @@ class BaseController
 
                 if ($authorizedUser != null) {
                     $helper = $this->getDatabaseHelper();
-                    $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "guid=:guid AND user_id=:user_id", array("guid" => $request->DeviceId, "user_id" => $authorizedUser->id));
+                    $this->authorizedDevice = $helper->getSingleFromDatabase(new Device(), "device_id=:device_id AND user_id=:user_id", array("device_id" => $request->DeviceId, "user_id" => $authorizedUser->id));
 
                     if ($this->authorizedDevice != null) {
                         $this->authorizedDevice->last_request_date_time = time();

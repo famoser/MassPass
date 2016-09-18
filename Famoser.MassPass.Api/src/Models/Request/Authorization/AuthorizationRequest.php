@@ -14,6 +14,5 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 class AuthorizationRequest extends ApiRequest
 {
     public $AuthorisationCode;
-    public $UserName;
     public $DeviceName;
 }

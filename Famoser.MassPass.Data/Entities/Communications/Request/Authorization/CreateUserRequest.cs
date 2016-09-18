@@ -2,10 +2,9 @@
 
 namespace Famoser.MassPass.Data.Entities.Communications.Request.Authorization
 {
-    public class AuthorizationRequest : ApiRequest
+    public class CreateUserRequest : ApiRequest
     {
-        public string AuthorisationCode { get; set; }
-        
+        public string UserName { get; set; }
         public string DeviceName { get; set; }
     }
 }

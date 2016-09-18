@@ -10,10 +10,12 @@ use Famoser\MassPass\Models\Request\Authorization\UnAuthorizationRequest;
 use Famoser\MassPass\Models\Request\CollectionEntriesRequest;
 use Famoser\MassPass\Models\Request\ContentEntityHistoryRequest;
 use Famoser\MassPass\Models\Request\ContentEntityRequest;
-use Famoser\MassPass\Models\Request\RefreshRequest;
+use Famoser\MassPass\Models\Request\SyncRequest;
 use Famoser\MassPass\Models\Request\UpdateRequest;
 use Famoser\MassPass\Models\Response\Authorization\AuthorizedDevicesResponse;
 use JsonMapper;
+use Models\Request\Authorization\CreateUserRequest;
+use Models\Request\Authorization\WipeUserRequest;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
@@ -32,6 +34,16 @@ class RequestHelper
     public static function parseAuthorisationRequest(Request $request)
     {
         return RequestHelper::executeJsonMapper($request, new AuthorizationRequest());
+    }
+
+    /**
+     * @param Request $request
+     * @return CreateUserRequest
+     * @throws \JsonMapper_Exception
+     */
+    public static function parseCreateUserRequest(Request $request)
+    {
+        return RequestHelper::executeJsonMapper($request, new CreateUserRequest());
     }
 
     /**
@@ -62,6 +74,16 @@ class RequestHelper
     public static function parseAuthorizationStatusRequest(Request $request)
     {
         return RequestHelper::executeJsonMapper($request, new AuthorizationStatusRequest());
+    }
+
+    /**
+     * @param Request $request
+     * @return WipeUserRequest
+     * @throws \JsonMapper_Exception
+     */
+    public static function parseWipeUserRequest(Request $request)
+    {
+        return RequestHelper::executeJsonMapper($request, new WipeUserRequest());
     }
 
     /**
@@ -106,12 +128,12 @@ class RequestHelper
 
     /**
      * @param Request $request
-     * @return RefreshRequest
+     * @return SyncRequest
      * @throws \JsonMapper_Exception
      */
-    public static function parseRefreshRequest(Request $request)
+    public static function parseSyncRequest(Request $request)
     {
-        return RequestHelper::executeJsonMapper($request, new RefreshRequest());
+        return RequestHelper::executeJsonMapper($request, new SyncRequest());
     }
 
     /**

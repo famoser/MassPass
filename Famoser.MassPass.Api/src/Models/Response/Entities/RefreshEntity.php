@@ -11,7 +11,7 @@ namespace Famoser\MassPass\Models\Response\Entities;
 
 class RefreshEntity
 {
-    public $ServerId;
+    public $ContentId;
     public $VersionId;
     public $RemoteStatus;
 }

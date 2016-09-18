@@ -9,11 +9,11 @@ namespace Famoser.MassPass.Data.Attributes
     {
         public string RelativeUrl { get; }
 
-        public ApiUriAttribute(string relativeUrl, ApiRequest dependsOn = ApiRequest.Index, ApiType apiType = ApiType.Version1)
+        public ApiUriAttribute(string relativeUrl, ApiNode dependsOn = ApiNode.Index, ApiType apiType = ApiType.Version1)
         {
-            if (dependsOn != ApiRequest.Index)
+            if (dependsOn != ApiNode.Index)
             {
-                var type = typeof(ApiRequest);
+                var type = typeof(ApiNode);
                 var attribute = type.GetRuntimeField(dependsOn.ToString()).GetCustomAttribute<ApiUriAttribute>();
                 RelativeUrl = "/" + attribute.RelativeUrl;
             }

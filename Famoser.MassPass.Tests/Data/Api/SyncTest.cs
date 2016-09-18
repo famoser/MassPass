@@ -20,7 +20,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             {
                 //arrange
                 var ds = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
+                var guids = await helper.CreateAuthroizedClient();
                 var serverId = Guid.NewGuid();
                 var relationId = Guid.NewGuid();
                 var entity = EntityMockHelper.GetContentEntity();
@@ -62,7 +62,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             using (var helper = new ApiHelper())
             {
                 var ds = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
+                var guids = await helper.CreateAuthroizedClient();
                 var serverId = Guid.NewGuid();
                 var serverId2 = Guid.NewGuid();
                 var relationId = Guid.NewGuid();
@@ -90,7 +90,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                 AssertionHelper.CheckForSuccessfull(res2, "res2");
                 var version1 = res1.VersionId;
                 var version2 = res2.VersionId;
-                var refreshRequest1 = new RefreshRequest()
+                var refreshRequest1 = new SyncRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
@@ -108,7 +108,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                         }
                     }
                 };
-                var refreshRequest2 = new RefreshRequest()
+                var refreshRequest2 = new SyncRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
@@ -126,7 +126,7 @@ namespace Famoser.MassPass.Tests.Data.Api
                         }
                     }
                 };
-                var refreshRequest3 = new RefreshRequest()
+                var refreshRequest3 = new SyncRequest()
                 {
                     UserId = guids.Item1,
                     DeviceId = guids.Item2,
@@ -183,7 +183,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             {
                 //arrange
                 var ds = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
+                var guids = await helper.CreateAuthroizedClient();
                 var relationId = Guid.NewGuid();
                 var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
                 var entityGuids2 = await helper.AddEntity(guids.Item1, guids.Item2, relationId);
@@ -237,7 +237,7 @@ namespace Famoser.MassPass.Tests.Data.Api
             using (var helper = new ApiHelper())
             {
                 var ds = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
+                var guids = await helper.CreateAuthroizedClient();
                 var relationId = Guid.NewGuid();
                 var serverId = Guid.NewGuid();
                 var entityGuids1 = await helper.AddEntity(guids.Item1, guids.Item2, relationId, serverId);

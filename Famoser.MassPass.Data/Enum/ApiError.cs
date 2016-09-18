@@ -45,16 +45,22 @@ namespace Famoser.MassPass.Data.Enum
         #endregion
 
         #region AuthorisationRequest
-        /// <summary>
-        /// The provided AuthorisationCode is invalid
-        /// </summary>
         [Description("Your athorization code is invalid")]
         AuthorizationCodeInvalid = 2000,
+        [Description("User not found")]
+        UserNotFound = 2001,
+        [Description("Device already exists")]
+        DeviceAlreadyExists = 2002,
         #endregion
 
         #region UnAuthorisationRequest
         [Description("The device to unauthorize could not be found")]
         DeviceNotFound = 3000,
+        #endregion
+
+        #region CreateUserResponse
+        [Description("This User already exists")]
+        UserAlreadyExists = 2100,
         #endregion
 
         #region AuthorizedDevicesRequst

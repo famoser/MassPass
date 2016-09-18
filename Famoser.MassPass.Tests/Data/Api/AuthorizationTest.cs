@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
@@ -14,65 +15,18 @@ namespace Famoser.MassPass.Tests.Data.Api
     public class AuthorizationTest
     {
         [TestMethod]
-        public async Task RequestIsSuccessfull()
-        {
-            using (var helper = new ApiHelper())
-            {
-                //arrange
-                var dataService = helper.GetDataService();
-                var userGuid = Guid.NewGuid();
-                var deviceGuid = Guid.NewGuid();
-                var authRequest = new AuthorizationRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserName = "my user",
-                    DeviceName = "my device",
-                    UserId = userGuid
-                };
-
-                //act
-                var res = await dataService.AuthorizeAsync(authRequest);
-
-                //assert
-                Assert.IsTrue(res.IsSuccessfull, ErrorHelper.ErrorMessageForRequest(res));
-                Assert.IsTrue(!res.RequestFailed, ErrorHelper.ErrorMessageForRequest(res));
-                Assert.IsTrue(res.ApiError == ApiError.None, ErrorHelper.ErrorMessageForRequest(res));
-                Assert.IsNull(res.Exception, ErrorHelper.ErrorMessageForRequest(res));
-            }
-        }
-
-        [TestMethod]
         public async Task InitialAuthorization()
         {
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var dataService = helper.GetDataService();
-                var userGuid = Guid.NewGuid();
-                var deviceGuid = Guid.NewGuid();
-                var authRequest = new AuthorizationRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserName = "my user",
-                    DeviceName = "my device",
-                    UserId = userGuid,
-                    AuthorisationCode = "empty"
-                };
-                var authStatusRequest = new AuthorizationStatusRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                };
+                var client = await helper.CreateAuthorizedClient1Async();
 
                 //act
-                var res = await dataService.AuthorizeAsync(authRequest);
-                var res2 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
+                var res = await client.CheckIsAuthorizedAsync();
 
                 //assert
-                AssertionHelper.CheckForSuccessfull(res, "res");
-                AssertionHelper.CheckForSuccessfull(res2, "res2");
-                Assert.IsTrue(res2.IsAuthorized, ErrorHelper.ErrorMessageForRequest(res2));
-                Assert.IsNull(res2.UnauthorizedReason, ErrorHelper.ErrorMessageForRequest(res2));
+                Assert.IsTrue(res, "Authentication failed!");
             }
         }
 
@@ -82,75 +36,23 @@ namespace Famoser.MassPass.Tests.Data.Api
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var dataService = helper.GetDataService();
-                var deviceGuid = Guid.NewGuid();
-                var userGuid = Guid.NewGuid();
 
-                var responses = new List<ApiResponse>();
+                var dataService = await helper.CreateUnAuthorizedClient();
 
-                //0
-                responses.Add(await dataService.GetAuthorizationStatusAsync(new AuthorizationStatusRequest()
+                //test all routes
+                var responses = new List<ApiResponse>
                 {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //1
-                responses.Add(await dataService.GetAuthorizedDevicesAsync(new AuthorizedDevicesRequest
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //2
-                responses.Add(await dataService.CreateAuthorizationAsync(new CreateAuthorizationRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //3
-                responses.Add(await dataService.GetHistoryAsync(new ContentEntityHistoryRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //4
-                responses.Add(await dataService.RefreshAsync(new RefreshRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //5
-                responses.Add(await dataService.UnAuthorizeAsync(new UnAuthorizationRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //6
-                responses.Add(await dataService.UpdateAsync(new UpdateRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid,
-                    TransferEntity = new ContentEntity()
-                }));
-
-                //7
-                responses.Add(await dataService.ReadAsync(new CollectionEntriesRequest()
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
-
-                //8
-                responses.Add(await dataService.ReadAsync(new ContentEntityRequest
-                {
-                    DeviceId = deviceGuid,
-                    UserId = userGuid
-                }));
+                    await dataService.AuthorizeAsync(new AuthorizationRequest()),
+                    await dataService.CreateAuthorizationAsync(new CreateAuthorizationRequest()),
+                    await dataService.CreateUserAsync(new CreateUserRequest()),
+                    await dataService.GetAuthorizationStatusAsync(new AuthorizationStatusRequest()),
+                    await dataService.GetAuthorizedDevicesAsync(new AuthorizedDevicesRequest()),
+                    await dataService.GetHistoryAsync(new ContentEntityHistoryRequest()),
+                    await dataService.ReadAsync(new ContentEntityRequest()),
+                    await dataService.SyncAsync(new SyncRequest()),
+                    await dataService.UnAuthorizeAsync(new UnAuthorizationRequest()),
+                    
+                };
 
                 for (int index = 0; index < responses.Count; index++)
                 {
@@ -165,44 +67,17 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             using (var helper = new ApiHelper())
             {
-                //arrange
-                var dataService = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
-                var userGuid = guids.Item1;
-                var deviceGuid = guids.Item2;
-
-                var newDeviceGuid = Guid.NewGuid();
-                var authCode = Guid.NewGuid().ToString();
-                var validCreateAuthRequest = new CreateAuthorizationRequest()
-                {
-                    UserId = userGuid,
-                    DeviceId = deviceGuid,
-                    AuthorisationCode = authCode
-                };
-                var validAuthRequest = new AuthorizationRequest()
-                {
-                    UserId = userGuid,
-                    DeviceId = newDeviceGuid,
-                    AuthorisationCode = authCode,
-                    DeviceName = "my device",
-                    UserName = "this user"
-                };
-                var authStatusRequest = new AuthorizationStatusRequest()
-                {
-                    UserId = userGuid,
-                    DeviceId = newDeviceGuid
-                };
-
+                //arrange && act
+                var client1 = await helper.CreateAuthorizedClient1Async();
+                var client2 = await helper.AddValidatedDevice2Async(client1);
+                
                 //act
-                var valid1 = await dataService.CreateAuthorizationAsync(validCreateAuthRequest);
-                var valid2 = await dataService.AuthorizeAsync(validAuthRequest);
-                var valid3 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
+                var valid1 = await client1.CheckIsAuthorizedAsync();
+                var valid2 = await client2.CheckIsAuthorizedAsync();
 
                 //assert
-                AssertionHelper.CheckForSuccessfull(valid1, "valid1");
-                AssertionHelper.CheckForSuccessfull(valid2, "valid2");
-                AssertionHelper.CheckForSuccessfull(valid3, "valid3");
-                Assert.IsTrue(valid3.IsAuthorized, "valid3 not authorized");
+                Assert.IsTrue(valid1, "valid1 failed");
+                Assert.IsTrue(valid2, "valid2 failed");
             }
         }
 
@@ -211,34 +86,25 @@ namespace Famoser.MassPass.Tests.Data.Api
         {
             using (var helper = new ApiHelper())
             {
-                //arrange
-                var dataService = helper.GetDataService();
-                var guids = await helper.CreateValidatedDevice();
-                var newDeviceGuid = await helper.AddValidatedDevice(guids.Item1, guids.Item2);
-                var unauthReason = "cause fuck u";
-
-                var validUnAuthRequest = new UnAuthorizationRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2,
-                    DeviceToBlockId = newDeviceGuid,
-                    Reason = unauthReason
-                };
-                var authStatusRequest = new AuthorizationStatusRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = newDeviceGuid
-                };
+                //arrange && act
+                var client1 = await helper.CreateAuthorizedClient1Async();
+                var client2 = await helper.AddValidatedDevice2Async(client1);
+                var unAuthReason = "Cause fuck you, thats why!";
 
                 //act
-                var valid1 = await dataService.UnAuthorizeAsync(validUnAuthRequest);
-                var valid2 = await dataService.GetAuthorizationStatusAsync(authStatusRequest);
+                var req1 = await client1.UnAuthorizeAsync(new UnAuthorizationRequest()
+                {
+                    DeviceToBlockId = client2.DeviceId,
+                    Reason = unAuthReason
+                });
+                var invalid1 = await client2.GetAuthorizationStatusAsync(new AuthorizationStatusRequest());
+
 
                 //assert
-                AssertionHelper.CheckForSuccessfull(valid1, "valid1");
-                AssertionHelper.CheckForSuccessfull(valid2, "valid2");
-                Assert.IsFalse(valid2.IsAuthorized, ErrorHelper.ErrorMessageForRequest(valid2, "valid2"));
-                Assert.IsTrue(valid2.UnauthorizedReason == unauthReason, "unauth reason not correct");
+                AssertionHelper.CheckForSuccessfull(req1, "req1");
+                AssertionHelper.CheckForSuccessfull(invalid1, "invalid1");
+                Assert.IsFalse(invalid1.IsAuthorized, ErrorHelper.ErrorMessageForRequest(invalid1, "invalid1"));
+                Assert.IsTrue(invalid1.UnauthorizedReason == unAuthReason, "unAuthReason not correct");
             }
         }
 
@@ -248,36 +114,17 @@ namespace Famoser.MassPass.Tests.Data.Api
             using (var helper = new ApiHelper())
             {
                 //arrange
-                var dataService = helper.GetDataService();
-                string userName = "user name";
-                string deviceName1 = "device name 1";
-                string deviceName2 = "device name 2";
-                string deviceName3 = "device name 3";
-                var guids = await helper.CreateValidatedDevice(userName, deviceName1);
-                var guids2 = await helper.AddValidatedDevice(guids.Item1, guids.Item2, deviceName2, userName);
-                var guids3 = await helper.AddValidatedDevice(guids.Item1, guids.Item2, deviceName3, userName);
-
-                var validUnAuthRequest = new AuthorizedDevicesRequest()
-                {
-                    UserId = guids.Item1,
-                    DeviceId = guids.Item2
-                };
+                var client1 = await helper.CreateAuthorizedClient1Async();
+                var client2 = await helper.AddValidatedDevice2Async(client1);
 
                 //act
-                var valid1 = await dataService.GetAuthorizedDevicesAsync(validUnAuthRequest);
+                var valid1 = await client2.GetAuthorizedDevicesAsync(new AuthorizedDevicesRequest());
 
                 //assert
                 AssertionHelper.CheckForSuccessfull(valid1, "valid1");
-                Assert.IsTrue(valid1.AuthorizedDeviceEntities.Count == 3, "not valid authorized devies number");
+                Assert.IsTrue(valid1.AuthorizedDeviceEntities.Count == 2, "not valid authorized devies number");
                 foreach (var authorizedDeviceEntity in valid1.AuthorizedDeviceEntities)
                 {
-                    if (authorizedDeviceEntity.DeviceId == guids.Item2)
-                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName1);
-                    else if (authorizedDeviceEntity.DeviceId == guids2)
-                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName2);
-                    else if (authorizedDeviceEntity.DeviceId == guids3)
-                        Assert.IsTrue(authorizedDeviceEntity.DeviceName == deviceName3);
-
                     AssertionHelper.CheckDateTimeNowValidity(authorizedDeviceEntity.AuthorizationDateTime, "AuthorizationDateTime");
                     AssertionHelper.CheckDateTimeNowValidity(authorizedDeviceEntity.LastModificationDateTime, "LastModificationDateTime");
                 }

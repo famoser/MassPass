@@ -4,6 +4,7 @@ using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services;
 using Famoser.MassPass.Business.Services.Interfaces;
+using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.ViewModels.ContentPageViewModels;

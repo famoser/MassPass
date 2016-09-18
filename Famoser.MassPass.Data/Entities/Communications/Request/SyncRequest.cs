@@ -4,9 +4,9 @@ using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 
 namespace Famoser.MassPass.Data.Entities.Communications.Request
 {
-    public class RefreshRequest : ApiRequest
+    public class SyncRequest : ApiRequest
     {
-        public RefreshRequest()
+        public SyncRequest()
         {
             RefreshEntities = new List<RefreshEntity>();
         }

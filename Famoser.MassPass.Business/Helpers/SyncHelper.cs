@@ -28,7 +28,7 @@ namespace Famoser.MassPass.Business.Helpers
             _contentRepository = contentRepository;
         }
 
-        public static async Task<ConcurrentStack<ContentModel>> GetLocallyChangedStack(IDataService dataService, RequestHelper requestHelper)
+        public static async Task<ConcurrentStack<ContentModel>> GetLocallyChangedStack(IDataService dataService, ContentHelper contentHelper)
         {
             var changed = ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.Changed || c.LocalStatus == LocalStatus.New).ToList();
             if (changed.Count < 2)
@@ -42,7 +42,7 @@ namespace Famoser.MassPass.Business.Helpers
                 ContentId = s.ApiInformations.ServerId,
                 VersionId = s.ApiInformations.VersionId
             }).ToList();
-            var onlineVersion = await dataService.RefreshAsync(requestHelper.RefreshRequest(versions));
+            var onlineVersion = await dataService.RefreshAsync(contentHelper.RefreshRequest(versions));
             foreach (var contentModel in changed)
             {
                 var refreshEntity =
@@ -56,7 +56,7 @@ namespace Famoser.MassPass.Business.Helpers
             return changedStack;
         }
 
-        public static async Task<ConcurrentStack<ContentModel>> GetRemotelyChangedStack(IDataService dataService, RequestHelper requestHelper)
+        public static async Task<ConcurrentStack<ContentModel>> GetRemotelyChangedStack(IDataService dataService, ContentHelper contentHelper)
         {
             var changed = ContentManager.FlatContentModelCollection.Where(c => c.LocalStatus == LocalStatus.UpToDate).ToList();
             var changedStack = new ConcurrentStack<ContentModel>();
@@ -65,7 +65,7 @@ namespace Famoser.MassPass.Business.Helpers
                 ContentId = s.ApiInformations.ServerId,
                 VersionId = s.ApiInformations.VersionId
             }).ToList();
-            var onlineVersion = await dataService.RefreshAsync(requestHelper.RefreshRequest(versions));
+            var onlineVersion = await dataService.RefreshAsync(contentHelper.RefreshRequest(versions));
             foreach (var contentModel in changed)
             {
                 var refreshEntity =
@@ -98,7 +98,7 @@ namespace Famoser.MassPass.Business.Helpers
             return false;
         }
 
-        public async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
+        public async Task UploadChangedWorker(ConcurrentStack<ContentModel> stack, ContentHelper contentHelper)
         {
             ContentModel changedContent;
             if (stack.TryPop(out changedContent))
@@ -106,7 +106,7 @@ namespace Famoser.MassPass.Business.Helpers
                 await ExecuteWorker(async () =>
                 {
                     changedContent.RuntimeStatus = RuntimeStatus.Syncing;
-                    var req = await _dataService.UpdateAsync(requestHelper.UpdateRequest(
+                    var req = await _dataService.UpdateAsync(contentHelper.UpdateRequest(
                         changedContent.ApiInformations.ServerId,
                         changedContent.ApiInformations.ServerRelationId,
                         changedContent.ApiInformations.VersionId,
@@ -133,7 +133,7 @@ namespace Famoser.MassPass.Business.Helpers
             }
         }
 
-        public async Task DownloadChangedWorker(ConcurrentStack<ContentModel> stack, RequestHelper requestHelper)
+        public async Task DownloadChangedWorker(ConcurrentStack<ContentModel> stack, ContentHelper contentHelper)
         {
             ContentModel changedContent;
             if (stack.TryPop(out changedContent))
@@ -142,7 +142,7 @@ namespace Famoser.MassPass.Business.Helpers
                 {
                     changedContent.RuntimeStatus = RuntimeStatus.Syncing;
                     var req = await _dataService.ReadAsync(
-                        requestHelper.ContentEntityRequest(
+                        contentHelper.ContentEntityRequest(
                             changedContent.ApiInformations.ServerId,
                             changedContent.ApiInformations.ServerRelationId,
                             changedContent.ApiInformations.VersionId));
@@ -164,7 +164,7 @@ namespace Famoser.MassPass.Business.Helpers
             }
         }
 
-        public async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, RequestHelper requestHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
+        public async Task ReadCollectionWorker(ConcurrentStack<Guid> stack, ContentHelper contentHelper, ConcurrentStack<CollectionEntryEntity> missingStack)
         {
             Guid relationGuid;
             if (stack.TryPop(out relationGuid))
@@ -176,7 +176,7 @@ namespace Famoser.MassPass.Business.Helpers
                     var newItems =
                         await
                             _dataService.ReadAsync(
-                                requestHelper.CollectionEntriesRequest(
+                                contentHelper.CollectionEntriesRequest(
                                     items.Select(s => s.ApiInformations.ServerId).ToList(), relationGuid));
                     if (newItems.IsSuccessfull)
                     {
@@ -194,14 +194,14 @@ namespace Famoser.MassPass.Business.Helpers
             }
         }
 
-        public async Task DownloadMissingWorker(ConcurrentStack<CollectionEntryEntity> stack, RequestHelper requestHelper)
+        public async Task DownloadMissingWorker(ConcurrentStack<CollectionEntryEntity> stack, ContentHelper contentHelper)
         {
             CollectionEntryEntity entry;
             if (stack.TryPop(out entry))
             {
                 await ExecuteWorker(async () =>
                 {
-                    var response = await _dataService.ReadAsync(requestHelper.ContentEntityRequest(entry.ContentId, entry.CollectionId, entry.VersionId));
+                    var response = await _dataService.ReadAsync(contentHelper.ContentEntityRequest(entry.ContentId, entry.CollectionId, entry.VersionId));
                     if (response.IsSuccessfull)
                     {
                         var newModel = new ContentModel();

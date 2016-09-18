@@ -131,7 +131,7 @@ class DatabaseHelper
      * @param null $parameters
      * @param null $orderBy
      * @param int $limit
-     * @return AuthorizationCode[]|Content[]|ContentHistory[]|Device[]|User[]|bool
+     * @return AuthorizationCode[]|Content[]|Device[]|User[]|bool
      */
     public function getFromDatabase(BaseEntity $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
@@ -149,7 +149,7 @@ class DatabaseHelper
      * @param null $parameters
      * @param null $orderBy
      * @param int $limit
-     * @return AuthorizationCode[]|Content[]|ContentHistory[]|Device[]|User[]|bool
+     * @return AuthorizationCode[]|Content[]|Device[]|User[]|bool
      */
     public function getWithInFromDatabase(BaseEntity $entity, $property, $values, $invertIn = false, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {
@@ -176,7 +176,7 @@ class DatabaseHelper
      * @param null $parameters
      * @param null $orderBy
      * @param int $limit
-     * @return AuthorizationCode|Content|Device|ContentHistory|User|bool
+     * @return AuthorizationCode|Content|Device|User|bool
      */
     public function getSingleFromDatabase(BaseEntity $entity, $where = null, $parameters = null, $orderBy = null, $limit = 1000)
     {

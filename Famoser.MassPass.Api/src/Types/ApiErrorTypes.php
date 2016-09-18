@@ -45,9 +45,18 @@ class ApiErrorTypes
     const Unauthorized = 1001;
     #endregion
 
+    #region CreateUserRequest
+//[Description("This User already exists")]
+    const UserAlreadyExists = 2100;
+    #endregion
+
     #region AuthorisationRequest
 //[Description("Your athorization code is invalid")]
     const AuthorizationCodeInvalid = 2000;
+//[Description("User not found")]
+    const UserNotFound = 2001;
+//[Description("Device already exists")]
+    const DeviceAlreadyExists = 2002;
     #endregion
 
     #region UnAuthorisationRequest

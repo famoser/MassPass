@@ -13,7 +13,6 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
 class UpdateRequest extends ApiRequest
 {
-    public $ServerId;
-    public $RelationId;
+    public $ContentId;
     public $VersionId;
 }

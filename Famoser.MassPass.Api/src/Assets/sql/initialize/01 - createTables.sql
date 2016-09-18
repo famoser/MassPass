@@ -1,14 +1,14 @@
 CREATE TABLE users (
-  id   INTEGER PRIMARY KEY,
-  guid TEXT,
-  name TEXT
+  id        INTEGER PRIMARY KEY,
+  user_id   TEXT,
+  user_name TEXT
 );
 
 CREATE TABLE devices (
   id                          INTEGER PRIMARY KEY,
   user_id                     INTEGER,
-  guid                        TEXT,
-  name                        TEXT,
+  device_id                   TEXT,
+  device_name                 TEXT,
   has_access                  TINYINT,
   last_modification_date_time INTEGER,
   last_request_date_time      INTEGER,
@@ -21,24 +21,17 @@ CREATE TABLE devices (
 CREATE TABLE authorization_codes (
   id         INTEGER PRIMARY KEY,
   user_id    INTEGER,
-  content_id INTEGER,
   code       TEXT,
-  valid_from INTEGER,
+  content    TEXT,
   valid_till INTEGER
 );
 
 CREATE TABLE content (
-  id            INTEGER PRIMARY KEY,
-  user_id       INTEGER,
-  guid          TEXT,
-  relation_id TEXT,
-  version_id    TEXT
-);
-
-CREATE TABLE content_history (
-  id            INTEGER PRIMARY KEY,
-  content_id    INTEGER,
-  device_id    INTEGER,
-  version_id    TEXT,
+  id                 INTEGER PRIMARY KEY,
+  user_id            INTEGER,
+  content_id         TEXT,
+  collection_id      TEXT,
+  version_id         TEXT,
+  device_id          INTEGER,
   creation_date_time INTEGER
 );

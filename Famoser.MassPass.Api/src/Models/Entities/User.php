@@ -13,8 +13,8 @@ use Famoser\MassPass\Models\Entities\Base\BaseEntity;
 
 class User extends BaseEntity
 {
-    public $guid;
-    public $name;
+    public $user_id;
+    public $user_name;
 
     public function getTableName()
     {

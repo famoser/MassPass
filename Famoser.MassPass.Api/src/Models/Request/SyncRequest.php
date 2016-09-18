@@ -11,7 +11,7 @@ namespace Famoser\MassPass\Models\Request;
 
 use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
-class RefreshRequest extends ApiRequest
+class SyncRequest extends ApiRequest
 {
     /**
      * @var Entities\RefreshEntity[] $RefreshEntities

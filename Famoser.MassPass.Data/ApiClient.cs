@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
 using Famoser.FrameworkEssentials.Models.RestService;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Data.Attributes;
-using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
-using Famoser.MassPass.Data.Entities.Communications.Request.Raw;
+using Famoser.MassPass.Data.Entities.Communications.Request.Base;
 using Famoser.MassPass.Data.Entities.Communications.Response;
 using Famoser.MassPass.Data.Entities.Communications.Response.Authorization;
 using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 using Famoser.MassPass.Data.Enum;
-using Famoser.MassPass.Data.Exceptions;
-using Famoser.MassPass.Data.Models;
-using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 
-namespace Famoser.MassPass.Data.Services
+namespace Famoser.MassPass.Data
 {
     public class ApiClient
     {
@@ -37,38 +32,42 @@ namespace Famoser.MassPass.Data.Services
             _deviceId = deviceId;
         }
 
+        public Guid UserId => _userId;
+        public Guid DeviceId => _deviceId;
+        public Uri BaseUri => _baseUri;
+
+        private bool _isAuthorized;
         public async Task<bool> CheckIsAuthorizedAsync()
         {
-            var res = await GetAuthorizationStatusAsync(new AuthorizationStatusRequest()
+            if (!_isAuthorized) //cache authentication to save requests
             {
-                DeviceId = _deviceId,
-                UserId = _userId
-            });
-            return res.IsAuthorized;
+                var res = await GetAuthorizationStatusAsync(new AuthorizationStatusRequest()
+                {
+                    DeviceId = _deviceId,
+                    UserId = _userId
+                });
+                _isAuthorized = res.IsAuthorized;
+            }
+            return _isAuthorized;
         }
 
-        private Uri GetUri(ApiRequest rt)
+        private T AuthenticateRequest<T>(T request) where T : ApiRequest
         {
-            var type = typeof(ApiRequest);
+            request.DeviceId = _deviceId;
+            request.UserId = _userId;
+            return request;
+        }
+
+        private Uri GetUri(ApiNode rt)
+        {
+            var type = typeof(ApiNode);
             var attribute = type.GetRuntimeField(rt.ToString()).GetCustomAttribute<ApiUriAttribute>();
             return new Uri(_baseUri + attribute.RelativeUrl);
         }
 
-        private async Task<HttpResponseModel> PostJsonToApiRaw(object request, ApiRequest type)
+        private async Task<T> PostJsonToApi<T>(ApiRequest request, ApiNode type) where T : ApiResponse, new()
         {
-            try
-            {
-                return await _restService.PostJsonAsync(GetUri(type), JsonConvert.SerializeObject(request));
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-                return new HttpResponseModel(ex);
-            }
-        }
-
-        private async Task<T> PostJsonToApi<T>(object request, ApiRequest type) where T : ApiResponse, new()
-        {
+            request = AuthenticateRequest(request);
             var response = await _restService.PostJsonAsync(GetUri(type), JsonConvert.SerializeObject(request));
             var rawResponse = await response.GetResponseAsStringAsync();
             var obj = JsonConvert.DeserializeObject<T>(rawResponse);
@@ -86,44 +85,53 @@ namespace Famoser.MassPass.Data.Services
 
         public Task<AuthorizationStatusResponse> GetAuthorizationStatusAsync(AuthorizationStatusRequest request)
         {
-            return PostJsonToApi<AuthorizationStatusResponse>(request, ApiRequest.AuthorizationStatus);
+            return PostJsonToApi<AuthorizationStatusResponse>(request, ApiNode.AuthorizationStatus);
+        }
+
+        public Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request)
+        {
+            return PostJsonToApi<CreateUserResponse>(request, ApiNode.CreateUser);
         }
 
         public Task<AuthorizationResponse> AuthorizeAsync(AuthorizationRequest request)
         {
-            return PostJsonToApi<AuthorizationResponse>(request, ApiRequest.Authorize);
+            return PostJsonToApi<AuthorizationResponse>(request, ApiNode.Authorize);
         }
 
         public Task<CreateAuthorizationResponse> CreateAuthorizationAsync(CreateAuthorizationRequest request)
         {
-            return PostJsonToApi<CreateAuthorizationResponse>(request, ApiRequest.CreateAuthorization);
+            return PostJsonToApi<CreateAuthorizationResponse>(request, ApiNode.CreateAuthorization);
+        }
+
+        public Task<WipeUserResponse> WipeUserAsync(WipeUserRequest request)
+        {
+            return PostJsonToApi<WipeUserResponse>(request, ApiNode.WipeUser);
         }
 
         public Task<UnAuthorizationResponse> UnAuthorizeAsync(UnAuthorizationRequest request)
         {
-            return PostJsonToApi<UnAuthorizationResponse>(request, ApiRequest.UnAuthorize);
+            return PostJsonToApi<UnAuthorizationResponse>(request, ApiNode.UnAuthorize);
         }
 
         public Task<AuthorizedDevicesResponse> GetAuthorizedDevicesAsync(AuthorizedDevicesRequest request)
         {
-            return PostJsonToApi<AuthorizedDevicesResponse>(request, ApiRequest.AuthorizedDevices);
+            return PostJsonToApi<AuthorizedDevicesResponse>(request, ApiNode.AuthorizedDevices);
         }
 
-        public Task<RefreshResponse> RefreshAsync(RefreshRequest request)
+        public Task<SyncResponse> SyncAsync(SyncRequest request)
         {
-            return PostJsonToApi<RefreshResponse>(request, ApiRequest.Refresh);
+            return PostJsonToApi<SyncResponse>(request, ApiNode.SyncContent);
+        }
+
+        public Task<ContentEntityHistoryResponse> GetHistoryAsync(ContentEntityHistoryRequest request)
+        {
+            return PostJsonToApi<ContentEntityHistoryResponse>(request, ApiNode.GetHistory);
         }
 
         public async Task<TransferEntityResponse> ReadAsync(ContentEntityRequest request)
         {
-            var req = new RawTransferEntityRequest()
-            {
-                UserId = request.UserId,
-                DeviceId = request.DeviceId,
-                ContentId = request.ContentId,
-                VersionId = request.VersionId
-            };
-            var resp = await PostJsonToApiRaw(req, ApiRequest.ReadContentEntity);
+            request = AuthenticateRequest(request);
+            var resp = await _restService.PostJsonAsync(GetUri(ApiNode.ReadContentEntity), JsonConvert.SerializeObject(request));
             if (resp.IsRequestSuccessfull)
             {
                 return new TransferEntityResponse()
@@ -140,14 +148,8 @@ namespace Famoser.MassPass.Data.Services
 
         public async Task<UpdateResponse> UpdateAsync(UpdateRequest request, byte[] content)
         {
-            var newRequest = new RawUpdateRequest()
-            {
-                DeviceId = request.DeviceId,
-                ContentId = request.ContentId,
-                UserId = request.UserId
-            };
-
-            var response = await _restService.PostJsonAsync(GetUri(ApiRequest.Update), JsonConvert.SerializeObject(newRequest),
+            request = AuthenticateRequest(request);
+            var response = await _restService.PostJsonAsync(GetUri(ApiNode.Update), JsonConvert.SerializeObject(request),
                 new List<RestFile>()
                 {
                     new RestFile()
@@ -164,21 +166,10 @@ namespace Famoser.MassPass.Data.Services
                 obj.RawResponse = response;
                 return obj;
             }
-            LogHelper.Instance.LogError("response from api null", this);
             return new UpdateResponse()
             {
                 RawResponse = response
             };
-        }
-
-        public Task<CollectionEntriesResponse> ReadAsync(CollectionEntriesRequest request)
-        {
-            return PostJsonToApi<CollectionEntriesResponse>(request, ApiRequest.ReadCollectionEntries);
-        }
-
-        public Task<ContentEntityHistoryResponse> GetHistoryAsync(ContentEntityHistoryRequest request)
-        {
-            return PostJsonToApi<ContentEntityHistoryResponse>(request, ApiRequest.GetHistory);
         }
     }
 }

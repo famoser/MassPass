@@ -13,6 +13,6 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
 class ContentEntityRequest extends ApiRequest
 {
-    public $ServerId;
+    public $ContentId;
     public $VersionId;
 }

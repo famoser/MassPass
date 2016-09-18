@@ -13,5 +13,5 @@ use Famoser\MassPass\Models\Request\Base\ApiRequest;
 
 class ContentEntityHistoryRequest extends ApiRequest
 {
-    public $ServerId;
+    public $ContentId;
 }
