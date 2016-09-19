@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Business.Content.Providers.Interfaces;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Content.Base;
 using Newtonsoft.Json;
 
@@ -41,6 +42,8 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
         {
             return true;
         }
+
+        public abstract ContentType GetContentType();
 
         protected abstract Guid GetTypeGuid();
     }

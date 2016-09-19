@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
-using Famoser.MassPass.Business.Content.Providers.Helpers;
+using Famoser.FrameworkEssentials.Logging;
+using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Managers;
@@ -32,13 +34,15 @@ namespace Famoser.MassPass.Business.Repositories
         private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IAuthorizationRepository _authorizationRepository;
         private readonly IApiEncryptionService _apiEncryptionService;
+        private readonly IDevicesRepository _devicesRepository;
 
-        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IAuthorizationRepository authorizationRepository, IApiEncryptionService apiEncryptionService)
+        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IAuthorizationRepository authorizationRepository, IApiEncryptionService apiEncryptionService, IDevicesRepository devicesRepository)
         {
             _folderStorageService = folderStorageService;
             _passwordVaultService = passwordVaultService;
             _authorizationRepository = authorizationRepository;
             _apiEncryptionService = apiEncryptionService;
+            _devicesRepository = devicesRepository;
             _apiConfigurationService = apiConfigurationService;
         }
 
@@ -58,8 +62,8 @@ namespace Famoser.MassPass.Business.Repositories
 
                 if (jsonCache != null)
                 {
-                    var cacheModel = JsonConvert.DeserializeObject<EncryptedStorageModel>(jsonCache);
-                    foreach (var collectionCacheModel in cacheModel.CollectionCacheModels)
+                    _encryptedStorageModel = JsonConvert.DeserializeObject<EncryptedStorageModel>(jsonCache);
+                    foreach (var collectionCacheModel in _encryptedStorageModel.CollectionCacheModels)
                     {
                         var model = CacheHelper.ReadCache(collectionCacheModel);
                         if (model != null)
@@ -68,6 +72,8 @@ namespace Famoser.MassPass.Business.Repositories
                 }
             }
         }
+
+        private EncryptedStorageModel _encryptedStorageModel;
 
         private readonly AsyncLock _initAsyncLock = new AsyncLock();
         private bool _isInitialized;
@@ -132,153 +138,158 @@ namespace Famoser.MassPass.Business.Repositories
                         });
                         if (resp3.IsSuccessfull)
                         {
-                            var json = await _apiEncryptionService.DecryptToStringAsync(resp3.EncryptedBytes,
-                                refreshEntity.CollectionId);
+                            var json = await _apiEncryptionService.DecryptToStringAsync(resp3.EncryptedBytes, refreshEntity.CollectionId);
                             var content = ContentHelper.Deserialize(json);
                             if (collection != null)
                             {
                                 if (bcm != null)
-                                    CollectionManager.ReplaceContentModel(content);
+                                {
+                                    var provider = ContentHelper.GetProvider(bcm);
+                                    provider?.WriteValues(bcm, content);
+                                    await SaveLocally(bcm, true);
+                                }
                                 else
+                                {
                                     CollectionManager.AddContentModel(content, collection);
+                                    await SaveLocally(content, true);
+                                }
                             }
                             else
                             {
                                 var coll = new CollectionModel(refreshEntity.CollectionId);
                                 coll.ContentModels.Add(content);
                                 CollectionManager.AddCollectionModel(coll);
+                                await SaveLocally(content, true);
                             }
                         }
                     }
                 }
+                await CreateCache();
 
                 return true;
             });
         }
 
+        private string GetFileName(BaseContentModel contentModel)
+        {
+            return contentModel.Id + "_" + contentModel.ContentApiInformations.VersionId;
+        }
+
         public Task<bool> LoadValues(BaseContentModel model)
         {
-            throw new System.NotImplementedException();
+            return ExecuteSafe(async () =>
+            {
+                model.ContentLoadingState = LoadingState.Loading;
+                var content = await _folderStorageService.GetFile(ContentFolder, GetFileName(model));
+                var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(content);
+                var jsonCache = StorageHelper.ByteToString(decryptedBytes);
+                if (jsonCache != null)
+                {
+                    var source = ContentHelper.Deserialize(jsonCache);
+                    var provider = ContentHelper.GetProvider(model);
+                    provider?.WriteValues(model, source);
+                    model.ContentLoadingState = LoadingState.Loaded;
+                    return true;
+                }
+                model.ContentLoadingState = LoadingState.LoadingFailed;
+                return false;
+            });
         }
 
         public Task<bool> FillHistory(BaseContentModel model)
         {
-            throw new System.NotImplementedException();
+            return ExecuteSafe(async () =>
+            {
+                model.HistoryLoadingState = LoadingState.Loading;
+                var client = await _authorizationRepository.GetAuthorizedApiClientAsync();
+                var req1 = await client.GetHistoryAsync(new ContentEntityHistoryRequest()
+                {
+                    ContentId = model.Id
+                });
+                if (req1.IsSuccessfull)
+                {
+                    var devices = await _devicesRepository.GetDevices();
+                    model.History.Clear();
+                    foreach (var historyEntry in req1.HistoryEntries)
+                    {
+                        model.History.Add(new HistoryModel()
+                        {
+                            VersionId = historyEntry.VersionId,
+                            CreationDateTime = historyEntry.CreationDateTime,
+                            DeviceModel = devices.FirstOrDefault(d => d.DeviceId == historyEntry.DeviceId)
+                        });
+                    }
+                    model.HistoryLoadingState = LoadingState.Loaded;
+                    return true;
+                }
+                model.HistoryLoadingState = LoadingState.LoadingFailed;
+                return false;
+            });
         }
 
         public Task<bool> Save(BaseContentModel model)
         {
-            throw new System.NotImplementedException();
+            return ExecuteSafe(async () =>
+            {
+                //new version
+                model.ContentApiInformations.VersionId = Guid.NewGuid().ToString();
+
+                var uploadRequest = new UpdateRequest()
+                {
+                    CollectionId = model.Collection.Id,
+                    ContentId = model.Id,
+                    VersionId = model.ContentApiInformations.VersionId
+                };
+                var json = JsonConvert.SerializeObject(model);
+                var encrypted = await _apiEncryptionService.EncryptFromStringAsync(json, model.Collection.Id);
+                var client = await _authorizationRepository.GetAuthorizedApiClientAsync();
+                var res = await client.UpdateAsync(uploadRequest, encrypted);
+
+                return await SaveLocally(model) && res.IsSuccessfull;
+            });
         }
 
-        //public async Task<bool> SyncAsync()
-        //{
-        //    try
-        //    {
-        //        await InitializeAsync();
+        public Task<bool> SaveLocally(BaseContentModel model, bool skipCacheCreation = false)
+        {
+            return ExecuteSafe(async () =>
+            {
+                var json = JsonConvert.SerializeObject(model);
+                var bytes = StorageHelper.StringToBytes(json);
+                var encrytedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
+                if (await _folderStorageService.SaveFile(ContentFolder, GetFileName(model), encrytedBytes))
+                {
+                    if (!skipCacheCreation)
+                        return await CreateCache();
+                    return true;
+                }
+                return false;
+            });
+        }
 
 
-        //        var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
-        //        var requestHelper = await GetRequestHelper();
+        private readonly AsyncLock _createCacheAsyncLock = new AsyncLock();
+        private Task<bool> CreateCache()
+        {
+            return ExecuteSafe(async () =>
+            {
+                using (await _createCacheAsyncLock.LockAsync())
+                {
+                    var collections = CollectionManager.CollectionModels;
+                    _encryptedStorageModel.CollectionCacheModels.Clear();
+                    foreach (var collectionModel in collections)
+                        _encryptedStorageModel.CollectionCacheModels.Add(CacheHelper.CreateCache(collectionModel));
 
-        //        var res = await _dataService.GetAuthorizationStatusAsync(requestHelper.AuthorizationStatusRequest());
-        //        if (res.IsSuccessfull && res.IsAuthorized)
-        //        {
-        //            /*
-        //             * Sync:
-        //             * 1. Upload locally changed if possible
-        //             * 2. Refresh all changed ones online
-        //             * 3. collect missing from collections
-        //             * 4. download missing from collections
-        //             * */
-
-        //            var syncHelper = new SyncHelper(_dataService, _errorApiReportingService, this);
-
-        //            // 1. check if version online is same, if yes, prepare for upload
-        //            var locallyChangedStack = await SyncHelper.GetLocallyChangedStack(_dataService, requestHelper);
-        //            var tasks = new List<Task>();
-        //            for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
-        //            {
-        //                tasks.Add(syncHelper.UploadChangedWorker(locallyChangedStack, requestHelper));
-        //            }
-        //            await Task.WhenAll(tasks);
-        //            tasks.Clear();
-
-        //            // 2. refresh all changed ones
-        //            var remotelyChangedStack = await SyncHelper.GetRemotelyChangedStack(_dataService, requestHelper);
-        //            for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
-        //            {
-        //                tasks.Add(syncHelper.DownloadChangedWorker(remotelyChangedStack, requestHelper));
-        //            }
-        //            await Task.WhenAll(tasks);
-        //            tasks.Clear();
-
-        //            // 3. collect missing
-        //            var collectionStack = new ConcurrentStack<Guid>(
-        //                ContentManager.FlatContentModelCollection.Select(c => c.ApiInformations.ServerRelationId).Distinct());
-        //            var missingStack = new ConcurrentStack<CollectionEntryEntity>();
-        //            for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
-        //            {
-        //                tasks.Add(syncHelper.ReadCollectionWorker(collectionStack, requestHelper, missingStack));
-        //            }
-        //            await Task.WhenAll(tasks);
-        //            tasks.Clear();
-
-        //            // 4. download missing
-        //            for (int i = 0; i < workerConfig.IntValue && i < userConfig.CollectionIds.Count; i++)
-        //            {
-        //                tasks.Add(syncHelper.DownloadMissingWorker(missingStack, requestHelper));
-        //            }
-        //            await Task.WhenAll(tasks);
-        //            tasks.Clear();
-
-        //            var cacheConfig = await _configurationService.GetConfiguration(SettingKeys.EnableCachingOfCollectionNames);
-        //            if (cacheConfig.BoolValue)
-        //            {
-        //                await CreateCache();
-        //            }
-
-        //            return true;
-        //        }
-        //        _errorApiReportingService.ReportUnhandledApiError(res);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogHelper.Instance.LogException(ex);
-        //    }
-        //    return false;
-        //}
-
-        //private async Task<bool> CreateCache()
-        //{
-        //    var cacheModel = ContentManager.CreateCacheModel();
-        //    var str = JsonConvert.SerializeObject(cacheModel);
-        //    var bytes = StorageHelper.StringToBytes(str);
-        //    var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
-        //    return await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration).Description, encryptedBytes);
-        //}
-
-
-        //public async Task<bool> FillValues(ContentModel model)
-        //{
-        //    try
-        //    {
-        //        var content = await _folderStorageService.GetFile(ContentFolder, model.Id.ToString());
-        //        var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(content);
-        //        var jsonCache = StorageHelper.ByteToString(decryptedBytes);
-        //        if (jsonCache != null)
-        //        {
-        //            var contentModel = JsonConvert.DeserializeObject<ContentModel>(jsonCache);
-        //            CacheHelper.WriteAllValues(model, contentModel);
-        //            return true;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogHelper.Instance.LogException(ex);
-        //    }
-        //    return false;
-        //}
+                    var str = JsonConvert.SerializeObject(_encryptedStorageModel);
+                    var bytes = StorageHelper.StringToBytes(str);
+                    var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
+                    return
+                        await
+                            _folderStorageService.SetCachedFileAsync(
+                                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
+                                    FileKeys.EncryptedCache).Description, encryptedBytes);
+                }
+            });
+        }
 
         //public async Task<bool> FillHistory(ContentModel model)
         //{

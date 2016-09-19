@@ -12,13 +12,6 @@ namespace Famoser.MassPass.Business.Models
             set { Set(ref _deviceModel, value); }
         }
 
-        private BaseSyncModel _baseSyncModel;
-        public BaseSyncModel BaseSyncModel
-        {
-            get { return _baseSyncModel; }
-            set { Set(ref _baseSyncModel, value); }
-        }
-
         public DateTime CreationDateTime { get; set; }
         public string VersionId { get; set; }
     }

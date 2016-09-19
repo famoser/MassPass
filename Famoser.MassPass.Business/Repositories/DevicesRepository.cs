@@ -5,6 +5,7 @@ using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
+using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Nito.AsyncEx;
 
@@ -12,15 +13,15 @@ namespace Famoser.MassPass.Business.Repositories
 {
     public class DevicesRepository : BaseRepository, IDevicesRepository
     {
-        private readonly IDataService _dataService;
         private readonly IErrorApiReportingService _errorApiReportingService;
+        private IAuthorizationRepository _authorizationRepository;
         private IApiConfigurationService _apiConfigurationService;
 
-        public DevicesRepository(IDataService dataService, IErrorApiReportingService errorApiReportingService, IApiConfigurationService apiConfigurationService) : base(apiConfigurationService)
+        public DevicesRepository(IErrorApiReportingService errorApiReportingService, IApiConfigurationService apiConfigurationService, IAuthorizationRepository authorizationRepository)
         {
-            _dataService = dataService;
             _errorApiReportingService = errorApiReportingService;
             _apiConfigurationService = apiConfigurationService;
+            _authorizationRepository = authorizationRepository;
         }
 
         private readonly ObservableCollection<DeviceModel> _device = new ObservableCollection<DeviceModel>();
@@ -34,7 +35,8 @@ namespace Famoser.MassPass.Business.Repositories
                 {
                     _hasLoadedDevices = true;
 
-                    var resp = await _dataService.GetAuthorizedDevicesAsync((await GetRequestHelper()).AuthorizedDevicesRequest());
+                    var client = await _authorizationRepository.GetAuthorizedApiClientAsync();
+                    var resp = await client.GetAuthorizedDevicesAsync(new AuthorizedDevicesRequest());
                     if (resp.IsSuccessfull)
                     {
                         foreach (var authorizedDeviceEntity in resp.AuthorizedDeviceEntities)
@@ -47,7 +49,12 @@ namespace Famoser.MassPass.Business.Repositories
                                 _device.Add(newDevice);
                                 exitingDevice = newDevice;
                             }
-                            EntityConversionHelper.WriteValues(authorizedDeviceEntity, exitingDevice);
+
+                            exitingDevice.DeviceId = authorizedDeviceEntity.DeviceId;
+                            exitingDevice.DeviceName = authorizedDeviceEntity.DeviceName;
+                            exitingDevice.AuthorizationDateTime = authorizedDeviceEntity.AuthorizationDateTime;
+                            exitingDevice.LastModificationDateTime = authorizedDeviceEntity.LastModificationDateTime;
+                            exitingDevice.LastRequestDateTime = authorizedDeviceEntity.LastRequestDateTime;
                         }
                     }
                     else
@@ -55,8 +62,8 @@ namespace Famoser.MassPass.Business.Repositories
                         _errorApiReportingService.ReportUnhandledApiError(resp);
                     }
                 }
-                return _device;
             }
+            return _device;
         }
     }
 }

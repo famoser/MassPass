@@ -99,12 +99,11 @@
     <Compile Include="Content\Providers\NoteContentModelProvider.cs" />
     <Compile Include="Enums\RuntimeStatus.cs" />
     <Compile Include="Enums\LoadingState.cs" />
-    <Compile Include="Enums\ContentTypes.cs" />
+    <Compile Include="Content\Enums\ContentTypes.cs" />
     <Compile Include="Enums\FileKeys.cs" />
     <Compile Include="Enums\SettingKey.cs" />
     <Compile Include="Helpers\CacheHelper.cs" />
-    <Compile Include="Helpers\EntityConversionHelper.cs" />
-    <Compile Include="Content\Providers\Helpers\ContentHelper.cs" />
+    <Compile Include="Content\Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\ResponseHelper.cs" />
     <Compile Include="Extensions\ObservaleCollectionExtension.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />

@@ -34,12 +34,12 @@ namespace Famoser.MassPass.Business.Models.Content.Base
             set { Set(ref _description, value); }
         }
 
-        private LocalStatus _localStatus;
-        public LocalStatus LocalStatus
-        {
-            get { return _localStatus; }
-            set { Set(ref _localStatus, value); }
-        }
+        //private LocalStatus _localStatus;
+        //public LocalStatus LocalStatus
+        //{
+        //    get { return _localStatus; }
+        //    set { Set(ref _localStatus, value); }
+        //}
 
         private LivecycleStatus _livecycleStatus;
         public LivecycleStatus LivecycleStatus

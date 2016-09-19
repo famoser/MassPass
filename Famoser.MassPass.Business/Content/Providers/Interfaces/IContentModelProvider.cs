@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Content.Base;
 
 namespace Famoser.MassPass.Business.Content.Providers.Interfaces
@@ -15,5 +16,6 @@ namespace Famoser.MassPass.Business.Content.Providers.Interfaces
         string Serialize(BaseContentModel model);
         string GetListName();
         bool ShowAsList();
+        ContentType GetContentType();
     }
 }

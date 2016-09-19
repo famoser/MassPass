@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Business.Content.Providers.Base;
+using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Content;
 
 namespace Famoser.MassPass.Business.Content.Providers
@@ -13,6 +14,11 @@ namespace Famoser.MassPass.Business.Content.Providers
        public override string GetListName()
        {
            return "notes";
+       }
+
+       public override ContentType GetContentType()
+       {
+           return ContentType.Note;
        }
 
        protected override Guid GetTypeGuid()

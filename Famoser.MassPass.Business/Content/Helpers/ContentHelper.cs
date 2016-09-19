@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Famoser.MassPass.Business.Content.Providers.Base;
+﻿using System.Collections.Generic;
+using Famoser.MassPass.Business.Content.Providers;
 using Famoser.MassPass.Business.Content.Providers.Interfaces;
-using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content;
 using Famoser.MassPass.Business.Models.Content.Base;
-using Newtonsoft.Json;
 
-namespace Famoser.MassPass.Business.Content.Providers.Helpers
+namespace Famoser.MassPass.Business.Content.Helpers
 {
     public class ContentHelper
     {
@@ -26,6 +21,16 @@ namespace Famoser.MassPass.Business.Content.Providers.Helpers
             {
                 if (contentModelProvider.CanDeserialize(json))
                     return contentModelProvider.Deserialize(json);
+            }
+            return null;
+        }
+
+        public static IContentModelProvider GetProvider(BaseContentModel model)
+        {
+            foreach (var contentModelProvider in ContentModelProviders)
+            {
+                if (contentModelProvider.GetContentType() == model.ContentType)
+                    return contentModelProvider;
             }
             return null;
         }
