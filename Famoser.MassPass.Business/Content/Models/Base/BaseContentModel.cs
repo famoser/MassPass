@@ -56,6 +56,7 @@ namespace Famoser.MassPass.Business.Models.Content.Base
         }
 
         public ObservableCollection<HistoryModel> History { get; }
+        public CollectionModel Collection { get; set; }
 
         private LoadingState _historyLoadingState;
         public LoadingState HistoryLoadingState
@@ -65,5 +66,7 @@ namespace Famoser.MassPass.Business.Models.Content.Base
         }
         
         protected RuntimeStatus RuntimeStatus { get; set; }
+
+        
     }
 }

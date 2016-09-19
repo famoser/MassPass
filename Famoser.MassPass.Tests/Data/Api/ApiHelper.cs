@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Singleton;
+using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;

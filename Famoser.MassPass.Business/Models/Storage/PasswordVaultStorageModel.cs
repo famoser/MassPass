@@ -7,10 +7,7 @@ namespace Famoser.MassPass.Business.Models.Storage
     {
         public PasswordVaultStorageModel()
         {
-            LastModifiedDateTime = DateTime.Now;
-            Vault = new Dictionary<Guid, byte[]>();
+            Vault = new Dictionary<Guid, string>();
         }
-        public DateTime LastModifiedDateTime { get; set; }
-        public Dictionary<Guid, byte[]> Vault { get; set; }
     }
 }

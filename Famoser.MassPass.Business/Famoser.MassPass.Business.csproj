@@ -91,33 +91,38 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Content\Providers\Base\BaseContentModelProvider.cs" />
+    <Compile Include="Content\Providers\CollectionContentModelProvider.cs" />
+    <Compile Include="Content\Providers\CreditCardContentModelProvider.cs" />
+    <Compile Include="Content\Providers\Interfaces\IContentModelProvider.cs" />
+    <Compile Include="Content\Providers\LoginContentModelProvider.cs" />
+    <Compile Include="Content\Providers\NoteContentModelProvider.cs" />
     <Compile Include="Enums\RuntimeStatus.cs" />
     <Compile Include="Enums\LoadingState.cs" />
     <Compile Include="Enums\ContentTypes.cs" />
     <Compile Include="Enums\FileKeys.cs" />
-    <Compile Include="Enums\SettingKeys.cs" />
+    <Compile Include="Enums\SettingKey.cs" />
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Helpers\EntityConversionHelper.cs" />
-    <Compile Include="Helpers\ContentHelper.cs" />
+    <Compile Include="Content\Providers\Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\ResponseHelper.cs" />
     <Compile Include="Extensions\ObservaleCollectionExtension.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="Helpers\SyncHelper.cs" />
     <Compile Include="Managers\CollectionManager.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
-    <Compile Include="Models\Content\CollectionModel.cs" />
-    <Compile Include="Models\ConfigurationModel.cs" />
-    <Compile Include="Models\Content\Base\BaseContentModel.cs" />
-    <Compile Include="Models\Content\CreditCardModel.cs" />
-    <Compile Include="Models\Content\LoginModel.cs" />
-    <Compile Include="Models\Content\NoteModel.cs" />
+    <Compile Include="Content\Models\CollectionModel.cs" />
+    <Compile Include="Content\Models\Base\BaseContentModel.cs" />
+    <Compile Include="Content\Models\CreditCardModel.cs" />
+    <Compile Include="Content\Models\LoginModel.cs" />
+    <Compile Include="Content\Models\NoteModel.cs" />
     <Compile Include="Models\DeviceModel.cs" />
     <Compile Include="Models\GroupedCollectionModel.cs" />
     <Compile Include="Models\HistoryModel.cs" />
-    <Compile Include="Models\Storage\ApiStorageModel.cs" />
     <Compile Include="Models\Storage\Cache\BaseCacheModel.cs" />
     <Compile Include="Models\Storage\Cache\CacheContentEntity.cs" />
     <Compile Include="Models\Storage\Cache\CollectionCacheModel.cs" />
+    <Compile Include="Models\Storage\EncryptedStorageModel.cs" />
     <Compile Include="Models\Storage\PasswordVaultStorageModel.cs" />
     <Compile Include="Models\Sync\RawSyncModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,7 +135,6 @@
     <Compile Include="Repositories\Interfaces\IDevicesRepository.cs" />
     <Compile Include="Services\ApiConfigurationService.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />
-    <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationService.cs" />
     <Compile Include="Services\Interfaces\IErrorApiReportingService.cs" />
     <Compile Include="Services\Interfaces\IFolderStorageService.cs" />

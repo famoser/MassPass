@@ -6,7 +6,7 @@ using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Services.Interfaces;
-using Famoser.MassPass.Data.Models.Storage;
+using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
 using Nito.AsyncEx;

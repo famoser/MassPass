@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Business.Models.Content;
 using Famoser.MassPass.Business.Models.Content.Base;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces

@@ -1,7 +1,6 @@
 ﻿using System;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
-using Famoser.MassPass.Data.Models.Storage;
 using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Data.Entities

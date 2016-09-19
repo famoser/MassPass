@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Data;
-using Famoser.MassPass.Data.Models.Storage;
+using Famoser.MassPass.Data.Models.Configuration;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces
 {

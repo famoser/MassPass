@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
+using Famoser.MassPass.Business.Content.Providers.Helpers;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Repositories;

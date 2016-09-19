@@ -12,8 +12,8 @@ namespace Famoser.MassPass.Business.Managers
 {
     public static class CollectionManager
     {
-        private static ObservableCollection<CollectionModel> CollectionModels { get; } = new ObservableCollection<CollectionModel>();
-        private static ObservableCollection<BaseContentModel> ContentModels { get; } = new ObservableCollection<BaseContentModel>();
+        public static ObservableCollection<CollectionModel> CollectionModels { get; } = new ObservableCollection<CollectionModel>();
+        public static ObservableCollection<BaseContentModel> ContentModels { get; } = new ObservableCollection<BaseContentModel>();
 
         //per type
         private static ObservableCollection<BaseContentModel> NoteModels { get; } = new ObservableCollection<BaseContentModel>();
@@ -28,9 +28,10 @@ namespace Famoser.MassPass.Business.Managers
             new GroupedCollectionModel("credit cards", CreditCardModels)
         };
 
-        public static void AddContentModel(BaseContentModel model)
+        public static void AddContentModel(BaseContentModel model, CollectionModel collection)
         {
             ContentModels.Add(model);
+            model.Collection = collection;
 
             if (model.GetType() == typeof(NoteModel))
                 NoteModels.Add((NoteModel)model);
@@ -45,8 +46,23 @@ namespace Famoser.MassPass.Business.Managers
             CollectionModels.Add(model);
             foreach (var baseContentModel in model.ContentModels)
             {
-                AddContentModel(baseContentModel);
+                AddContentModel(baseContentModel, model);
             }
+        }
+
+        public static void ReplaceContentModel(BaseContentModel content)
+        {
+            var exisiting = ContentModels.FirstOrDefault(c => c.Id == content.Id);
+            ContentModels.Remove(exisiting);
+
+            if (exisiting.GetType() == typeof(NoteModel))
+                NoteModels.Remove(exisiting);
+            else if (exisiting.GetType() == typeof(LoginModel))
+                LoginModels.Remove(exisiting);
+            else if (exisiting.GetType() == typeof(CreditCardModel))
+                CreditCardModels.Remove(exisiting);
+
+            AddContentModel(exisiting, exisiting.Collection);
         }
     }
 }

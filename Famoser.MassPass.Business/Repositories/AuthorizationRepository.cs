@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using Famoser.FrameworkEssentials.Logging;
+﻿using System.Threading.Tasks;
+using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
-using Famoser.MassPass.Data.Models.Storage;
+using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Repositories
 {
@@ -65,7 +65,7 @@ namespace Famoser.MassPass.Business.Repositories
                 });
                 if (resp.IsSuccessfull)
                 {
-                    configuration.AuthorizationContent = resp.Content;
+                    configuration.AuthorizationContent = JsonConvert.DeserializeObject<UserAuthorizationContent>(resp.Content);
                     configuration.AuthorizationMessage = resp.Message;
                     return client;
                 }

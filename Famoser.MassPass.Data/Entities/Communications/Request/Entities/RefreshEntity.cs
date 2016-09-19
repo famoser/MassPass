@@ -6,5 +6,6 @@ namespace Famoser.MassPass.Data.Entities.Communications.Request.Entities
     {
         public Guid ContentId { get; set; }
         public string VersionId { get; set; }
+        public Guid CollectionId { get; set; }
     }
 }

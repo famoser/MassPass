@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Famoser.MassPass.Data.Models.Storage;
+﻿using System.Threading.Tasks;
+using Famoser.MassPass.Data.Models.Configuration;
 
 namespace Famoser.MassPass.Data.Services.Interfaces
 {

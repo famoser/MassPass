@@ -128,15 +128,16 @@
     <Compile Include="Enum\ApiNode.cs" />
     <Compile Include="Exceptions\DecryptionFailedException.cs" />
     <Compile Include="Exceptions\UploadFailedException.cs" />
-    <Compile Include="Models\Storage\ApiConfiguration.cs" />
+    <Compile Include="Models\Configuration\ApiConfiguration.cs" />
+    <Compile Include="Models\Configuration\UserAuthorizationContent.cs" />
     <Compile Include="Models\ContentApiInformations.cs" />
-    <Compile Include="Models\Storage\UserConfiguration.cs" />
+    <Compile Include="Models\Configuration\UserConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />
     <Compile Include="ApiClient.cs" />
     <Compile Include="Services\EncryptionService.cs" />
-    <Compile Include="Services\Interfaces\IApiEncryptionService.cs" />
     <Compile Include="Services\Interfaces\IApiConfigurationService.cs" />
+    <Compile Include="Services\Interfaces\IApiEncryptionService.cs" />
     <Compile Include="Services\Interfaces\IEncryptionService.cs" />
     <Compile Include="Services\Interfaces\IPasswordVaultService.cs" />
   </ItemGroup>

@@ -64,6 +64,7 @@ class SyncController extends BaseController
                     $entity = new RefreshEntity();
                     $entity->VersionId = $results[$i]->version_id;
                     $entity->ContentId = $results[$i]->content_id;
+                    $entity->CollectionId = $results[$i]->collection_id;
                     //check if requested version is already on server
                     $found = false;
                     for (; $i < count($results); $i++) {
@@ -105,6 +106,7 @@ class SyncController extends BaseController
                 $entity = new RefreshEntity();
                 $entity->VersionId = $missing->version_id;
                 $entity->ContentId = $missing->content_id;
+                $entity->CollectionId = $missing->collection_id;
                 //check if requested version is already on server
                 $entity->RemoteStatus = ServerVersion::Newer;
                 $resp->RefreshEntities[] = $entity;
@@ -123,6 +125,7 @@ class SyncController extends BaseController
                     $entity = new RefreshEntity();
                     $entity->VersionId = $refreshEntity->VersionId;
                     $entity->ContentId = $refreshEntity->ContentId;
+                    $entity->CollectionId = $refreshEntity->CollectionId;
                     $entity->RemoteStatus = ServerVersion::None;
                     $resp->RefreshEntities[] = $entity;
                 }

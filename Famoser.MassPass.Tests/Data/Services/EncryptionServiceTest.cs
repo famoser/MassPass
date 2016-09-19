@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.Tests.Data.Mocks;
