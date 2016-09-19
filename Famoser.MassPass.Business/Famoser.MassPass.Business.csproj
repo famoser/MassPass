@@ -120,6 +120,7 @@
     <Compile Include="Models\Storage\Cache\CacheContentEntity.cs" />
     <Compile Include="Models\Storage\Cache\CollectionCacheModel.cs" />
     <Compile Include="Models\Storage\CacheStorageModel.cs" />
+    <Compile Include="Models\Storage\ConfigStorageModel.cs" />
     <Compile Include="Models\Storage\VaultStorageModel.cs" />
     <Compile Include="Models\Sync\RawSyncModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

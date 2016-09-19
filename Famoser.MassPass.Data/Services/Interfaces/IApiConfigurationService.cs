@@ -8,12 +8,8 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     /// </summary>
     public interface IApiConfigurationService
     {
-        Task<bool> IsConfigurationReady();
-
         Task<ApiConfiguration> GetApiConfigurationAsync();
         Task<bool> SetApiConfigurationAsync(ApiConfiguration config);
-        bool CanSetApiConfigurationAsync(string config);
-        Task<bool> TrySetApiConfigurationAsync(string config);
 
         Task<UserConfiguration> GetUserConfigurationAsync();
         Task<bool> SetUserConfigurationAsync(UserConfiguration config);

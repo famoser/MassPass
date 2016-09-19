@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Helpers;
+using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;
@@ -15,166 +18,56 @@ namespace Famoser.MassPass.Business.Services
     public class ApiConfigurationService : IApiConfigurationService
     {
         private readonly IFolderStorageService _folderStorageService;
+        private readonly IPasswordVaultService _passwordVaultService;
 
-        public ApiConfigurationService(IFolderStorageService folderStorageService)
+        public ApiConfigurationService(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService)
         {
             _folderStorageService = folderStorageService;
+            _passwordVaultService = passwordVaultService;
         }
 
-        private ApiStorageModel _config;
+        private ConfigStorageModel _config;
         private readonly AsyncLock _asyncLock = new AsyncLock();
-        private async Task<ApiStorageModel> GetStorageModelAsync()
+        private bool _isInitialized = false;
+
+        private async Task Initialize()
         {
             using (await _asyncLock.LockAsync())
             {
-                if (_config == null)
-                {
-                    string json = null;
-                    try
-                    {
-                        json = await _folderStorageService.GetCachedTextFileAsync(
-                            ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
-                                .Description);
-                    }
-                    catch (Exception)
-                    {
-                        //most likely file not found exception, so ignore it
-                    }
-                    if (json != null)
-                    {
-                        _config = JsonConvert.DeserializeObject<ApiStorageModel>(json);
-                    }
-                }
-                return _config;
+                if (_isInitialized)
+                    return;
+
+                _isInitialized = true;
+
+                var encryptedBytes = await _folderStorageService.GetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.EncryptedConfiguration).Description);
+                var bytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(encryptedBytes);
+                var json = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                _config = JsonConvert.DeserializeObject<ConfigStorageModel>(json);
             }
-        }
-
-        private async Task<bool> SaveStorageModelAsync(ApiStorageModel config)
-        {
-            _config = config;
-            var json = JsonConvert.SerializeObject(_config);
-            return await _folderStorageService.SetCachedTextFileAsync(
-                ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.ApiConfiguration)
-                    .Description, json);
-        }
-
-        public async Task<bool> IsConfigurationReady()
-        {
-            var storage = await GetStorageModelAsync();
-            return storage != null;
         }
 
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
         {
-            var storage = await GetStorageModelAsync();
-            return storage?.ApiConfiguration;
+            await Initialize();
+
+            return _config.ApiConfiguration;
         }
 
-        private bool IsValidApiConfiguration(ApiConfiguration config)
+        public Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
         {
-            if (config.Version == 1)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
-        {
-            try
-            {
-                if (IsValidApiConfiguration(config))
-                {
-                    var storageModel = await GetStorageModelAsync() ?? new ApiStorageModel();
-                    storageModel.ApiConfiguration = config;
-                    return await SaveStorageModelAsync(storageModel);
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
-        }
-
-        public bool CanSetApiConfigurationAsync(string config)
-        {
-            try
-            {
-                var obj = JsonConvert.DeserializeObject<ApiConfiguration>(config);
-                return IsValidApiConfiguration(obj);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
-        }
-
-        public async Task<bool> TrySetApiConfigurationAsync(string config)
-        {
-            try
-            {
-                var obj = JsonConvert.DeserializeObject<ApiConfiguration>(config);
-                return await SetApiConfigurationAsync(obj);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
+            throw new NotImplementedException();
         }
 
         public async Task<UserConfiguration> GetUserConfigurationAsync()
         {
-            var storage = await GetStorageModelAsync();
-            return storage?.UserConfiguration;
+            await Initialize();
+
+            return _config.UserConfiguration;
         }
 
-        private bool IsValidUserConfiguration(UserConfiguration config)
+        public Task<bool> SetUserConfigurationAsync(UserConfiguration config)
         {
-            if (config.Version == 1)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<bool> SetUserConfigurationAsync(UserConfiguration config, Guid deviceGuid)
-        {
-            config.DeviceId = deviceGuid;
-            var storageModel = await GetStorageModelAsync() ?? new ApiStorageModel();
-            storageModel.UserConfiguration = config;
-            return await SaveStorageModelAsync(storageModel);
-        }
-
-        public bool CanSetUserConfigurationAsync(string config)
-        {
-            try
-            {
-                var obj = JsonConvert.DeserializeObject<UserConfiguration>(config);
-                return IsValidUserConfiguration(obj);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
-        }
-
-        public async Task<bool> TrySetUserConfigurationAsync(string config, Guid deviceGuid)
-        {
-            try
-            {
-                var obj = JsonConvert.DeserializeObject<UserConfiguration>(config);
-                return await SetUserConfigurationAsync(obj, deviceGuid);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-            }
-            return false;
+            throw new NotImplementedException();
         }
     }
 }
