@@ -1,7 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models;
 
 namespace Famoser.MassPass.Business.Services.Interfaces
 {

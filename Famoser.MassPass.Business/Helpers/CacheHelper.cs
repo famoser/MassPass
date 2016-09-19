@@ -24,7 +24,6 @@ namespace Famoser.MassPass.Business.Helpers
                 ContentApiInformations = cache.ContentApiInformations,
                 Description = cache.Description,
                 LivecycleStatus = cache.LivecycleStatus,
-                LocalStatus = cache.LocalStatus,
                 Name = cache.Name
             };
             foreach (var cacheContentEntity in cache.CacheContentModels)

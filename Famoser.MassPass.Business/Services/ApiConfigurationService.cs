@@ -4,7 +4,6 @@ using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;

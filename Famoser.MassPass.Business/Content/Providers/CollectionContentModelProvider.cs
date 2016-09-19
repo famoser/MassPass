@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Famoser.MassPass.Business.Content.Providers.Base;
-using Famoser.MassPass.Business.Content.Providers.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Content;
-using Famoser.MassPass.Business.Models.Content.Base;
-using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Content.Providers
 {

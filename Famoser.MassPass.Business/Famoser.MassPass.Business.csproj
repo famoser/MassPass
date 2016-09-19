@@ -104,10 +104,8 @@
     <Compile Include="Enums\SettingKey.cs" />
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Content\Helpers\ContentHelper.cs" />
-    <Compile Include="Helpers\ResponseHelper.cs" />
     <Compile Include="Extensions\ObservaleCollectionExtension.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
-    <Compile Include="Helpers\SyncHelper.cs" />
     <Compile Include="Managers\CollectionManager.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
     <Compile Include="Content\Models\CollectionModel.cs" />
@@ -121,8 +119,8 @@
     <Compile Include="Models\Storage\Cache\BaseCacheModel.cs" />
     <Compile Include="Models\Storage\Cache\CacheContentEntity.cs" />
     <Compile Include="Models\Storage\Cache\CollectionCacheModel.cs" />
-    <Compile Include="Models\Storage\EncryptedStorageModel.cs" />
-    <Compile Include="Models\Storage\PasswordVaultStorageModel.cs" />
+    <Compile Include="Models\Storage\CacheStorageModel.cs" />
+    <Compile Include="Models\Storage\VaultStorageModel.cs" />
     <Compile Include="Models\Sync\RawSyncModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AuthorizationRepository.cs" />

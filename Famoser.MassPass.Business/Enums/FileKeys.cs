@@ -8,5 +8,7 @@ namespace Famoser.MassPass.Business.Enums
         AssetConfiguration,
         [Description("cache.V1")]
         EncryptedCache,
+        [Description("passwords.V1")]
+        EncryptedPasswords,
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
-using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
@@ -62,8 +60,8 @@ namespace Famoser.MassPass.Business.Repositories
 
                 if (jsonCache != null)
                 {
-                    _encryptedStorageModel = JsonConvert.DeserializeObject<EncryptedStorageModel>(jsonCache);
-                    foreach (var collectionCacheModel in _encryptedStorageModel.CollectionCacheModels)
+                    _cacheStorageModel = JsonConvert.DeserializeObject<CacheStorageModel>(jsonCache);
+                    foreach (var collectionCacheModel in _cacheStorageModel.CollectionCacheModels)
                     {
                         var model = CacheHelper.ReadCache(collectionCacheModel);
                         if (model != null)
@@ -73,7 +71,7 @@ namespace Famoser.MassPass.Business.Repositories
             }
         }
 
-        private EncryptedStorageModel _encryptedStorageModel;
+        private CacheStorageModel _cacheStorageModel;
 
         private readonly AsyncLock _initAsyncLock = new AsyncLock();
         private bool _isInitialized;
@@ -275,11 +273,11 @@ namespace Famoser.MassPass.Business.Repositories
                 using (await _createCacheAsyncLock.LockAsync())
                 {
                     var collections = CollectionManager.CollectionModels;
-                    _encryptedStorageModel.CollectionCacheModels.Clear();
+                    _cacheStorageModel.CollectionCacheModels.Clear();
                     foreach (var collectionModel in collections)
-                        _encryptedStorageModel.CollectionCacheModels.Add(CacheHelper.CreateCache(collectionModel));
+                        _cacheStorageModel.CollectionCacheModels.Add(CacheHelper.CreateCache(collectionModel));
 
-                    var str = JsonConvert.SerializeObject(_encryptedStorageModel);
+                    var str = JsonConvert.SerializeObject(_cacheStorageModel);
                     var bytes = StorageHelper.StringToBytes(str);
                     var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
                     return

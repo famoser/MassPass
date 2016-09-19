@@ -33,6 +33,11 @@ namespace Famoser.MassPass.Tests.Data.Mocks
             });
         }
 
+        public async Task<bool> IsConfigurationReady()
+        {
+            return true;
+        }
+
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
         {
             return GetConfig();
@@ -42,6 +47,11 @@ namespace Famoser.MassPass.Tests.Data.Mocks
         {
             _config = config;
             return true;
+        }
+
+        public bool CanSetApiConfigurationAsync(string config)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> TrySetApiConfigurationAsync(string config)
