@@ -1,8 +1,9 @@
-﻿using Famoser.FrameworkEssentials.Services.Base;
+﻿using Famoser.FrameworkEssentials.Helpers;
+using Famoser.FrameworkEssentials.Services.Base;
 
 namespace Famoser.MassPass.Business.Repositories
 {
-    public class BaseRepository : BaseService
+    public class BaseRepository : BaseHelper
     {
     }
 }

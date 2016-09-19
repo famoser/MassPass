@@ -5,65 +5,90 @@ using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
+using Famoser.MassPass.Data.Models.Storage;
 using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Business.Repositories
 {
     public class AuthorizationRepository : BaseRepository, IAuthorizationRepository
     {
-        private readonly IErrorApiReportingService _errorApiReportingService;
         private readonly IApiConfigurationService _apiConfigurationService;
 
-        public AuthorizationRepository(IErrorApiReportingService errorApiReportingService, IApiConfigurationService apiConfigurationService)
+        public AuthorizationRepository(IApiConfigurationService apiConfigurationService)
         {
-            _errorApiReportingService = errorApiReportingService;
             _apiConfigurationService = apiConfigurationService;
         }
 
-        public async Task<bool> AuthorizeNew(Guid userId, Guid deviceId, string userName, string deviceName)
+        public Task<ApiClient> CreateUserAsync(UserConfiguration configuration)
         {
-            try
+            return ExecuteSafe(async () =>
             {
-                var client = new ApiClient((await _apiConfigurationService.GetApiConfigurationAsync()).Uri, userId, deviceId);
-                var resp = await client.AuthorizeAsync(new AuthorizationRequest()
+                var apiConfig = await _apiConfigurationService.GetApiConfigurationAsync();
+                var client = new ApiClient(apiConfig.Uri, configuration.UserId, configuration.DeviceId);
+                var res = await client.CreateUserAsync(new CreateUserRequest()
                 {
-                    AuthorisationCode = null,
-                    DeviceName = deviceName,
-                    UserName = userName
+                    DeviceName = configuration.DeviceName,
+                    UserName = configuration.UserName
                 });
-                if (!resp.IsSuccessfull)
+                if (res.IsSuccessfull)
                 {
-                    _errorApiReportingService.ReportUnhandledApiError(resp);
-                    return false;
+                    configuration.AuthorizationMessage = res.Message;
+                    return client;
                 }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-                return false;
-            }
-            return true;
+                return null;
+            });
         }
 
-        public async Task<bool> AuthorizeAdditional(Guid userId, Guid deviceId, string authCode, string userName, string deviceName)
+        public Task<bool> CreateAuthorizationAsync(ApiClient client, string authCode, string content)
         {
-            try
+            return ExecuteSafe(async () =>
             {
-                var requHelper = await GetRequestHelper();
-                var client = new ApiClient((await _apiConfigurationService.GetApiConfigurationAsync()).Uri, userId, deviceId);
-                var resp = await _dataService.AuthorizeAsync(requHelper.AuthorizationRequest(userName, deviceName, authCode));
-                if (!resp.IsSuccessfull)
+                var res = await client.CreateAuthorizationAsync(new CreateAuthorizationRequest()
                 {
-                    _errorApiReportingService.ReportUnhandledApiError(resp);
-                    return false;
-                }
-            }
-            catch (Exception ex)
+                    AuthorisationCode = authCode,
+                    Content = content
+                });
+                return res.IsSuccessfull;
+            });
+        }
+
+        public Task<ApiClient> AuthorizeAsync(UserConfiguration configuration, string authCode)
+        {
+            return ExecuteSafe(async () =>
             {
-                LogHelper.Instance.LogException(ex);
-                return false;
-            }
-            return true;
+                var apiConfig = await _apiConfigurationService.GetApiConfigurationAsync();
+                var client = new ApiClient(apiConfig.Uri, configuration.UserId, configuration.DeviceId);
+                var resp = await client.AuthorizeAsync(new AuthorizationRequest()
+                {
+                    DeviceName = configuration.DeviceName,
+                    AuthorisationCode = authCode
+                });
+                if (resp.IsSuccessfull)
+                {
+                    configuration.AuthorizationContent = resp.Content;
+                    configuration.AuthorizationMessage = resp.Message;
+                    return client;
+                }
+                return null;
+            });
+        }
+
+        private ApiClient _authorizedClient;
+        public Task<ApiClient> GetAuthorizedApiClientAsync()
+        {
+            return ExecuteSafe(async () =>
+            {
+                if (_authorizedClient == null)
+                {
+                    var apiConfig = await _apiConfigurationService.GetApiConfigurationAsync();
+                    var userConfig = await _apiConfigurationService.GetUserConfigurationAsync();
+                    var client = new ApiClient(apiConfig.Uri, userConfig.UserId, userConfig.DeviceId);
+                    var resp = await client.CheckIsAuthorizedAsync();
+                    if (resp)
+                        _authorizedClient = client;
+                }
+                return _authorizedClient;
+            });
         }
     }
 }

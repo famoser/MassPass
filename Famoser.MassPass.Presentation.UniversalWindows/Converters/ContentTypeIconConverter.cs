@@ -10,7 +10,7 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var res = value as ContentType?;
-            if (res == ContentType.Root || res == ContentType.Folder)
+            if (res == ContentType.Collection)
                 return Symbol.Folder;
             if (res == ContentType.Note)
                 return Symbol.Caption;

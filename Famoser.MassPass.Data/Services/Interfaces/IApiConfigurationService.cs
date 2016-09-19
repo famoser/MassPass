@@ -17,8 +17,6 @@ namespace Famoser.MassPass.Data.Services.Interfaces
         Task<bool> TrySetApiConfigurationAsync(string config);
 
         Task<UserConfiguration> GetUserConfigurationAsync();
-        Task<bool> SetUserConfigurationAsync(UserConfiguration config, Guid deviceGuid);
-        bool CanSetUserConfigurationAsync(string config);
-        Task<bool> TrySetUserConfigurationAsync(string config, Guid deviceGuid);
+        Task<bool> SetUserConfigurationAsync(UserConfiguration config);
     }
 }

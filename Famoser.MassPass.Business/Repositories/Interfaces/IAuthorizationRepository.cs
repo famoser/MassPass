@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Famoser.MassPass.Data;
+using Famoser.MassPass.Data.Models.Storage;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces
 {
     public interface IAuthorizationRepository
     {
-        Task<bool> AuthorizeNew(Guid userId, Guid deviceId, string userName, string deviceName);
-        Task<bool> AuthorizeAdditional(Guid userId, Guid deviceId, string authCode, string userName, string deviceName);
+        Task<ApiClient> CreateUserAsync(UserConfiguration configuration);
+        Task<bool> CreateAuthorizationAsync(ApiClient client, string authCode, string content);
+        Task<ApiClient> AuthorizeAsync(UserConfiguration configuration, string authCode);
+        Task<ApiClient> GetAuthorizedApiClientAsync();
     }
 }

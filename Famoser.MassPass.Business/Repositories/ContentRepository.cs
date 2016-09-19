@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
@@ -10,6 +12,7 @@ using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
+using Famoser.MassPass.Business.Models.Content;
 using Famoser.MassPass.Business.Models.Storage.Cache;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
@@ -18,6 +21,7 @@ using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Newtonsoft.Json;
+using Nito.AsyncEx;
 
 namespace Famoser.MassPass.Business.Repositories
 {
@@ -28,17 +32,15 @@ namespace Famoser.MassPass.Business.Repositories
         private readonly IFolderStorageService _folderStorageService;
         private readonly IErrorApiReportingService _errorApiReportingService;
         private readonly IPasswordVaultService _passwordVaultService;
-        private readonly IDataService _dataService;
         private readonly IDevicesRepository _devicesRepository;
         private readonly IConfigurationService _configurationService;
         private readonly IApiConfigurationService _apiConfigurationService;
         private readonly IAuthorizationRepository _authorizationRepository;
 
-        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IDataService dataService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService, IDevicesRepository devicesRepository, IConfigurationService configurationService, IAuthorizationRepository authorizationRepository) : base(apiConfigurationService)
+        public ContentRepository(IFolderStorageService folderStorageService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IErrorApiReportingService errorApiReportingService, IDevicesRepository devicesRepository, IConfigurationService configurationService, IAuthorizationRepository authorizationRepository) : base(apiConfigurationService)
         {
             _folderStorageService = folderStorageService;
             _passwordVaultService = passwordVaultService;
-            _dataService = dataService;
             _errorApiReportingService = errorApiReportingService;
             _devicesRepository = devicesRepository;
             _configurationService = configurationService;
@@ -46,87 +48,24 @@ namespace Famoser.MassPass.Business.Repositories
             _apiConfigurationService = apiConfigurationService;
         }
 
-        private Task _fillCollectionsTask;
-        private bool _initialisationStarted;
-        public async Task<bool> InitializeVault(string masterPassword)
+        private async Task InitializeAsync()
         {
-            try
+            using (await _initAsyncLock.LockAsync())
             {
-                await DeleteAll();
+                if (_isInitialized)
+                    return;
 
-                var config = await _apiConfigurationService.GetUserConfigurationAsync();
-                if (await _authorizationRepository.AuthorizeNew(config.UserId, config.DeviceId, config.UserName, config.DeviceName))
-                {
-                    await _passwordVaultService.CreateNewVault(masterPassword);
+                _isInitialized = true;
 
-                    var serverRelationGuid = Guid.NewGuid();
-                    await _passwordVaultService.RegisterPasswordAsync(serverRelationGuid, Guid.NewGuid().ToString());
-
-                    var parentGuid = Guid.NewGuid();
-                    var content = new ContentModel()
-                    {
-                        Name = "Example Folder",
-                        Id = parentGuid,
-                        ApiInformations = new ContentApiInformations()
-                        {
-                            CollectionId = serverRelationGuid
-                        }
-                    };
-                    content.SetContentType(ContentType.Folder);
-                    ContentManager.AddOrReplaceContent(content);
-                    await Save(content);
-
-                    var note1Guid = Guid.NewGuid();
-                    content = new ContentModel()
-                    {
-                        ContentJson = @"{'Content': 'This is a note with another note inside!'}",
-                        Name = "Example Note",
-                        Id = note1Guid,
-                        ParentId = parentGuid,
-                        ApiInformations = new ContentApiInformations()
-                        {
-                            CollectionId = serverRelationGuid
-                        }
-                    };
-                    content.SetContentType(ContentType.Note);
-                    ContentManager.AddOrReplaceContent(content);
-                    await Save(content);
-
-                    content = new ContentModel()
-                    {
-                        ContentJson = @"{'Content': 'This is a note in a note in a folder!'}",
-                        Name = "Example Note",
-                        Id = Guid.NewGuid(),
-                        ParentId = note1Guid,
-                        ApiInformations = new ContentApiInformations()
-                        {
-                            CollectionId = serverRelationGuid
-                        }
-                    };
-                    content.SetContentType(ContentType.Note);
-                    ContentManager.AddOrReplaceContent(content);
-                    await Save(content);
-                }
             }
-            catch (Exception ex)
-            {
-                LogHelper.Instance.LogException(ex);
-                return false;
-            }
-            return true;
         }
-
-        public ContentModel GetRootModelAndLoad()
+        
+        private readonly AsyncLock _initAsyncLock = new AsyncLock();
+        private bool _isInitialized;
+        public ObservableCollection<GroupedCollectionModel> GetGroupedCollectionModels()
         {
-            lock (this)
-            {
-                if (!_initialisationStarted)
-                {
-                    _initialisationStarted = true;
-                    _fillCollectionsTask = FillRootContentModel();
-                }
-            }
-            return ContentManager.RootContentModel;
+            InitializeAsync();
+            return CollectionManager.GroupedCollectionModels;
         }
 
         private async Task FillRootContentModel()

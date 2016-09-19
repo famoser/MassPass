@@ -37,7 +37,7 @@ class SyncController extends BaseController
     {
         $model = RequestHelper::parseSyncRequest($request);
         if ($this->isAuthorized($model)) {
-            if (!$this->isWellDefined($model, null, array("RefreshEntities")))
+            if (!$this->isWellDefined($model, null, array("RefreshEntities", "CollectionIds")))
                 return $this->returnApiError(ApiErrorTypes::NotWellDefined, $response);
 
             $contentIds = [];
@@ -92,6 +92,11 @@ class SyncController extends BaseController
                         }
                     }
                 }
+            }
+
+            foreach ($model->CollectionIds as $collectionId) {
+                if (!in_array($collectionId, $collectionIds))
+                    $collectionIds[] = $collectionId;
             }
 
             //adding missing from database

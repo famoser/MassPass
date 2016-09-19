@@ -96,7 +96,6 @@
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\AuthorizedDevicesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Base\ApiRequest.cs" />
-    <Compile Include="Entities\Communications\Request\CollectionEntriesRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\UnAuthorizationRequest.cs" />
     <Compile Include="Entities\Communications\Request\ContentEntityHistoryRequest.cs" />
     <Compile Include="Entities\Communications\Request\Authorization\CreateUserRequest.cs" />

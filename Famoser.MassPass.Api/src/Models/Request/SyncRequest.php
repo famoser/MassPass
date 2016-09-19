@@ -17,4 +17,8 @@ class SyncRequest extends ApiRequest
      * @var Entities\RefreshEntity[] $RefreshEntities
      */
     public $RefreshEntities;
+    /**
+     * @var string[] $CollectionIds
+     */
+    public $CollectionIds;
 }

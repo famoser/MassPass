@@ -1,20 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
+using Famoser.MassPass.Business.Models.Content;
+using Famoser.MassPass.Business.Models.Content.Base;
 
 namespace Famoser.MassPass.Business.Repositories.Interfaces
 {
     public interface IContentRepository
     {
-        Task<bool> InitializeVault(string masterPassword);
-
-        ContentModel GetRootModelAndLoad();
-        ContentModel GetSampleModel(ContentType type);
+        ObservableCollection<GroupedCollectionModel> GetGroupedCollectionModels();
 
         Task<bool> SyncAsync();
-        Task<bool> FillValues(ContentModel model);
-        Task<bool> FillHistory(ContentModel model);
-        Task<bool> GetContentModelForHistory(HistoryModel model);
-        Task<bool> Save(ContentModel model);
+        Task<bool> LoadValues(BaseContentModel model);
+        Task<bool> FillHistory(BaseContentModel model);
+        Task<bool> Save(BaseContentModel model);
     }
 }
