@@ -1,6 +1,5 @@
 ﻿using System;
 using Famoser.MassPass.Business.Models.Base;
-using Famoser.MassPass.Business.Models.Sync;
 
 namespace Famoser.MassPass.Business.Models
 {

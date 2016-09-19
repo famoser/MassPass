@@ -9,17 +9,16 @@ namespace Famoser.MassPass.Business.Models.Content.Base
 {
     public abstract class BaseContentModel : BaseModel
     {
-        protected BaseContentModel(Guid id, ContentTypes type)
+        protected BaseContentModel(Guid id, ContentType type)
         {
             Id = id;
             ContentType = type;
-            Contents = new ObservableCollection<BaseContentModel>();
             History = new ObservableCollection<HistoryModel>();
         }
 
         public Guid Id { get; private set; }
         public ContentApiInformations ContentApiInformations { get; set; }
-        public ContentTypes ContentType { get; private set; }
+        public ContentType ContentType { get; private set; }
         
         private string _name;
         public string Name
@@ -49,8 +48,6 @@ namespace Famoser.MassPass.Business.Models.Content.Base
             set { Set(ref _livecycleStatus, value); }
         }
 
-        public ObservableCollection<BaseContentModel> Contents { get; }
-
         private LoadingState _contentLoadingState;
         public LoadingState ContentLoadingState
         {
@@ -66,13 +63,7 @@ namespace Famoser.MassPass.Business.Models.Content.Base
             get { return _historyLoadingState; }
             set { Set(ref _historyLoadingState, value); }
         }
-
-
-        private RuntimeStatus _runtimeStatus;
-        public RuntimeStatus RuntimeStatus
-        {
-            get { return _runtimeStatus; }
-            set { Set(ref _runtimeStatus, value); }
-        }
+        
+        protected RuntimeStatus RuntimeStatus { get; set; }
     }
 }

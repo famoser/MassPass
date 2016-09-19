@@ -13,7 +13,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         public RootContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService) : base(passwordVaultService, historyNavigationService, contentRepository, progressService)
         {
             if (IsInDesignMode)
-                SetContentModelStatic(contentRepository.GetSampleModel(ContentTypes.Root));
+                SetContentModelStatic(contentRepository.GetSampleModel(ContentType.Root));
             else
                 SetContentModelStatic(contentRepository.GetRootModelAndLoad());
         }
@@ -25,9 +25,9 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             set { Set(ref _rootModel, value); }
         }
 
-        public override bool IsContentTypeApplicable(ContentTypes type)
+        public override bool IsContentTypeApplicable(ContentType type)
         {
-            return type == ContentTypes.Root;
+            return type == ContentType.Root;
         }
 
         public override ICustomContentModel PrepareCustomContentModel()

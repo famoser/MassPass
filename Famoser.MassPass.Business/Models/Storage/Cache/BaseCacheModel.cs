@@ -2,16 +2,15 @@
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
 
-namespace Famoser.MassPass.Business.Models.Storage
+namespace Famoser.MassPass.Business.Models.Storage.Cache
 {
-    public class CacheContentEntity
+    public class BaseCacheModel
     {
         public Guid Id { get; set; }
-        public Guid TypeId { get; set; }
-        public Guid ParentId { get; set; }
         public ContentApiInformations ContentApiInformations { get; set; }
         public LocalStatus LocalStatus { get; set; }
         public LivecycleStatus LivecycleStatus { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

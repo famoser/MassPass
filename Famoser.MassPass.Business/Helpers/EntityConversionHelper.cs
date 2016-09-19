@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Data.Entities;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Models;
 using RefreshEntity = Famoser.MassPass.Data.Entities.Communications.Request.Entities.RefreshEntity;

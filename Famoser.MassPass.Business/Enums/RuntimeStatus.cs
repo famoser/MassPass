@@ -2,10 +2,10 @@
 {
     public enum RuntimeStatus
     {
-        Idle,
-        Syncing,
-        SyncingFailed,
-        Saving,
-        SavingFailed
+        Idle = 0,
+        Syncing = 1,
+        SyncingFailed = 2,
+        Saving = 3,
+        SavingFailed = 4
     }
 }

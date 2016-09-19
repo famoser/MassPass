@@ -4,8 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Helpers;
-using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Business.Models.Storage;
+using Famoser.MassPass.Business.Models.Storage.Cache;
 using Famoser.MassPass.Data.Enum;
 
 namespace Famoser.MassPass.Business.Managers
@@ -25,7 +24,7 @@ namespace Famoser.MassPass.Business.Managers
                 LocalStatus = LocalStatus.Immutable,
                 Name = "Sammlungen"
             };
-            RootContentModel.SetContentType(ContentTypes.Root);
+            RootContentModel.SetContentType(ContentType.Root);
         }
 
         public static void AddOrReplaceContent(ContentModel content)

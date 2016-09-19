@@ -1,5 +1,4 @@
-﻿using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Data.Entities.Communications.Response.Base;
+﻿using Famoser.MassPass.Data.Entities.Communications.Response.Base;
 
 namespace Famoser.MassPass.Business.Services.Interfaces
 {

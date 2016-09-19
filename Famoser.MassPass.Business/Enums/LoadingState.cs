@@ -2,8 +2,8 @@
 {
     public enum LoadingState
     {
-        NotLoaded = 1,
-        Loading = 2,
-        Loaded = 3
+        NotLoaded = 0,
+        Loading = 1,
+        Loaded = 2
     }
 }

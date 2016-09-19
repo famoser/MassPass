@@ -7,11 +7,10 @@ using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
 using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Extensions;
 using Famoser.MassPass.Business.Helpers;
 using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Business.Models.Storage;
+using Famoser.MassPass.Business.Models.Storage.Cache;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
@@ -73,7 +72,7 @@ namespace Famoser.MassPass.Business.Repositories
                             CollectionId = serverRelationGuid
                         }
                     };
-                    content.SetContentType(ContentTypes.Folder);
+                    content.SetContentType(ContentType.Folder);
                     ContentManager.AddOrReplaceContent(content);
                     await Save(content);
 
@@ -89,7 +88,7 @@ namespace Famoser.MassPass.Business.Repositories
                             CollectionId = serverRelationGuid
                         }
                     };
-                    content.SetContentType(ContentTypes.Note);
+                    content.SetContentType(ContentType.Note);
                     ContentManager.AddOrReplaceContent(content);
                     await Save(content);
 
@@ -104,7 +103,7 @@ namespace Famoser.MassPass.Business.Repositories
                             CollectionId = serverRelationGuid
                         }
                     };
-                    content.SetContentType(ContentTypes.Note);
+                    content.SetContentType(ContentType.Note);
                     ContentManager.AddOrReplaceContent(content);
                     await Save(content);
                 }
@@ -163,7 +162,7 @@ namespace Famoser.MassPass.Business.Repositories
             }
         }
 
-        public ContentModel GetSampleModel(ContentTypes type)
+        public ContentModel GetSampleModel(ContentType type)
         {
             var cm = new ContentModel()
             {
@@ -180,7 +179,7 @@ namespace Famoser.MassPass.Business.Repositories
                     }
                 }
             };
-            if (type == ContentTypes.Note)
+            if (type == ContentType.Note)
             {
                 cm.ContentJson = @"{'Content': 'This is a note!'}";
             }

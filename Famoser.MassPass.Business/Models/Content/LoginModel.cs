@@ -4,10 +4,12 @@ using Famoser.MassPass.Business.Models.Content.Base;
 
 namespace Famoser.MassPass.Business.Models.Content
 {
-    public class NoteModel : BaseContentModel
+    public class LoginModel : BaseContentModel
     {
-        public NoteModel(Guid id) : base(id, ContentType.Note)
+        public LoginModel(Guid id) : base(id, ContentType.Login)
         {
         }
+
+        //login properties
     }
 }

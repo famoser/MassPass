@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Logging;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Managers;
-using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Response.Entitites;
 using Famoser.MassPass.Data.Enum;
-using Famoser.MassPass.Data.Services.Interfaces;
 using RefreshEntity = Famoser.MassPass.Data.Entities.Communications.Request.Entities.RefreshEntity;
 
 namespace Famoser.MassPass.Business.Helpers

@@ -171,9 +171,9 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         private void NavigateTo(ContentModel model)
         {
             var oldContent = ContentModel;
-            if (model.ContentType == ContentTypes.Folder)
+            if (model.ContentType == ContentType.Folder)
                 _historyNavigationService.NavigateTo(PageKeys.FolderContentPage.ToString(), this, oldContent);
-            else if (model.ContentType == ContentTypes.Note)
+            else if (model.ContentType == ContentType.Note)
                 _historyNavigationService.NavigateTo(PageKeys.NoteContentPage.ToString(), this, oldContent);
             SetContentModelStatic(model);
         }
@@ -219,7 +219,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             }
         }
 
-        public abstract bool IsContentTypeApplicable(ContentTypes type);
+        public abstract bool IsContentTypeApplicable(ContentType type);
 
         public abstract ICustomContentModel PrepareCustomContentModel();
 

@@ -9,7 +9,7 @@ namespace Famoser.MassPass.Business.Repositories.Interfaces
         Task<bool> InitializeVault(string masterPassword);
 
         ContentModel GetRootModelAndLoad();
-        ContentModel GetSampleModel(ContentTypes type);
+        ContentModel GetSampleModel(ContentType type);
 
         Task<bool> SyncAsync();
         Task<bool> FillValues(ContentModel model);

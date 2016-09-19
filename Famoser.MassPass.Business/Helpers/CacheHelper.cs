@@ -1,68 +1,82 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Business.Models.Storage;
+﻿using System.Linq;
+using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Models.Content;
+using Famoser.MassPass.Business.Models.Content.Base;
+using Famoser.MassPass.Business.Models.Storage.Cache;
 
 namespace Famoser.MassPass.Business.Helpers
 {
     public class CacheHelper
     {
-        public static CollectionCacheModel CreateCache(ObservableCollection<ContentModel> contents)
+        public static CollectionCacheModel CreateCache(CollectionModel collection)
         {
             var res = new CollectionCacheModel()
             {
-                CacheContentModels = contents.Select(Convert).ToList(),
-                SaveVersion = 1
+                CacheContentModels = collection.ContentModels.Select(Convert).ToList()
             };
             return res;
         }
 
-        public static IList<ContentModel> ReadCache(CollectionCacheModel cache)
+        public static CollectionModel ReadCache(CollectionCacheModel cache)
         {
-            return cache.CacheContentModels.Select(Convert).ToList();
+            var model = new CollectionModel(cache.Id)
+            {
+                ContentApiInformations = cache.ContentApiInformations,
+                Description = cache.Description,
+                LivecycleStatus = cache.LivecycleStatus,
+                LocalStatus = cache.LocalStatus,
+                Name = cache.Name
+            };
+            foreach (var cacheContentEntity in cache.CacheContentModels)
+            {
+                var converted = Convert(cacheContentEntity);
+                if (converted != null)
+                    model.ContentModels.Add(converted);
+            }
+            return model;
         }
 
 
-        private static ContentModel Convert(CacheContentEntity entity)
+        private static BaseContentModel Convert(ContentCacheModel entity)
         {
-            return new ContentModel()
+            BaseContentModel model;
+            switch (entity.ContentType)
+            {
+                case ContentType.Note:
+                    model = new NoteModel(entity.Id);
+                    break;
+
+                case ContentType.CreditCard:
+                    model = new CreditCardModel(entity.Id);
+                    break;
+
+                case ContentType.Login:
+                    model = new LoginModel(entity.Id);
+                    break;
+                default:
+                    return null;
+            }
+            model.ContentApiInformations = entity.ContentApiInformations;
+            model.ContentLoadingState = LoadingState.NotLoaded;
+            model.Description = entity.Description;
+            model.Name = entity.Name;
+            model.LivecycleStatus = entity.LivecycleStatus;
+            model.LocalStatus = entity.LocalStatus;
+            return model;
+        }
+
+        private static ContentCacheModel Convert(BaseContentModel entity)
+        {
+            return new ContentCacheModel()
             {
                 Id = entity.Id,
-                ParentId = entity.ParentId,
-                TypeId = entity.TypeId,
                 LivecycleStatus = entity.LivecycleStatus,
                 LocalStatus = entity.LocalStatus,
-                ApiInformations = entity.ContentApiInformations,
-                Name = entity.Name
+                ContentApiInformations = entity.ContentApiInformations,
+                Name = entity.Name,
+                ContentType = entity.ContentType,
+                Description = entity.Description
             };
-        }
-
-        private static CacheContentEntity Convert(ContentModel entity)
-        {
-            return new CacheContentEntity()
-            {
-                Id = entity.Id,
-                ParentId = entity.ParentId,
-                TypeId = entity.TypeId,
-                LivecycleStatus = entity.LivecycleStatus,
-                LocalStatus = entity.LocalStatus,
-                ContentApiInformations = entity.ApiInformations,
-                Name = entity.Name
-            };
-        }
-
-        public static void WriteAllValues(ContentModel target, ContentModel source)
-        {
-            target.ContentFile = source.ContentFile;
-            target.ContentJson = source.ContentJson;
-            target.Id = source.Id;
-            target.ParentId = source.ParentId;
-            target.TypeId = source.TypeId;
-            target.LivecycleStatus = source.LivecycleStatus;
-            target.LocalStatus = source.LocalStatus;
-            target.ApiInformations = source.ApiInformations;
-            target.Name = source.Name;
         }
     }
 }

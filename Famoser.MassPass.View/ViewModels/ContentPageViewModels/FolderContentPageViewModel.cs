@@ -13,7 +13,7 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
         public FolderContentPageViewModel(IPasswordVaultService passwordVaultService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService) : base(passwordVaultService, historyNavigationService, contentRepository, progressService)
         {
             if (IsInDesignMode)
-                SetContentModelStatic(contentRepository.GetSampleModel(ContentTypes.Folder));
+                SetContentModelStatic(contentRepository.GetSampleModel(ContentType.Folder));
         }
 
         private FolderModel _folderModel;
@@ -23,9 +23,9 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
             set { Set(ref _folderModel, value); }
         }
 
-        public override bool IsContentTypeApplicable(ContentTypes type)
+        public override bool IsContentTypeApplicable(ContentType type)
         {
-            return type == ContentTypes.Folder;
+            return type == ContentType.Folder;
         }
 
         public override ICustomContentModel PrepareCustomContentModel()

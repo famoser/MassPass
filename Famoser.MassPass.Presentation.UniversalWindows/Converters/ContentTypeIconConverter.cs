@@ -9,10 +9,10 @@ namespace Famoser.MassPass.Presentation.UniversalWindows.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var res = value as ContentTypes?;
-            if (res == ContentTypes.Root || res == ContentTypes.Folder)
+            var res = value as ContentType?;
+            if (res == ContentType.Root || res == ContentType.Folder)
                 return Symbol.Folder;
-            if (res == ContentTypes.Note)
+            if (res == ContentType.Note)
                 return Symbol.Caption;
             return Symbol.Placeholder;
         }

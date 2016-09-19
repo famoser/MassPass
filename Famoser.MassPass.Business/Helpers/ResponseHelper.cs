@@ -1,7 +1,4 @@
-﻿using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Data.Entities;
-
-namespace Famoser.MassPass.Business.Helpers
+﻿namespace Famoser.MassPass.Business.Helpers
 {
     public class ResponseHelper
     {

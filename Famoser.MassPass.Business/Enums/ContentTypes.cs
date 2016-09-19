@@ -1,6 +1,6 @@
 ﻿namespace Famoser.MassPass.Business.Enums
 {
-    public enum ContentTypes
+    public enum ContentType
     {
         /// <summary>
         /// A Collection

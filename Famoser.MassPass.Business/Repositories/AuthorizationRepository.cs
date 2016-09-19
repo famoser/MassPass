@@ -5,7 +5,6 @@ using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Entities.Communications.Request.Authorization;
-using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
 
 namespace Famoser.MassPass.Business.Repositories
