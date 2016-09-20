@@ -13,5 +13,6 @@ namespace Famoser.MassPass.Data.Services.Interfaces
 
         Task<UserConfiguration> GetUserConfigurationAsync();
         Task<bool> SetUserConfigurationAsync(UserConfiguration config);
+        Task<bool> IsConfigurationReady();
     }
 }

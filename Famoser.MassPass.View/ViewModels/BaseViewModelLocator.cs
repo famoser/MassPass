@@ -1,5 +1,6 @@
 ﻿using Famoser.FrameworkEssentials.Services;
 using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Business.Services;
@@ -7,6 +8,7 @@ using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data;
 using Famoser.MassPass.Data.Services;
 using Famoser.MassPass.Data.Services.Interfaces;
+using Famoser.MassPass.View.Content.Providers;
 using Famoser.MassPass.View.ViewModels.ContentPageViewModels;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
@@ -24,7 +26,6 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IEncryptionService, EncryptionService>();
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultService>();
             SimpleIoc.Default.Register<IRestService, RestService>();
-            SimpleIoc.Default.Register<IDataService, ApiClient>();
 
             //business
             SimpleIoc.Default.Register<IConfigurationService, ConfigurationService>();
@@ -40,6 +41,11 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<PasswordPageViewModel>();
             SimpleIoc.Default.Register<SharePageViewModel>();
             SimpleIoc.Default.Register<IProgressService, ProgressService>();
+
+            ContentHelper.RegisterContentModelProvider(new CollectionContentModelProvider());
+            ContentHelper.RegisterContentModelProvider(new CreditCardContentModelProvider());
+            ContentHelper.RegisterContentModelProvider(new LoginContentModelProvider());
+            ContentHelper.RegisterContentModelProvider(new NoteContentModelProvider());
 
             //to implement: IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
         }

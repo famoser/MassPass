@@ -23,13 +23,13 @@
                 </Grid.RowDefinitions>
                 <userControls:ProgressControl VerticalAlignment="Top" />
                 <Grid Grid.Row="0" >
-                    <contentPages:EditableTextBlock Value="{Binding NoteModel.Name, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserHeaderTextBlock}" TextBoxStyle="{StaticResource FamoserHeaderTextBox}" />
+                    <contentPages:EditableTextBlock Value="{Binding ViewNoteModel.Name, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserHeaderTextBlock}" TextBoxStyle="{StaticResource FamoserHeaderTextBox}" />
                     <!--<TextBlock Text="{Binding FolderModel.Name}" Style="{StaticResource FamoserHeaderTextBlock}" />-->
                 </Grid>
                 <ScrollViewer Grid.Row="1" Style="{StaticResource AlwaysScrollViewer}">
                     <StackPanel>
                         <TextBlock Style="{StaticResource FamoserDefaultTextBoxDescriptionTextBlock}" Text="Note"/>
-                        <contentPages:EditableTextBlock Value="{Binding NoteModel.Content, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserMultiLineTextBlock}" TextBoxStyle="{StaticResource FamoserMultiLineTextBox}" />
+                        <contentPages:EditableTextBlock Value="{Binding ViewNoteModel.Content, Mode=TwoWay}" TextBlockStyle="{StaticResource FamoserMultiLineTextBlock}" TextBoxStyle="{StaticResource FamoserMultiLineTextBox}" />
                         <ListView ItemContainerStyle="{StaticResource StretchListViewItemStyle}" ItemsSource="{Binding ContentModel.Contents}" ItemTemplate="{StaticResource CollectionDataTemplate}" SelectedItem="{Binding ContentModel, Mode=TwoWay}" />
                     </StackPanel>
                 </ScrollViewer>

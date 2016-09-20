@@ -28,7 +28,7 @@ namespace Famoser.MassPass.Business.Services
 
         private ConfigStorageModel _config;
         private readonly AsyncLock _asyncLock = new AsyncLock();
-        private bool _isInitialized = false;
+        private bool _isInitialized;
 
         private async Task Initialize()
         {
@@ -40,9 +40,14 @@ namespace Famoser.MassPass.Business.Services
                 _isInitialized = true;
 
                 var encryptedBytes = await _folderStorageService.GetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.EncryptedConfiguration).Description);
-                var bytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(encryptedBytes);
-                var json = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                _config = JsonConvert.DeserializeObject<ConfigStorageModel>(json);
+                if (encryptedBytes?.Length > 0)
+                {
+                    var bytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(encryptedBytes);
+                    var json = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                    _config = JsonConvert.DeserializeObject<ConfigStorageModel>(json);
+                }
+                else
+                    _config = new ConfigStorageModel();
             }
         }
 
@@ -51,7 +56,7 @@ namespace Famoser.MassPass.Business.Services
             var json = JsonConvert.SerializeObject(_config);
             var bytes = Encoding.UTF8.GetBytes(json);
             var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
-            return await  _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.EncryptedConfiguration).Description, encryptedBytes);
+            return await _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.EncryptedConfiguration).Description, encryptedBytes);
         }
 
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
@@ -84,6 +89,13 @@ namespace Famoser.MassPass.Business.Services
             _config.UserConfiguration = config;
 
             return await SaveConfig();
+        }
+
+        public async Task<bool> IsConfigurationReady()
+        {
+            await Initialize();
+
+            return _config.UserConfiguration != null && _config.ApiConfiguration != null;
         }
     }
 }

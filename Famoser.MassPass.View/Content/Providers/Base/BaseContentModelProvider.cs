@@ -4,11 +4,16 @@ using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.Business.Content.Providers.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage.Cache;
+using Famoser.MassPass.View.Content.Interfaces;
+using Famoser.MassPass.View.Models;
+using Famoser.MassPass.View.Models.Base;
 using Newtonsoft.Json;
 
-namespace Famoser.MassPass.Business.Content.Providers.Base
+namespace Famoser.MassPass.View.Content.Providers.Base
 {
-    public abstract class BaseContentModelProvider<T> : IContentModelProvider where T : BaseContentModel
+    public abstract class BaseContentModelProvider<T1, T2> : IContentModelProvider, IViewContentModelProvider<T1, T2>
+        where T1 : BaseContentModel
+        where T2 : ViewContentModel
     {
         public virtual void WriteValues(BaseContentModel target, BaseContentModel source)
         {
@@ -21,7 +26,7 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
 
         public BaseContentModel Deserialize(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonConvert.DeserializeObject<T1>(json);
         }
 
         public bool CanDeserialize(string json)
@@ -41,7 +46,7 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
         }
 
         public abstract ContentType GetContentType();
-        protected abstract BaseContentModel ConstructModel(Guid id);
+        protected abstract T1 ConstructModel(Guid id);
 
         public BaseContentModel FromCache(ContentCacheModel entity)
         {
@@ -55,5 +60,19 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
         }
 
         protected abstract Guid GetTypeGuid();
+        protected abstract T2 ConstructViewModel(T1 contentModel);
+        public virtual void SaveValues(T1 target, T2 source)
+        {
+            target.Name = source.Name;
+            target.Description = source.Description;
+        }
+
+        public T2 GetViewContentModel(T1 model)
+        {
+            var vm = ConstructViewModel(model);
+            vm.Name = model.Name;
+            vm.Description = model.Description;
+            return vm;
+        }
     }
 }

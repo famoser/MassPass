@@ -18,11 +18,11 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
                 SetContentModelStatic(contentRepository.GetSampleModel(ContentType.Note));
         }
         
-        private NoteModel _noteModel;
-        public NoteModel NoteModel
+        private ViewNoteModel _viewNoteModel;
+        public ViewNoteModel ViewNoteModel
         {
-            get { return _noteModel; }
-            set { Set(ref _noteModel, value); }
+            get { return _viewNoteModel; }
+            set { Set(ref _viewNoteModel, value); }
         }
 
         public override bool IsContentTypeApplicable(ContentType type)
@@ -32,13 +32,13 @@ namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels
 
         public override ICustomContentModel PrepareCustomContentModel()
         {
-            NoteModel = ModelConverter.ConvertToNoteModel(ContentModel);
-            return NoteModel;
+            ViewNoteModel = ModelConverter.ConvertToNoteModel(ContentModel);
+            return ViewNoteModel;
         }
 
         public override bool SaveToContentModel()
         {
-            return ModelSaver.SaveNoteModel(ContentModel, NoteModel);
+            return ModelSaver.SaveNoteModel(ContentModel, ViewNoteModel);
         }
     }
 }

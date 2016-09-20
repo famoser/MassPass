@@ -99,19 +99,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Content\Interfaces\IViewContentModelProvider.cs" />
     <Compile Include="Enums\PageKeys.cs" />
     <Compile Include="Enums\ProgressKeys.cs" />
     <Compile Include="Events\ContentModelEventArgs.cs" />
-    <Compile Include="Helpers\ModelConverter.cs" />
-    <Compile Include="Helpers\ModelSaver.cs" />
     <Compile Include="Models\Interfaces\IContentViewModel.cs" />
-    <Compile Include="Models\BaseContentModel.cs" />
+    <Compile Include="Models\ViewCollectionModel.cs" />
+    <Compile Include="Models\Base\ViewContentModel.cs" />
     <Compile Include="Models\Interfaces\ICustomContentModel.cs" />
-    <Compile Include="Models\NameModel.cs" />
-    <Compile Include="Models\NoteModel.cs" />
-    <Compile Include="Models\FolderModel.cs" />
-    <Compile Include="Models\RootModel.cs" />
+    <Compile Include="Models\ViewCreditCardModel.cs" />
+    <Compile Include="Models\ViewLoginModel.cs" />
+    <Compile Include="Models\ViewNoteModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Content\Providers\Base\BaseContentModelProvider.cs" />
+    <Compile Include="Content\Providers\CollectionContentModelProvider.cs" />
+    <Compile Include="Content\Providers\CreditCardContentModelProvider.cs" />
+    <Compile Include="Content\Providers\LoginContentModelProvider.cs" />
+    <Compile Include="Content\Providers\NoteContentModelProvider.cs" />
     <Compile Include="Services\Interfaces\IQrCodeService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />
     <Compile Include="ViewModels\ContentPageViewModels\BaseContentPageViewModel.cs" />

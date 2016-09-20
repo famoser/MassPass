@@ -91,12 +91,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Content\Providers\Base\BaseContentModelProvider.cs" />
-    <Compile Include="Content\Providers\CollectionContentModelProvider.cs" />
-    <Compile Include="Content\Providers\CreditCardContentModelProvider.cs" />
     <Compile Include="Content\Providers\Interfaces\IContentModelProvider.cs" />
-    <Compile Include="Content\Providers\LoginContentModelProvider.cs" />
-    <Compile Include="Content\Providers\NoteContentModelProvider.cs" />
     <Compile Include="Enums\RuntimeStatus.cs" />
     <Compile Include="Enums\LoadingState.cs" />
     <Compile Include="Content\Enums\ContentTypes.cs" />

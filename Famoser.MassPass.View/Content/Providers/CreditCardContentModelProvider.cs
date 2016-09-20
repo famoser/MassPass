@@ -2,12 +2,12 @@
 using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Content.Models;
 using Famoser.MassPass.Business.Content.Models.Base;
-using Famoser.MassPass.Business.Content.Providers.Base;
-using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.View.Content.Providers.Base;
+using Famoser.MassPass.View.Models;
 
-namespace Famoser.MassPass.Business.Content.Providers
+namespace Famoser.MassPass.View.Content.Providers
 {
-    public class CreditCardContentModelProvider : BaseContentModelProvider<CreditCardModel>
+    public class CreditCardContentModelProvider : BaseContentModelProvider<CreditCardModel, ViewCreditCardModel>
     {
         public override string GetListName()
         {
@@ -19,7 +19,7 @@ namespace Famoser.MassPass.Business.Content.Providers
             return ContentType.CreditCard;
         }
 
-        protected override BaseContentModel ConstructModel(Guid id)
+        protected override CreditCardModel ConstructModel(Guid id)
         {
             return new CreditCardModel(id);
         }
@@ -27,6 +27,11 @@ namespace Famoser.MassPass.Business.Content.Providers
         protected override Guid GetTypeGuid()
         {
             return Guid.Parse("b7e6507f-3397-4565-9768-05267f4efced");
+        }
+
+        protected override ViewCreditCardModel ConstructViewModel(CreditCardModel contentModel)
+        {
+            return new ViewCreditCardModel();
         }
     }
 }

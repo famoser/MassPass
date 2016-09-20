@@ -42,8 +42,12 @@ namespace Famoser.MassPass.Business.Services
                 var bytes = await _folderStorageService.GetCachedFileAsync(
                     ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
                         FileKeys.EncryptedPasswords).Description);
-                var maybeJson = await _encryptionService.DecryptAsync(bytes, _activePasswordPhrase);
-                _storage = JsonConvert.DeserializeObject<VaultStorageModel>(StorageHelper.ByteToString(maybeJson));
+                if (bytes?.Length > 0)
+                {
+                    var maybeJson = await _encryptionService.DecryptAsync(bytes, _activePasswordPhrase);
+                    _storage = JsonConvert.DeserializeObject<VaultStorageModel>(StorageHelper.ByteToString(maybeJson));
+                } else 
+                    _storage = new VaultStorageModel();
                 _lastActionDateTime = DateTime.Now;
             }
             catch (Exception ex)

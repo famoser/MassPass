@@ -9,13 +9,12 @@ namespace Famoser.MassPass.Business.Content.Helpers
 {
     public class ContentHelper
     {
-        public static readonly List<IContentModelProvider> ContentModelProviders = new List<IContentModelProvider>()
+        public static readonly List<IContentModelProvider> ContentModelProviders = new List<IContentModelProvider>();
+
+        public static void RegisterContentModelProvider(IContentModelProvider provider)
         {
-            new CollectionContentModelProvider(),
-            new CreditCardContentModelProvider(),
-            new LoginContentModelProvider(),
-            new NoteContentModelProvider()
-        };
+            ContentModelProviders.Add(provider);
+        }
 
         public static BaseContentModel Deserialize(string json)
         {

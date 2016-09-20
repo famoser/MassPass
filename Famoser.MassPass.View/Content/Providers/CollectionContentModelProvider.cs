@@ -2,12 +2,12 @@
 using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Content.Models;
 using Famoser.MassPass.Business.Content.Models.Base;
-using Famoser.MassPass.Business.Content.Providers.Base;
-using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.View.Content.Providers.Base;
+using Famoser.MassPass.View.Models;
 
-namespace Famoser.MassPass.Business.Content.Providers
+namespace Famoser.MassPass.View.Content.Providers
 {
-    public class CollectionContentModelProvider : BaseContentModelProvider<CollectionModel>
+    public class CollectionContentModelProvider : BaseContentModelProvider<CollectionModel, ViewCollectionModel>
     {
         public override string GetListName()
         {
@@ -19,7 +19,7 @@ namespace Famoser.MassPass.Business.Content.Providers
             return ContentType.Collection;
         }
 
-        protected override BaseContentModel ConstructModel(Guid id)
+        protected override CollectionModel ConstructModel(Guid id)
         {
             return new CollectionModel(id);
         }
@@ -27,6 +27,11 @@ namespace Famoser.MassPass.Business.Content.Providers
         protected override Guid GetTypeGuid()
         {
             return Guid.Parse("2576024e-1d60-4127-bf0f-f1a83a8af93c");
+        }
+
+        protected override ViewCollectionModel ConstructViewModel(CollectionModel contentModel)
+        {
+            return new ViewCollectionModel();
         }
 
         public override bool ShowAsList()
