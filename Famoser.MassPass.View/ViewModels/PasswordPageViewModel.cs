@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.FrameworkEssentials.View.Interfaces;
-using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
 using GalaSoft.MvvmLight;
@@ -25,10 +25,10 @@ namespace Famoser.MassPass.View.ViewModels
             _apiConfigurationService = apiConfigurationService;
             _progressService = progressService;
 
-            _unlockCommand = new RelayCommand(Unlock, () => CanUnlock);
+            _unlockCommand = new LoadingRelayCommand(Unlock);
             _initializeCommand = new RelayCommand(GoToInitializePage);
             _aboutCommand = new RelayCommand(GoToAboutPage);
-            
+
 
             if (IsInDesignMode)
             {
@@ -59,20 +59,15 @@ namespace Famoser.MassPass.View.ViewModels
             set { Set(ref _password, value); }
         }
 
-        private readonly RelayCommand _unlockCommand;
+        private readonly LoadingRelayCommand _unlockCommand;
         public ICommand UnlockCommand => _unlockCommand;
-        private bool IsUnlocking { get; set; }
-        private bool CanUnlock => !IsUnlocking;
-        private async void Unlock()
+        private async Task Unlock()
         {
-            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_unlockCommand, z => IsUnlocking = z, ProgressKeys.Unlocking, _progressService))
-            {
-                var bo = await _passwordVaultService.TryUnlockVaultAsync(_password);
-                if (bo && _passwordVaultService.IsVaultUnLocked())
-                    _historyNavigationService.NavigateTo(PageKeys.RootContentPage.ToString());
-                else
-                    WrongPasswordEvent?.Invoke(this, new EventArgs());
-            }
+            var bo = await _passwordVaultService.TryUnlockVaultAsync(_password);
+            if (bo && _passwordVaultService.IsVaultUnLocked())
+                _historyNavigationService.NavigateTo(PageKeys.RootContentPage.ToString());
+            else
+                WrongPasswordEvent?.Invoke(this, EventArgs.Empty);
         }
 
         private readonly RelayCommand _initializeCommand;

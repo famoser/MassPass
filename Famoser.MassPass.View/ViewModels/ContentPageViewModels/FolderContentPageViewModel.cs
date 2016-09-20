@@ -1,10 +1,7 @@
 ﻿using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Content.Enums;
-using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Repositories.Interfaces;
 using Famoser.MassPass.Data.Services.Interfaces;
-using Famoser.MassPass.View.Helpers;
-using Famoser.MassPass.View.Models;
 using Famoser.MassPass.View.Models.Interfaces;
 
 namespace Famoser.MassPass.View.ViewModels.ContentPageViewModels

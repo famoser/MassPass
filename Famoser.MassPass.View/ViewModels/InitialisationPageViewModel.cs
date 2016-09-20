@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
-using Famoser.FrameworkEssentials.View.Commands;
-using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
-using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
-using Famoser.MassPass.View.Helpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
