@@ -1,5 +1,7 @@
-﻿using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content.Base;
+﻿using Famoser.MassPass.Business.Content.Enums;
+using Famoser.MassPass.Business.Content.Models.Base;
+using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Models.Storage.Cache;
 
 namespace Famoser.MassPass.Business.Content.Providers.Interfaces
 {
@@ -12,5 +14,6 @@ namespace Famoser.MassPass.Business.Content.Providers.Interfaces
         string GetListName();
         bool ShowAsList();
         ContentType GetContentType();
+        BaseContentModel FromCache(ContentCacheModel entity);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
-using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content.Base;
+using Famoser.MassPass.Business.Content.Enums;
+using Famoser.MassPass.Business.Content.Models.Base;
 
-namespace Famoser.MassPass.Business.Models.Content
+namespace Famoser.MassPass.Business.Content.Models
 {
     public class CreditCardModel : BaseContentModel
     {

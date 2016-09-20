@@ -1,7 +1,9 @@
 ﻿using System;
+using Famoser.MassPass.Business.Content.Enums;
+using Famoser.MassPass.Business.Content.Models;
+using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.Business.Content.Providers.Base;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content;
 
 namespace Famoser.MassPass.Business.Content.Providers
 {
@@ -15,6 +17,11 @@ namespace Famoser.MassPass.Business.Content.Providers
        public override ContentType GetContentType()
        {
            return ContentType.Note;
+       }
+
+       protected override BaseContentModel ConstructModel(Guid id)
+       {
+           return new NoteModel(id);
        }
 
        protected override Guid GetTypeGuid()

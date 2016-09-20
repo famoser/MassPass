@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.FrameworkEssentials.View.Interfaces;
+using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Repositories.Interfaces;

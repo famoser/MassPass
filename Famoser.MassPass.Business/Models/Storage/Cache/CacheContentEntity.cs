@@ -1,4 +1,5 @@
-﻿using Famoser.MassPass.Business.Enums;
+﻿using Famoser.MassPass.Business.Content.Enums;
+using Famoser.MassPass.Business.Enums;
 
 namespace Famoser.MassPass.Business.Models.Storage.Cache
 {

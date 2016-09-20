@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using Famoser.MassPass.Business.Content.Models;
+using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.Business.Models;
-using Famoser.MassPass.Business.Models.Content;
-using Famoser.MassPass.Business.Models.Content.Base;
 
 namespace Famoser.MassPass.Business.Managers
 {

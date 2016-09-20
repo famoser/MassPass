@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Famoser.MassPass.Data.Services.Interfaces;
 
@@ -19,20 +21,34 @@ namespace Famoser.MassPass.Business.Services
         {
             if (!_passwordVaultService.IsVaultUnLocked())
             {
-                var passwordPhrase = _passwordVaultService.GetPasswordAsync(collectionId);
-                return await _encryptionService.EncryptAsync(data, passwordPhrase);
+                var passwordPhrase = await _passwordVaultService.GetPasswordAsync(collectionId);
+                var bytes = Encoding.UTF8.GetBytes(passwordPhrase);
+                return await _encryptionService.EncryptAsync(data, bytes);
             }
             return null;
+        }
+
+        public Task<byte[]> EncryptFromStringAsync(string data, Guid collectionId)
+        {
+            var bytes = Encoding.UTF8.GetBytes(data);
+            return EncryptAsync(bytes, collectionId);
         }
 
         public async Task<byte[]> DecryptAsync(byte[] data, Guid collectionId)
         {
             if (!_passwordVaultService.IsVaultUnLocked())
             {
-                var passwordPhrase = _passwordVaultService.GetPasswordAsync(collectionId);
-                return await _encryptionService.DecryptAsync(data, passwordPhrase);
+                var passwordPhrase = await _passwordVaultService.GetPasswordAsync(collectionId);
+                var bytes = Encoding.UTF8.GetBytes(passwordPhrase);
+                return await _encryptionService.DecryptAsync(data, bytes);
             }
             return null;
+        }
+
+        public async Task<string> DecryptToStringAsync(byte[] data, Guid collectionId)
+        {
+            var decrypted = await DecryptAsync(data, collectionId);
+            return Encoding.UTF8.GetString(decrypted, 0, decrypted.Length);
         }
     }
 }

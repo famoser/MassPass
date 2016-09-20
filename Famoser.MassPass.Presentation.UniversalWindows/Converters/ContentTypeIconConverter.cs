@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Enums;
 
 namespace Famoser.MassPass.Presentation.UniversalWindows.Converters

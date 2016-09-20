@@ -46,6 +46,14 @@ namespace Famoser.MassPass.Business.Services
             }
         }
 
+        private async Task<bool> SaveConfig()
+        {
+            var json = JsonConvert.SerializeObject(_config);
+            var bytes = Encoding.UTF8.GetBytes(json);
+            var encryptedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
+            return await  _folderStorageService.SetCachedFileAsync(ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(FileKeys.EncryptedConfiguration).Description, encryptedBytes);
+        }
+
         public async Task<ApiConfiguration> GetApiConfigurationAsync()
         {
             await Initialize();
@@ -53,9 +61,13 @@ namespace Famoser.MassPass.Business.Services
             return _config.ApiConfiguration;
         }
 
-        public Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
+        public async Task<bool> SetApiConfigurationAsync(ApiConfiguration config)
         {
-            throw new NotImplementedException();
+            await Initialize();
+
+            _config.ApiConfiguration = config;
+
+            return await SaveConfig();
         }
 
         public async Task<UserConfiguration> GetUserConfigurationAsync()
@@ -65,9 +77,13 @@ namespace Famoser.MassPass.Business.Services
             return _config.UserConfiguration;
         }
 
-        public Task<bool> SetUserConfigurationAsync(UserConfiguration config)
+        public async Task<bool> SetUserConfigurationAsync(UserConfiguration config)
         {
-            throw new NotImplementedException();
+            await Initialize();
+
+            _config.UserConfiguration = config;
+
+            return await SaveConfig();
         }
     }
 }

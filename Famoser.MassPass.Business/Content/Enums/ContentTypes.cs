@@ -1,4 +1,4 @@
-﻿namespace Famoser.MassPass.Business.Enums
+﻿namespace Famoser.MassPass.Business.Content.Enums
 {
     public enum ContentType
     {

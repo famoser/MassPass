@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using Famoser.MassPass.Business.Models.Content.Base;
+using Famoser.MassPass.Business.Content.Models.Base;
 
 namespace Famoser.MassPass.Business.Models
 {

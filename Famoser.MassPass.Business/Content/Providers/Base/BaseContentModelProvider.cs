@@ -1,7 +1,9 @@
 ﻿using System;
+using Famoser.MassPass.Business.Content.Enums;
+using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.Business.Content.Providers.Interfaces;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content.Base;
+using Famoser.MassPass.Business.Models.Storage.Cache;
 using Newtonsoft.Json;
 
 namespace Famoser.MassPass.Business.Content.Providers.Base
@@ -13,7 +15,6 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
             target.Description = source.Description;
             target.Name = source.Name;
             target.ContentApiInformations = source.ContentApiInformations;
-            target.LocalStatus = source.LocalStatus;
             target.ContentLoadingState = source.ContentLoadingState;
             target.LivecycleStatus = source.LivecycleStatus;
         }
@@ -40,6 +41,18 @@ namespace Famoser.MassPass.Business.Content.Providers.Base
         }
 
         public abstract ContentType GetContentType();
+        protected abstract BaseContentModel ConstructModel(Guid id);
+
+        public BaseContentModel FromCache(ContentCacheModel entity)
+        {
+            var model = ConstructModel(entity.Id);
+            model.ContentApiInformations = entity.ContentApiInformations;
+            model.ContentLoadingState = LoadingState.NotLoaded;
+            model.Description = entity.Description;
+            model.Name = entity.Name;
+            model.LivecycleStatus = entity.LivecycleStatus;
+            return model;
+        }
 
         protected abstract Guid GetTypeGuid();
     }

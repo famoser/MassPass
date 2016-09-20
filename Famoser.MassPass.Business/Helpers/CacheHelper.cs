@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using Famoser.MassPass.Business.Content.Helpers;
+using Famoser.MassPass.Business.Content.Models;
+using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.Business.Enums;
-using Famoser.MassPass.Business.Models.Content;
-using Famoser.MassPass.Business.Models.Content.Base;
 using Famoser.MassPass.Business.Models.Storage.Cache;
 
 namespace Famoser.MassPass.Business.Helpers
@@ -38,30 +39,8 @@ namespace Famoser.MassPass.Business.Helpers
 
         private static BaseContentModel Convert(ContentCacheModel entity)
         {
-            BaseContentModel model;
-            switch (entity.ContentType)
-            {
-                case ContentType.Note:
-                    model = new NoteModel(entity.Id);
-                    break;
-
-                case ContentType.CreditCard:
-                    model = new CreditCardModel(entity.Id);
-                    break;
-
-                case ContentType.Login:
-                    model = new LoginModel(entity.Id);
-                    break;
-                default:
-                    return null;
-            }
-            model.ContentApiInformations = entity.ContentApiInformations;
-            model.ContentLoadingState = LoadingState.NotLoaded;
-            model.Description = entity.Description;
-            model.Name = entity.Name;
-            model.LivecycleStatus = entity.LivecycleStatus;
-            model.LocalStatus = entity.LocalStatus;
-            return model;
+            var provider = ContentHelper.GetProvider(entity.ContentType);
+            return provider?.FromCache(entity);
         }
 
         private static ContentCacheModel Convert(BaseContentModel entity)
@@ -70,7 +49,6 @@ namespace Famoser.MassPass.Business.Helpers
             {
                 Id = entity.Id,
                 LivecycleStatus = entity.LivecycleStatus,
-                LocalStatus = entity.LocalStatus,
                 ContentApiInformations = entity.ContentApiInformations,
                 Name = entity.Name,
                 ContentType = entity.ContentType,

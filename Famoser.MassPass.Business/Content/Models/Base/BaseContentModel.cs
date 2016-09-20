@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Enums;
+using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Base;
 using Famoser.MassPass.Data.Enum;
 using Famoser.MassPass.Data.Models;
 
-namespace Famoser.MassPass.Business.Models.Content.Base
+namespace Famoser.MassPass.Business.Content.Models.Base
 {
     public abstract class BaseContentModel : BaseModel
     {
