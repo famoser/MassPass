@@ -3,6 +3,7 @@ using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Content.Models;
 using Famoser.MassPass.Business.Content.Models.Base;
 using Famoser.MassPass.View.Content.Providers.Base;
+using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Models;
 
 namespace Famoser.MassPass.View.Content.Providers
@@ -29,9 +30,14 @@ namespace Famoser.MassPass.View.Content.Providers
             return Guid.Parse("2576024e-1d60-4127-bf0f-f1a83a8af93c");
         }
 
-        protected override ViewCollectionModel ConstructViewModel(CollectionModel contentModel)
+        protected override ViewCollectionModel ConstructViewModel(BaseContentModel contentModel)
         {
             return new ViewCollectionModel();
+        }
+
+        public override PageKeys GetPageKey()
+        {
+            return PageKeys.ListContentPage;
         }
 
         public override bool ShowAsList()

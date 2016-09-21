@@ -8,6 +8,7 @@ namespace Famoser.MassPass.Data.Services.Interfaces
     /// </summary>
     public interface IPasswordVaultService
     {
+        Task<bool> IsInitializedAsync();
         Task<bool> CreateNewVaultAsync(string masterPassword);
         Task<bool> TryUnlockVaultAsync(string masterPassword);
         bool IsVaultUnLocked();

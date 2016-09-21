@@ -100,9 +100,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\Interfaces\IViewContentModelProvider.cs" />
+    <Compile Include="Content\ViewContentHelper.cs" />
     <Compile Include="Enums\PageKeys.cs" />
     <Compile Include="Enums\ProgressKeys.cs" />
-    <Compile Include="Events\ContentModelEventArgs.cs" />
     <Compile Include="Models\Interfaces\IContentViewModel.cs" />
     <Compile Include="Models\ViewCollectionModel.cs" />
     <Compile Include="Models\Base\ViewContentModel.cs" />
@@ -118,12 +118,10 @@
     <Compile Include="Content\Providers\NoteContentModelProvider.cs" />
     <Compile Include="Services\Interfaces\IQrCodeService.cs" />
     <Compile Include="ViewModels\BaseViewModelLocator.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\BaseContentPageViewModel.cs" />
+    <Compile Include="ViewModels\ContentPageViewModel.cs" />
     <Compile Include="ViewModels\InitialisationPageViewModel.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\NoteContentPageViewModel.cs" />
+    <Compile Include="ViewModels\ListContentViewModel.cs" />
     <Compile Include="ViewModels\PasswordPageViewModel.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\RootContentPageViewModel.cs" />
-    <Compile Include="ViewModels\ContentPageViewModels\FolderContentPageViewModel.cs" />
     <Compile Include="ViewModels\SharePageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

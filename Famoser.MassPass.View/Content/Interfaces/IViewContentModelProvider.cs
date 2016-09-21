@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Famoser.MassPass.Business.Content.Models.Base;
+using Famoser.MassPass.Business.Content.Providers.Interfaces;
+using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Models;
 using Famoser.MassPass.View.Models.Base;
 
 namespace Famoser.MassPass.View.Content.Interfaces
 {
-    public interface IViewContentModelProvider<T1, T2>
-        where T1 : BaseContentModel
-        where T2 : ViewContentModel
+    public interface IViewContentModelProvider : IContentModelProvider
     {
-        void SaveValues(T1 target, T2 source);
-        T2 GetViewContentModel(T1 model);
+        void SaveValues(BaseContentModel target, ViewContentModel source);
+        ViewContentModel GetViewContentModel(BaseContentModel model);
+
+        PageKeys GetPageKey();
     }
 }

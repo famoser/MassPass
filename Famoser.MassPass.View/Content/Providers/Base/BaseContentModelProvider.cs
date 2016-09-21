@@ -5,13 +5,14 @@ using Famoser.MassPass.Business.Content.Providers.Interfaces;
 using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage.Cache;
 using Famoser.MassPass.View.Content.Interfaces;
+using Famoser.MassPass.View.Enums;
 using Famoser.MassPass.View.Models;
 using Famoser.MassPass.View.Models.Base;
 using Newtonsoft.Json;
 
 namespace Famoser.MassPass.View.Content.Providers.Base
 {
-    public abstract class BaseContentModelProvider<T1, T2> : IContentModelProvider, IViewContentModelProvider<T1, T2>
+    public abstract class BaseContentModelProvider<T1, T2> : IViewContentModelProvider
         where T1 : BaseContentModel
         where T2 : ViewContentModel
     {
@@ -60,19 +61,22 @@ namespace Famoser.MassPass.View.Content.Providers.Base
         }
 
         protected abstract Guid GetTypeGuid();
-        protected abstract T2 ConstructViewModel(T1 contentModel);
-        public virtual void SaveValues(T1 target, T2 source)
+        protected abstract T2 ConstructViewModel(BaseContentModel contentModel);
+
+        public void SaveValues(BaseContentModel target, ViewContentModel source)
         {
             target.Name = source.Name;
             target.Description = source.Description;
         }
 
-        public T2 GetViewContentModel(T1 model)
+        public ViewContentModel GetViewContentModel(BaseContentModel model)
         {
             var vm = ConstructViewModel(model);
             vm.Name = model.Name;
             vm.Description = model.Description;
             return vm;
         }
+
+        public abstract PageKeys GetPageKey();
     }
 }

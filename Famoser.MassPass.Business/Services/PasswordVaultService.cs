@@ -26,6 +26,25 @@ namespace Famoser.MassPass.Business.Services
         private VaultStorageModel _storage;
         private DateTime _lastActionDateTime;
         private byte[] _activePasswordPhrase;
+        public async Task<bool> IsInitializedAsync()
+        {
+            try
+            {
+                var bytes = await _folderStorageService.GetCachedFileAsync(
+                    ReflectionHelper.GetAttributeOfEnum<DescriptionAttribute, FileKeys>(
+                        FileKeys.EncryptedPasswords).Description);
+                if (bytes?.Length > 0)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                // does not matter; probably storage file does not exist
+            }
+            return false;
+        }
+
         public async Task<bool> CreateNewVaultAsync(string masterPassword)
         {
             _lastActionDateTime = DateTime.Now;
@@ -46,8 +65,9 @@ namespace Famoser.MassPass.Business.Services
                 {
                     var maybeJson = await _encryptionService.DecryptAsync(bytes, _activePasswordPhrase);
                     _storage = JsonConvert.DeserializeObject<VaultStorageModel>(StorageHelper.ByteToString(maybeJson));
-                } else 
-                    _storage = new VaultStorageModel();
+                }
+                else
+                    return false;
                 _lastActionDateTime = DateTime.Now;
             }
             catch (Exception ex)

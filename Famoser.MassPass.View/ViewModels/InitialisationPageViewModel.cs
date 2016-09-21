@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Famoser.FrameworkEssentials.Services.Interfaces;
+using Famoser.FrameworkEssentials.View.Commands;
 using Famoser.MassPass.Business.Repositories.Interfaces;
+using Famoser.MassPass.Data.Models;
 using Famoser.MassPass.Data.Models.Configuration;
 using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
@@ -13,189 +18,66 @@ namespace Famoser.MassPass.View.ViewModels
     public class InitialisationPageViewModel : ViewModelBase
     {
         private readonly IApiConfigurationService _apiConfigurationService;
-        private readonly IHistoryNavigationService _historyNavigationService;
-        private readonly IContentRepository _contentRepository;
-        private readonly IProgressService _progressService;
 
-        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService, IHistoryNavigationService historyNavigationService, IContentRepository contentRepository, IProgressService progressService)
+        public InitialisationPageViewModel(IApiConfigurationService apiConfigurationService)
         {
             _apiConfigurationService = apiConfigurationService;
-            _historyNavigationService = historyNavigationService;
-            _contentRepository = contentRepository;
-            _progressService = progressService;
 
-            _trySetApiConfigurationCommand = new RelayCommand<string>(SetApiConfiguration, CanSetApiConfguration);
-            _trySetUserConfigurationCommand = new RelayCommand<string>(SetUserConfiguration, CanSetUserConfguration);
-            _confirmCommand = new RelayCommand(Confirm, () => CanConfirm);
+            _setConfigurationCommand = new LoadingRelayCommand(SetConfigurationAsync);
+        }
 
-            if (IsInDesignMode)
+        internal async Task LoadExistigConfigurationAsync()
+        {
+            try
             {
-                CanSetApiConfiguration = true;
+                var newApiConfig = await _apiConfigurationService.GetApiConfigurationAsync();
+                ApiConfiguration = newApiConfig ?? new ApiConfiguration();
+
+                var newUserConfig = await _apiConfigurationService.GetUserConfigurationAsync();
+                UserConfiguration = newUserConfig ?? new UserConfiguration();
+
+                FullyConfigured = await _apiConfigurationService.IsConfigurationReady();
+            }
+            catch (Exception)
+            {
+                if (ApiConfiguration == null)
+                    ApiConfiguration = new ApiConfiguration();
+
+                if (UserConfiguration == null)
+                    UserConfiguration = new UserConfiguration();
             }
         }
 
-        private readonly RelayCommand<string> _trySetApiConfigurationCommand;
-        public ICommand TrySetApiConfigurationCommand => _trySetApiConfigurationCommand;
-
-        private bool CanSetApiConfguration(string config)
+        private ApiConfiguration _apiConfiguration;
+        public ApiConfiguration ApiConfiguration
         {
-            return !_isSettingApiConfiguration && !IsConfirming;
+            get { return _apiConfiguration; }
+            set { Set(ref _apiConfiguration, value); }
         }
 
-        private bool _isSettingApiConfiguration;
 
-        private bool _canSetApiConfiguration;
-        public bool CanSetApiConfiguration
+        private UserConfiguration _userConfiguration;
+        public UserConfiguration UserConfiguration
         {
-            get { return _canSetApiConfiguration; }
-            set
-            {
-                if (Set(ref _canSetApiConfiguration, value))
-                    RaisePropertyChanged(() => CanConfirm);
-            }
+            get { return _userConfiguration; }
+            set { Set(ref _userConfiguration, value); }
         }
 
-        private string _lastApiConfiguration;
-        private void SetApiConfiguration(string config)
+        private bool _fullyConfigured;
+        public bool FullyConfigured
         {
-            _isSettingApiConfiguration = true;
-            _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
-
-            CanSetApiConfiguration = _apiConfigurationService.CanSetApiConfigurationAsync(config);
-            _lastApiConfiguration = config;
-
-            _isSettingApiConfiguration = false;
-            _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
-            _confirmCommand.RaiseCanExecuteChanged();
+            get { return _fullyConfigured; }
+            set { Set(ref _fullyConfigured, value); }
         }
 
-        private readonly RelayCommand<string> _trySetUserConfigurationCommand;
-        public ICommand TrySetUserConfigurationCommand => _trySetUserConfigurationCommand;
+        private readonly LoadingRelayCommand _setConfigurationCommand;
+        public ICommand SetConfigurationCommand => _setConfigurationCommand;
 
-        private bool CanSetUserConfguration(string config)
+        private async Task SetConfigurationAsync()
         {
-            return !IsSettingUserConfiguration && !IsConfirming;
-        }
-
-        private bool IsSettingUserConfiguration { get; set; }
-
-        private bool _canSetUserConfiguration;
-        public bool CanSetUserConfiguration
-        {
-            get { return _canSetUserConfiguration; }
-            set
-            {
-                if (Set(ref _canSetUserConfiguration, value))
-                    RaisePropertyChanged(() => CanConfirm);
-            }
-        }
-        private string _lastUserConfiguration;
-        private void SetUserConfiguration(string content)
-        {
-            using (new IndeterminateProgressDisposable<ProgressKeys, string>(_trySetUserConfigurationCommand, z => IsSettingUserConfiguration = z, ProgressKeys.IsSettingUserConfiguration, _progressService))
-            {
-                CanSetUserConfiguration = _apiConfigurationService.CanSetUserConfigurationAsync(content);
-                _lastUserConfiguration = content;
-            }
-            _confirmCommand.RaiseCanExecuteChanged();
-        }
-
-        private bool _createNewUserConfiguration;
-        public bool CreateNewUserConfiguration
-        {
-            get { return _createNewUserConfiguration; }
-            set
-            {
-                if (Set(ref _createNewUserConfiguration, value))
-                {
-                    _confirmCommand.RaiseCanExecuteChanged();
-                    RaisePropertyChanged(() => CanConfirm);
-                }
-            }
-        }
-
-        private string _masterPassword;
-        public string MasterPassword
-        {
-            get { return _masterPassword; }
-            set
-            {
-                if (Set(ref _masterPassword, value))
-                    RaisePropertyChanged(() => CanConfirm);
-            }
-        }
-
-        private string _deviceName;
-        public string DeviceName
-        {
-            get { return _deviceName; }
-            set
-            {
-                if (Set(ref _deviceName, value))
-                    RaisePropertyChanged(() => CanConfirm);
-            }
-        }
-
-        private string _userName;
-        public string UserName
-        {
-            get { return _userName; }
-            set
-            {
-                if (Set(ref _userName, value))
-                    RaisePropertyChanged(() => CanConfirm);
-            }
-        }
-
-        private readonly RelayCommand _confirmCommand;
-        public ICommand ConfirmCommand => _confirmCommand;
-
-        public bool CanConfirm => CanSetApiConfiguration
-            && (CanSetUserConfiguration || CreateNewUserConfiguration)
-            && !IsConfirming
-            && !string.IsNullOrEmpty(MasterPassword)
-            && !string.IsNullOrEmpty(DeviceName)
-            && !string.IsNullOrEmpty(UserName);
-
-        private bool IsConfirming;
-        private async void Confirm()
-        {
-            using (new IndeterminateProgressDisposable<ProgressKeys, object>(_confirmCommand, z => IsConfirming = z, ProgressKeys.IsInitializingApplication, _progressService))
-            {
-                _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
-                _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
-
-                bool res1 = await _apiConfigurationService.TrySetApiConfigurationAsync(_lastApiConfiguration);
-                bool res2;
-                if (CreateNewUserConfiguration)
-                {
-                    res2 = await _apiConfigurationService.SetUserConfigurationAsync(new UserConfiguration()
-                    {
-                        UserId = Guid.NewGuid(),
-                        DeviceName = DeviceName,
-                        UserName = UserName
-                    },
-                    Guid.NewGuid());
-                }
-                else
-                {
-                    res2 = await _apiConfigurationService.TrySetUserConfigurationAsync(_lastUserConfiguration, Guid.NewGuid());
-                }
-                if (res1 && res2)
-                {
-                    await _contentRepository.InitializeVault(MasterPassword);
-                    _historyNavigationService.GoBack();
-                }
-                else
-                {
-                    if (!res1)
-                        CanSetApiConfiguration = false;
-                    if (!res2)
-                        CanSetUserConfiguration = false;
-                }
-            }
-            _trySetUserConfigurationCommand.RaiseCanExecuteChanged();
-            _trySetApiConfigurationCommand.RaiseCanExecuteChanged();
+            await _apiConfigurationService.SetApiConfigurationAsync(ApiConfiguration);
+            await _apiConfigurationService.SetUserConfigurationAsync(UserConfiguration);
+            FullyConfigured = await _apiConfigurationService.IsConfigurationReady();
         }
     }
 }

@@ -8,6 +8,7 @@ using Famoser.MassPass.Data.Services.Interfaces;
 using Famoser.MassPass.View.Enums;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 
 namespace Famoser.MassPass.View.ViewModels
 {
@@ -16,17 +17,15 @@ namespace Famoser.MassPass.View.ViewModels
         private readonly IHistoryNavigationService _historyNavigationService;
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IApiConfigurationService _apiConfigurationService;
-        private readonly IProgressService _progressService;
 
-        public PasswordPageViewModel(IHistoryNavigationService historyNavigationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService, IProgressService progressService)
+        public PasswordPageViewModel(IHistoryNavigationService historyNavigationService, IPasswordVaultService passwordVaultService, IApiConfigurationService apiConfigurationService)
         {
             _historyNavigationService = historyNavigationService;
             _passwordVaultService = passwordVaultService;
             _apiConfigurationService = apiConfigurationService;
-            _progressService = progressService;
 
             _unlockCommand = new LoadingRelayCommand(Unlock);
-            _initializeCommand = new RelayCommand(GoToInitializePage);
+            _initializeCommand = new LoadingRelayCommand(GoToInitializePage, () => Initialized);
             _aboutCommand = new RelayCommand(GoToAboutPage);
 
 
@@ -42,14 +41,18 @@ namespace Famoser.MassPass.View.ViewModels
 
         private async void InitializeAsync()
         {
-            Initialized = await _apiConfigurationService.IsConfigurationReady();
+            Initialized = await _passwordVaultService.IsInitializedAsync() && await _apiConfigurationService.IsConfigurationReady();
         }
 
         private bool _initialized;
         public bool Initialized
         {
             get { return _initialized; }
-            set { Set(ref _initialized, value); }
+            set
+            {
+                if (Set(ref _initialized, value))
+                    _initializeCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private string _password;
@@ -65,17 +68,23 @@ namespace Famoser.MassPass.View.ViewModels
         {
             var bo = await _passwordVaultService.TryUnlockVaultAsync(_password);
             if (bo && _passwordVaultService.IsVaultUnLocked())
-                _historyNavigationService.NavigateTo(PageKeys.RootContentPage.ToString());
+                _historyNavigationService.NavigateToAndForget(PageKeys.ListContentPage.ToString());
             else
                 WrongPasswordEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        private readonly RelayCommand _initializeCommand;
+        private readonly LoadingRelayCommand _initializeCommand;
         public ICommand InitializeCommand => _initializeCommand;
 
-        private void GoToInitializePage()
+        private async Task GoToInitializePage()
         {
-            _historyNavigationService.NavigateTo(PageKeys.InitialisationPage.ToString(), this);
+            await _passwordVaultService.CreateNewVaultAsync(Password);
+            if (await _passwordVaultService.TryUnlockVaultAsync(Password))
+            {
+                var vm = SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
+                await vm.LoadExistigConfigurationAsync();
+                _historyNavigationService.NavigateTo(PageKeys.InitialisationPage.ToString(), this);
+            }
         }
 
         private readonly RelayCommand _aboutCommand;

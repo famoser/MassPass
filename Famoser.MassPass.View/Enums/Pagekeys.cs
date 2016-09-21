@@ -18,19 +18,9 @@
         AboutPage,
 
         /// <summary>
-        /// the first page; a list of all collections
-        /// </summary>
-        RootContentPage,
-
-        /// <summary>
         /// a folder page; a list of all entries
         /// </summary>
-        FolderContentPage,
-
-        /// <summary>
-        /// a note
-        /// </summary>
-        NoteContentPage,
+        ListContentPage,
 
         /// <summary>
         /// used to display user information to connect another application
@@ -40,6 +30,21 @@
         /// <summary>
         /// add new item
         /// </summary>
-        AddPage
+        AddPage,
+
+        /// <summary>
+        /// NoteContentModel page
+        /// </summary>
+        NotePage,
+
+        /// <summary>
+        /// LoginContentModel page
+        /// </summary>
+        LoginPage,
+
+        /// <summary>
+        /// CreditCardContentModel page
+        /// </summary>
+        CreditCardPage
     }
 }
