@@ -15,6 +15,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <userControls:ProgressControl VerticalAlignment="Top" />
+        <!--
         <TextBlock Text="Initialize" Style="{StaticResource FamoserHeaderTextBlock}" />
         <ScrollViewer Grid.Row="1"  Style="{StaticResource AlwaysScrollViewer}">
             <Grid>
@@ -129,5 +130,6 @@
             </Grid>
 
         </ScrollViewer>
+        -->
     </Grid>
 </Page>

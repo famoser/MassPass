@@ -45,9 +45,6 @@ namespace Famoser.MassPass.View.ViewModels
             await _contentRepository.SyncAsync();
         }
 
-        private RelayCommand<BaseContentModel> _selectCommand;
-
-
         private readonly RelayCommand _shareCommand;
         public ICommand ShareCommand => _shareCommand;
 
