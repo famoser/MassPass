@@ -2,7 +2,6 @@
 using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Content.Models;
 using Famoser.MassPass.Business.Content.Models.Base;
-using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage.Cache;
 
 namespace Famoser.MassPass.Business.Helpers

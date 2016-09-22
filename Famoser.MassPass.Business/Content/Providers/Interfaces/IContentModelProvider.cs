@@ -1,6 +1,5 @@
 ﻿using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Content.Models.Base;
-using Famoser.MassPass.Business.Enums;
 using Famoser.MassPass.Business.Models.Storage.Cache;
 
 namespace Famoser.MassPass.Business.Content.Providers.Interfaces

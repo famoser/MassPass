@@ -3,6 +3,7 @@ using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Repositories;
 using Famoser.MassPass.Business.Repositories.Interfaces;
+using Famoser.MassPass.Business.Repositories.Mocks;
 using Famoser.MassPass.Business.Services;
 using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Services;
@@ -26,8 +27,10 @@ namespace Famoser.MassPass.View.ViewModels
             SimpleIoc.Default.Register<IPasswordVaultService, PasswordVaultService>();
             SimpleIoc.Default.Register<IRestService, RestService>();
 
-            //business
-            SimpleIoc.Default.Register<IContentRepository, ContentRepository>();
+            if (IsInDesignMode)
+                SimpleIoc.Default.Register<IContentRepository, ContentRepositoryMock>();
+            else
+                SimpleIoc.Default.Register<IContentRepository, ContentRepository>(); //business
             SimpleIoc.Default.Register<IDevicesRepository, DevicesRepository>();
             SimpleIoc.Default.Register<IAuthorizationRepository, AuthorizationRepository>();
 
@@ -44,7 +47,7 @@ namespace Famoser.MassPass.View.ViewModels
 
             //to implement: IConfigurationService, IFolderStorageService, IErrorApiReportingService, INavigationService, IQrCodeService
         }
-        
+
         public InitialisationPageViewModel InitialisationPageViewModel => SimpleIoc.Default.GetInstance<InitialisationPageViewModel>();
         public PasswordPageViewModel PasswordPageViewModel => SimpleIoc.Default.GetInstance<PasswordPageViewModel>();
         public SharePageViewModel SharePageViewModel => SimpleIoc.Default.GetInstance<SharePageViewModel>();

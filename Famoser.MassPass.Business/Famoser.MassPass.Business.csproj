@@ -126,11 +126,11 @@
     <Compile Include="Repositories\Interfaces\IAuthorizationRepository.cs" />
     <Compile Include="Repositories\Interfaces\IContentRepository.cs" />
     <Compile Include="Repositories\Interfaces\IDevicesRepository.cs" />
+    <Compile Include="Repositories\Mocks\ContentRepositoryMock.cs" />
     <Compile Include="Services\ApiConfigurationService.cs" />
     <Compile Include="Services\ApiEncryptionService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationService.cs" />
     <Compile Include="Services\Interfaces\IErrorApiReportingService.cs" />
-    <Compile Include="Services\Interfaces\IFolderStorageService.cs" />
     <Compile Include="Services\PasswordVaultService.cs" />
   </ItemGroup>
   <ItemGroup>

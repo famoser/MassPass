@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Famoser.MassPass.Business.Content.Enums;
 using Famoser.MassPass.Business.Content.Models.Base;
-using Famoser.MassPass.Business.Content.Providers;
 using Famoser.MassPass.Business.Content.Providers.Interfaces;
-using Famoser.MassPass.Business.Enums;
 
 namespace Famoser.MassPass.Business.Content.Helpers
 {

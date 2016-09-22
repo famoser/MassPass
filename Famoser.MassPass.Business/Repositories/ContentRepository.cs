@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Famoser.FrameworkEssentials.Attributes;
 using Famoser.FrameworkEssentials.Helpers;
+using Famoser.FrameworkEssentials.Services.Interfaces;
 using Famoser.MassPass.Business.Content.Helpers;
 using Famoser.MassPass.Business.Content.Models;
 using Famoser.MassPass.Business.Content.Models.Base;
@@ -13,7 +14,6 @@ using Famoser.MassPass.Business.Managers;
 using Famoser.MassPass.Business.Models;
 using Famoser.MassPass.Business.Models.Storage;
 using Famoser.MassPass.Business.Repositories.Interfaces;
-using Famoser.MassPass.Business.Services.Interfaces;
 using Famoser.MassPass.Data.Entities.Communications.Request;
 using Famoser.MassPass.Data.Entities.Communications.Request.Entities;
 using Famoser.MassPass.Data.Enum;
@@ -25,8 +25,6 @@ namespace Famoser.MassPass.Business.Repositories
 {
     public class ContentRepository : BaseRepository, IContentRepository
     {
-        private const string ContentFolder = "content";
-
         private readonly IFolderStorageService _folderStorageService;
         private readonly IPasswordVaultService _passwordVaultService;
         private readonly IApiConfigurationService _apiConfigurationService;
@@ -178,7 +176,7 @@ namespace Famoser.MassPass.Business.Repositories
             return ExecuteSafe(async () =>
             {
                 model.ContentLoadingState = LoadingState.Loading;
-                var content = await _folderStorageService.GetFile(ContentFolder, GetFileName(model));
+                var content = await _folderStorageService.GetCachedFileAsync(GetFileName(model));
                 var decryptedBytes = await _passwordVaultService.DecryptWithMasterPasswordAsync(content);
                 var jsonCache = StorageHelper.ByteToString(decryptedBytes);
                 if (jsonCache != null)
@@ -254,7 +252,7 @@ namespace Famoser.MassPass.Business.Repositories
                 var json = JsonConvert.SerializeObject(model);
                 var bytes = StorageHelper.StringToBytes(json);
                 var encrytedBytes = await _passwordVaultService.EncryptWithMasterPasswordAsync(bytes);
-                if (await _folderStorageService.SaveFile(ContentFolder, GetFileName(model), encrytedBytes))
+                if (await _folderStorageService.SetCachedFileAsync(GetFileName(model), encrytedBytes))
                 {
                     if (!skipCacheCreation)
                         return await CreateCache();
