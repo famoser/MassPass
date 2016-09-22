@@ -48,6 +48,7 @@
                 <Setter Property="FontFamily" Value="Segoe UI" />
                 <Setter Property="Foreground" Value="{ThemeResource TextForeground}" />
                 <Setter Property="Margin" Value="10,5" />
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
             <Style x:Key="FamoserPasswordBox" TargetType="PasswordBox">
